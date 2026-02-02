@@ -29,6 +29,7 @@ dev = [
 adhd = "adhd_framework:main"
 
 [tool.uv.sources]
+# All ADHD module dependencies must be declared here for workspace resolution
 logger-util = { workspace = true }
 config-manager = { workspace = true }
 exceptions-core = { workspace = true }
@@ -37,6 +38,14 @@ questionary-core = { workspace = true }
 github-api-core = { workspace = true }
 project-creator-core = { workspace = true }
 module-creator-core = { workspace = true }
+# Additional dependencies used by workspace members
+yaml-reading-core = { workspace = true }
+creator-common-core = { workspace = true }
+temp-files-manager = { workspace = true }
+workspace-core = { workspace = true }
+instruction-core = { workspace = true }
+uv-migrator-core = { workspace = true }
+adhd-mcp = { workspace = true }
 
 [tool.uv.workspace]
 members = [
