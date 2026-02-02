@@ -1,0 +1,20 @@
+03:27:12 I ConfigTemplate: Starting configuration template processing...
+03:27:12 W ModulesController: [ModuleIssueCode.MISSING_REPO_URL] instruction_core: Module is missing 'repo_url' in pyproject.toml. Please add a canonical repository URL under [project.urls].Repository. (file: cores/instruction_core/pyproject.toml)
+03:27:12 W ModulesController: [ModuleIssueCode.MISSING_REPO_URL] config_manager: Module is missing 'repo_url' in pyproject.toml. Please add a canonical repository URL under [project.urls].Repository. (file: managers/config_manager/pyproject.toml)
+03:27:12 I ConfigTemplate: Successfully saved 14 module configurations
+03:27:12 I ConfigTemplate: Configuration processing complete!
+03:27:12 I ConfigTemplate: Modules processed: 14
+03:27:12 I ModuleCreatorInit: Module templates ensured at: project/data/module_creator_core/module_templates.yaml
+Testing create_module with invalid inputs:
+03:27:12 I AdhdController: Using default template: default
+  ('', 'manager'): {'success': False, 'error': 'creation_error', 'message': "ModuleCreationParams.__init__() got an unexpected keyword argument 'template_url'"}
+03:27:12 I AdhdController: Using default template: default
+  ('123start', 'manager'): {'success': False, 'error': 'creation_error', 'message': "ModuleCreationParams.__init__() got an unexpected keyword argument 'template_url'"}
+03:27:12 I AdhdController: Using default template: default
+  ('has space', 'manager'): {'success': False, 'error': 'creation_error', 'message': "ModuleCreationParams.__init__() got an unexpected keyword argument 'template_url'"}
+03:27:12 I AdhdController: Using default template: default
+  ('has-hyphen', 'manager'): {'success': False, 'error': 'creation_error', 'message': "ModuleCreationParams.__init__() got an unexpected keyword argument 'template_url'"}
+  ('test', 'nonexistent'): {'success': False, 'error': 'invalid_type', 'message': "Module type must be one of: ['manager', 'util', 'plugin', 'mcp', 'core']"}
+03:27:12 I AdhdController: Using default template: default
+  (None, 'manager'): {'success': False, 'error': 'creation_error', 'message': "ModuleCreationParams.__init__() got an unexpected keyword argument 'template_url'"}
+  ('test', None): {'success': False, 'error': 'invalid_type', 'message': "Module type must be one of: ['manager', 'util', 'plugin', 'mcp', 'core']"}

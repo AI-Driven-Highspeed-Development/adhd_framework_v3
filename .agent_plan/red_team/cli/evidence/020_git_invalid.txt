@@ -1,0 +1,12 @@
+03:28:02 I ConfigTemplate: Starting configuration template processing...
+03:28:02 W ModulesController: [ModuleIssueCode.MISSING_REPO_URL] instruction_core: Module is missing 'repo_url' in pyproject.toml. Please add a canonical repository URL under [project.urls].Repository. (file: cores/instruction_core/pyproject.toml)
+03:28:02 W ModulesController: [ModuleIssueCode.MISSING_REPO_URL] config_manager: Module is missing 'repo_url' in pyproject.toml. Please add a canonical repository URL under [project.urls].Repository. (file: managers/config_manager/pyproject.toml)
+03:28:02 I ConfigTemplate: Successfully saved 14 module configurations
+03:28:02 I ConfigTemplate: Configuration processing complete!
+03:28:02 I ConfigTemplate: Modules processed: 14
+03:28:02 I ModuleCreatorInit: Module templates ensured at: project/data/module_creator_core/module_templates.yaml
+Test: Invalid git action
+  Result: {'success': False, 'error': 'invalid_action', 'message': "action must be one of: ['status', 'diff', 'pull', 'push']"}
+
+Test: Push without commit message
+  Result: {'success': False, 'error': 'commit_message_required', 'message': 'commit_message is required for push action'}

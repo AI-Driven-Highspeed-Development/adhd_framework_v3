@@ -1,0 +1,5 @@
+Command 'python' is available in the following places
+ * /bin/python
+ * /usr/bin/python
+The command could not be located because '/usr/bin:/bin' is not included in the PATH environment variable.
+python: command not found

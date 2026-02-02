@@ -1,0 +1,26 @@
+usage: adhd [-h]
+            {create-project,cp,create-module,cm,sync,s,init,i,refresh,r,list,ls,info,in,req,rq,workspace,ws,update-framework,uf,migrate,mg,doctor,doc}
+            ...
+
+ADHD Framework CLI - AI-Driven High-speed Development Framework
+
+positional arguments:
+  {create-project,cp,create-module,cm,sync,s,init,i,refresh,r,list,ls,info,in,req,rq,workspace,ws,update-framework,uf,migrate,mg,doctor,doc}
+                        Available commands
+    create-project (cp)
+                        Create a new ADHD project
+    create-module (cm)  Create a new module
+    sync (s)            Synchronize project dependencies using uv
+    init (i)            Initialize project (alias for sync)
+    refresh (r)         Refresh project modules
+    list (ls)           List all discovered modules
+    info (in)           Show detailed module information
+    req (rq)            Install requirements from all requirements.txt files
+    workspace (ws)      Update VS Code workspace file
+    update-framework (uf)
+                        Update adhd_framework.py from source repository
+    migrate (mg)        Migrate init.yaml to pyproject.toml
+    doctor (doc)        Check module health and report issues
+
+options:
+  -h, --help            show this help message and exit

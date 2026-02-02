@@ -1,0 +1,76 @@
+{
+  "session": "2026-02-02_final_retest",
+  "status": "PARTIAL_PASS",
+  "verdict": "UNSTABLE",
+  "summary": "3 of 4 targets fixed, 1 vulnerability remains",
+  
+  "attacks_executed": [
+    {
+      "id": "ATK-001",
+      "category": "MCP create_module",
+      "description": "create_module without template_url parameter",
+      "input": "module_name='test', module_type='util', no template_url",
+      "result": "PASS",
+      "severity": "INFO",
+      "notes": "Module created successfully. template_url now optional as intended. module_type now required (API change)."
+    },
+    {
+      "id": "ATK-002",
+      "category": "Template Escaping",
+      "description": "Template with __all__: list[str] = [] formatting",
+      "input": "init.py.template with {{}} braces",
+      "result": "PASS",
+      "severity": "INFO",
+      "notes": "Template formats correctly. __all__ preserved. Generated Python is syntactically valid."
+    },
+    {
+      "id": "ATK-003a",
+      "category": "Input Validation",
+      "description": "Invalid module names (empty, special chars, path traversal)",
+      "input": "['', ' ', '123module', 'my-module', '../escape', etc.]",
+      "result": "PASS",
+      "severity": "INFO",
+      "notes": "All invalid names correctly rejected with ADHDError before file creation."
+    },
+    {
+      "id": "ATK-003b",
+      "category": "Input Validation",
+      "description": "Python reserved keywords as module names",
+      "input": "['for', 'class', 'def', 'return', 'import']",
+      "result": "FAIL",
+      "severity": "WARNING",
+      "notes": "Python keywords are accepted and modules are created. Results in unusable modules (e.g., for.py cannot be imported as 'for' is a keyword)."
+    },
+    {
+      "id": "ATK-004",
+      "category": "get_module_info",
+      "description": "None and invalid inputs handling",
+      "input": "[None, '', ' ', 'nonexistent', '../../../etc/passwd', 'cmd;injection', 'a'*1000]",
+      "result": "PASS",
+      "severity": "INFO",
+      "notes": "All invalid inputs handled gracefully. Returns proper error dict with success=False."
+    }
+  ],
+  
+  "attacks_skipped": [],
+  
+  "blockers_found": [],
+  
+  "warnings_found": [
+    {
+      "id": "WARN-001",
+      "category": "Input Validation",
+      "description": "Python keywords accepted as module names",
+      "impact": "Creates modules that cannot be properly imported (e.g., `from for import ...` is a syntax error)",
+      "recommendation": "Add `keyword.iskeyword(name)` check to validation logic in module_creator_core",
+      "severity": "WARNING"
+    }
+  ],
+  
+  "fixes_verified": [
+    "MCP create_module works without template_url",
+    "Template escaped braces {{}} work correctly",
+    "Basic input validation (empty, special chars, path traversal) works",
+    "get_module_info handles None/invalid inputs gracefully"
+  ]
+}

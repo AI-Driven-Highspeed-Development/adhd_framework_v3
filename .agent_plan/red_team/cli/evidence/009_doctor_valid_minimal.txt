@@ -1,0 +1,49 @@
+03:26:04 I ConfigTemplate: Starting configuration template processing...
+03:26:04 W ModulesController: [ModuleIssueCode.MISSING_REPO_URL] instruction_core: Module is missing 'repo_url' in pyproject.toml. Please add a canonical repository URL under [project.urls].Repository. (file: cores/instruction_core/pyproject.toml)
+03:26:04 W ModulesController: [ModuleIssueCode.MISSING_INIT_YAML] corrupt_test_core: Invalid pyproject.toml (file: cores/corrupt_test_core/pyproject.toml)
+03:26:04 W ModulesController: [ModuleIssueCode.MISSING_REPO_URL] config_manager: Module is missing 'repo_url' in pyproject.toml. Please add a canonical repository URL under [project.urls].Repository. (file: managers/config_manager/pyproject.toml)
+03:26:04 I ConfigTemplate: Successfully saved 14 module configurations
+03:26:04 I ConfigTemplate: Configuration processing complete!
+03:26:04 I ConfigTemplate: Modules processed: 14
+
+🩺 Doctor Report: 17 modules checked
+
+❌ Errors (must fix):
+  • Module 'corrupt_test_core' is missing [tool.adhd] section
+    💡 Add [tool.adhd] section with 'type' field
+
+⚠️  Warnings (should fix):
+  • Module 'uv_migrator_core' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module uv_migrator_core' to remove
+  • Module 'questionary_core' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module questionary_core' to remove
+  • Module 'instruction_core' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module instruction_core' to remove
+  • Module 'project_creator_core' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module project_creator_core' to remove
+  • Module 'yaml_reading_core' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module yaml_reading_core' to remove
+  • Module 'modules_controller_core' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module modules_controller_core' to remove
+  • Module 'workspace_core' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module workspace_core' to remove
+  • Module 'exceptions_core' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module exceptions_core' to remove
+  • Module 'module_creator_core' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module module_creator_core' to remove
+  • Module 'creator_common_core' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module creator_common_core' to remove
+  • Module 'project_init_core' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module project_init_core' to remove
+  • Module 'github_api_core' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module github_api_core' to remove
+  • Module 'temp_files_manager' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module temp_files_manager' to remove
+  • Module 'config_manager' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module config_manager' to remove
+  • Module 'logger_util' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module logger_util' to remove
+  • Module 'adhd_mcp' has orphaned init.yaml (deprecated)
+    💡 Run 'adhd migrate --module adhd_mcp' to remove
+
+Summary: 1 errors, 16 warnings, 0 info

@@ -1,0 +1,28 @@
+03:25:36 I ConfigTemplate: Starting configuration template processing...
+03:25:36 W ModulesController: [ModuleIssueCode.MISSING_REPO_URL] instruction_core: Module is missing 'repo_url' in pyproject.toml. Please add a canonical repository URL under [project.urls].Repository. (file: cores/instruction_core/pyproject.toml)
+03:25:36 W ModulesController: [ModuleIssueCode.MISSING_REPO_URL] config_manager: Module is missing 'repo_url' in pyproject.toml. Please add a canonical repository URL under [project.urls].Repository. (file: managers/config_manager/pyproject.toml)
+03:25:36 I ConfigTemplate: Successfully saved 14 module configurations
+03:25:36 I ConfigTemplate: Configuration processing complete!
+03:25:36 I ConfigTemplate: Modules processed: 14
+03:25:37 I ADHDFramework: 🔍 Dry run mode - no changes will be made
+03:25:37 I ModulesController: Note: Root init.yaml found but not migrated (not a module)
+
+📦 Migration preview:
+  ✅ uv_migrator_core: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ questionary_core: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ instruction_core: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ project_creator_core: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ yaml_reading_core: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ modules_controller_core: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ workspace_core: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ exceptions_core: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ module_creator_core: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ creator_common_core: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ project_init_core: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ github_api_core: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ temp_files_manager: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ config_manager: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ logger_util: Would remove orphaned init.yaml (pyproject.toml already exists)
+  ✅ adhd_mcp: Would remove orphaned init.yaml (pyproject.toml already exists)
+
+Would migrate: 16 modules

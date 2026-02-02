@@ -1,0 +1,55 @@
+[project]
+name = "adhd-framework"
+version = "3.0.0"
+description = "ADHD Framework - AI-Driven Highspeed Development"
+requires-python = ">=3.11"
+readme = "README.md"
+
+dependencies = [
+    "argcomplete>=3.0",
+    "mcp>=1.0",
+    # Workspace member dependencies (required for adhd CLI)
+    "logger-util",
+    "config-manager",
+    "exceptions-core",
+    "modules-controller-core",
+    "questionary-core",
+    "github-api-core",
+    "project-creator-core",
+    "module-creator-core",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.1",
+]
+
+[project.scripts]
+adhd = "adhd_framework:main"
+
+[tool.uv.sources]
+logger-util = { workspace = true }
+config-manager = { workspace = true }
+exceptions-core = { workspace = true }
+modules-controller-core = { workspace = true }
+questionary-core = { workspace = true }
+github-api-core = { workspace = true }
+project-creator-core = { workspace = true }
+module-creator-core = { workspace = true }
+
+[tool.uv.workspace]
+members = [
+    "cores/*",
+    "managers/*",
+    "utils/*",
+    "plugins/*",
+    "mcps/*",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
