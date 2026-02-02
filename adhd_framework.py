@@ -454,7 +454,12 @@ class ADHDFramework:
 
     def update_workspace(self, args) -> None:
         """Update VS Code workspace file."""
-        from modules_controller_core import ModulesController, WorkspaceGenerationMode
+        from modules_controller_core import (
+            ModulesController,
+            WorkspaceGenerationMode,
+            ModuleFilter,
+            FilterMode,
+        )
         
         controller = ModulesController()
         overrides = {}
@@ -464,6 +469,21 @@ class ADHDFramework:
             mode = WorkspaceGenerationMode.INCLUDE_ALL
         elif args.ignore_overrides:
             mode = WorkspaceGenerationMode.IGNORE_OVERRIDES
+        
+        # Build filter from args (same pattern as list_modules)
+        filter_obj = None
+        if getattr(args, 'include', None):
+            filter_obj = ModuleFilter(mode=FilterMode.INCLUDE)
+            for val in args.include:
+                filter_obj = self._add_filter_value(filter_obj, val)
+        elif getattr(args, 'require', None):
+            filter_obj = ModuleFilter(mode=FilterMode.REQUIRE)
+            for val in args.require:
+                filter_obj = self._add_filter_value(filter_obj, val)
+        elif getattr(args, 'exclude', None):
+            filter_obj = ModuleFilter(mode=FilterMode.EXCLUDE)
+            for val in args.exclude:
+                filter_obj = self._add_filter_value(filter_obj, val)
 
         if args.module:
             module = controller.get_module_by_name(args.module)
@@ -493,7 +513,12 @@ class ADHDFramework:
             overrides[module.name] = new_visibility
             self.logger.info(f"Temporarily toggling workspace visibility for {module.name} to {new_visibility}")
 
-        path = controller.generate_workspace_file(mode=mode, overrides=overrides)
+        path = controller.generate_workspace_file(mode=mode, overrides=overrides, module_filter=filter_obj)
+        
+        # Show filter info if applied
+        if filter_obj and filter_obj.has_filters:
+            self.logger.info(f"📋 Filter applied: {filter_obj.mode.value} mode")
+        
         self.logger.info(f"✅ Workspace file updated at: {path}")
 
 
@@ -563,6 +588,14 @@ def setup_parser() -> argparse.ArgumentParser:
     workspace_parser.add_argument('--all', action='store_true', help='Include all modules regardless of settings')
     workspace_parser.add_argument('--ignore-overrides', action='store_true', help='Ignore module-level overrides')
     workspace_arg = workspace_parser.add_argument('--module', '-m', help='Toggle workspace visibility for a specific module')
+    # Filter flags (same as list command)
+    workspace_filter_group = workspace_parser.add_mutually_exclusive_group()
+    workspace_filter_group.add_argument('-i', '--include', nargs='+', metavar='FILTER',
+                                        help='Include only matching modules (layer/type/state)')
+    workspace_filter_group.add_argument('-r', '--require', nargs='+', metavar='FILTER',
+                                        help='Require all filters to match (AND logic)')
+    workspace_filter_group.add_argument('-x', '--exclude', nargs='+', metavar='FILTER',
+                                        help='Exclude matching modules')
     if argcomplete:
         workspace_arg.completer = module_completer
 
