@@ -55,6 +55,7 @@ This blueprint follows **HyperDream phasing rules**:
 | 05 | [UV Primer](./05_uv_primer.md) | **Educational** — Beginner's guide to uv concepts and commands |
 | 06 | [Impact Analysis](./06_impact_analysis.md) | **Analysis** — What gets eliminated, reduced, or stays unchanged |
 | 80 | [Implementation](./80_implementation.md) | **Task tracking** — Start/track work here |
+| 90 | [Federation Architecture Vision](./90_federation_architecture_vision.md) | **Vision** — Solving the workspace vs git paradigm clash |
 
 ---
 

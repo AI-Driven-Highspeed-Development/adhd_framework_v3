@@ -1,0 +1,19 @@
+23:10:48 W CLIManager: Failed to load registry: Expecting value: line 1 column 1 (char 0)
+23:10:48 W CLIManager: Failed to load registry: Expecting value: line 1 column 1 (char 0)
+23:10:48 W CLIManager: Failed to load registry: Expecting value: line 1 column 1 (char 0)
+23:10:48 W CLIManager: Failed to load registry: Expecting value: line 1 column 1 (char 0)
+23:10:48 W CLIManager: Failed to load registry: Expecting value: line 1 column 1 (char 0)
+23:10:48 W CLIManager: Failed to load registry: Expecting value: line 1 column 1 (char 0)
+23:10:48 W CLIManager: Failed to load registry: Expecting value: line 1 column 1 (char 0)
+23:10:48 W CLIManager: Failed to load registry: Expecting value: line 1 column 1 (char 0)
+23:10:48 W CLIManager: Failed to load registry: Expecting value: line 1 column 1 (char 0)
+23:10:48 W CLIManager: Failed to load registry: Expecting value: line 1 column 1 (char 0)
+23:10:48 W CLIManager: Failed to load registry: Expecting value: line 1 column 1 (char 0)
+23:10:48 W CLIManager: Failed to load registry: Expecting value: line 1 column 1 (char 0)
+23:10:48 W CLIManager: Failed to load registry: Expecting value: line 1 column 1 (char 0)
+23:10:48 W CLIManager: Failed to load registry: Extra data: line 8 column 4 (char 140)
+EVIDENCE: Race condition test
+Expected registrations: 20
+Actual registrations: 0
+Missing: 20
+Modules registered: []

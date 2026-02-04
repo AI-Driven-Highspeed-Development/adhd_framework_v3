@@ -6,6 +6,7 @@ requires-python = ">=3.11"
 members = [
     "adhd-framework",
     "adhd-mcp",
+    "cli-manager",
     "config-manager",
     "creator-common-core",
     "exceptions-core",
@@ -45,6 +46,11 @@ dev = [
     { name = "ruff" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "argcomplete", specifier = ">=3.0" },
@@ -61,6 +67,9 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1" },
 ]
 provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=9.0.2" }]
 
 [[package]]
 name = "adhd-mcp"
@@ -211,6 +220,21 @@ wheels = [
 ]
 
 [[package]]
+name = "cli-manager"
+version = "0.0.1"
+source = { editable = "managers/cli_manager" }
+dependencies = [
+    { name = "config-manager" },
+    { name = "logger-util" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "config-manager", editable = "managers/config_manager" },
+    { name = "logger-util", editable = "utils/logger_util" },
+]
+
+[[package]]
 name = "click"
 version = "8.3.1"
 source = { registry = "https://pypi.org/simple" }
@@ -238,12 +262,14 @@ source = { editable = "managers/config_manager" }
 dependencies = [
     { name = "logger-util" },
     { name = "modules-controller-core" },
+    { name = "pyyaml" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "logger-util", editable = "utils/logger_util" },
     { name = "modules-controller-core", editable = "cores/modules_controller_core" },
+    { name = "pyyaml", specifier = ">=6.0" },
 ]
 
 [[package]]
@@ -415,6 +441,7 @@ dependencies = [
     { name = "exceptions-core" },
     { name = "logger-util" },
     { name = "modules-controller-core" },
+    { name = "pyyaml" },
 ]
 
 [package.metadata]
@@ -423,6 +450,7 @@ requires-dist = [
     { name = "exceptions-core", editable = "cores/exceptions_core" },
     { name = "logger-util", editable = "utils/logger_util" },
     { name = "modules-controller-core", editable = "cores/modules_controller_core" },
+    { name = "pyyaml", specifier = ">=6.0" },
 ]
 
 [[package]]
@@ -576,22 +604,22 @@ name = "project-creator-core"
 version = "0.0.1"
 source = { editable = "cores/project_creator_core" }
 dependencies = [
-    { name = "config-manager" },
     { name = "creator-common-core" },
     { name = "exceptions-core" },
     { name = "github-api-core" },
     { name = "logger-util" },
+    { name = "modules-controller-core" },
     { name = "questionary-core" },
     { name = "yaml-reading-core" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "config-manager", editable = "managers/config_manager" },
     { name = "creator-common-core", editable = "cores/creator_common_core" },
     { name = "exceptions-core", editable = "cores/exceptions_core" },
     { name = "github-api-core", editable = "cores/github_api_core" },
     { name = "logger-util", editable = "utils/logger_util" },
+    { name = "modules-controller-core", editable = "cores/modules_controller_core" },
     { name = "questionary-core", editable = "cores/questionary_core" },
     { name = "yaml-reading-core", editable = "cores/yaml_reading_core" },
 ]

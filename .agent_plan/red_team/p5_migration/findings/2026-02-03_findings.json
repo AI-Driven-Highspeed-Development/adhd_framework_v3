@@ -1,0 +1,132 @@
+{
+  "date": "2026-02-03",
+  "phase": "P5",
+  "target_modules": [
+    "modules_controller_core",
+    "cli_manager",
+    "adhd_mcp",
+    "adhd_refresh"
+  ],
+  "threat_model": "internal",
+  "attacks_summary": {
+    "total_attacks": 29,
+    "blockers_found": 1,
+    "warnings_found": 4,
+    "info_found": 9,
+    "passed": 15
+  },
+  "findings": {
+    "blockers": [
+      {
+        "module": "cli_manager",
+        "category": "race_condition",
+        "severity": "BLOCKER",
+        "description": "Concurrent registration corrupts commands.json - only 1 out of 20 registrations succeed due to file corruption during simultaneous read/write",
+        "reproduction": "Run multiple threads calling register_module() simultaneously",
+        "impact": "Data loss - registered commands disappear, JSON file becomes corrupted",
+        "evidence": "23:09:34 W CLIManager: Failed to load registry: Extra data: line 8 column 4 (char 137)",
+        "recommendation": "Add file locking (fcntl.flock or filelock library) to _load_registry() and _save_registry()"
+      }
+    ],
+    "warnings": [
+      {
+        "module": "modules_controller_core",
+        "category": "misleading_error",
+        "severity": "WARNING",
+        "description": "Issue code MISSING_INIT_YAML used for missing [tool.adhd] section in pyproject.toml",
+        "reproduction": "Create module with valid pyproject.toml but no [tool.adhd] section",
+        "impact": "Confusing error messages for users",
+        "recommendation": "Add new issue code MISSING_TOOL_ADHD or rename existing code"
+      },
+      {
+        "module": "adhd_mcp",
+        "category": "input_validation",
+        "severity": "WARNING",
+        "description": "Whitespace-only module names treated as valid input, goes to module search",
+        "reproduction": "controller.get_module_info('   ')",
+        "impact": "Minor - fails with module_not_found but could be clearer",
+        "recommendation": "Strip and validate module_name before search"
+      },
+      {
+        "module": "adhd_mcp",
+        "category": "edge_case",
+        "severity": "WARNING",
+        "description": "Empty init.yaml treated as valid project config",
+        "reproduction": "Create project with empty init.yaml file",
+        "impact": "May cause unexpected behavior with defaults",
+        "recommendation": "Validate init.yaml has required fields"
+      },
+      {
+        "module": "cli_manager",
+        "category": "thread_safety",
+        "severity": "WARNING",
+        "description": "Singleton pattern not thread-safe during initialization",
+        "reproduction": "Create CLIManager instances from multiple threads simultaneously",
+        "impact": "Potential for double initialization (low impact)",
+        "recommendation": "Add thread lock around instance creation"
+      }
+    ],
+    "info": [
+      {
+        "module": "modules_controller_core",
+        "category": "behavior",
+        "description": "Symlinked modules are discovered as separate modules",
+        "impact": "May cause duplicate module discovery if symlinks used"
+      },
+      {
+        "module": "modules_controller_core",
+        "category": "behavior",
+        "description": "Unicode module names work on Linux ext4",
+        "impact": "May vary by filesystem"
+      },
+      {
+        "module": "modules_controller_core",
+        "category": "behavior",
+        "description": "Same module name in different folders creates two modules",
+        "impact": "Namespace collision possible when importing by name"
+      },
+      {
+        "module": "adhd_mcp",
+        "category": "feature",
+        "description": "Typo suggestions work correctly",
+        "impact": "Good UX"
+      },
+      {
+        "module": "adhd_refresh",
+        "category": "feature",
+        "description": "No --dry-run flag available for refresh command",
+        "impact": "Cannot safely preview what refresh will do"
+      },
+      {
+        "module": "adhd_refresh",
+        "category": "behavior",
+        "description": "Modules without refresh.py still report success",
+        "impact": "May confuse users expecting action"
+      },
+      {
+        "module": "adhd_refresh",
+        "category": "feature",
+        "description": "Default refresh runs uv sync automatically",
+        "impact": "Documented behavior"
+      },
+      {
+        "module": "modules_controller_core",
+        "category": "behavior",
+        "description": "Modules without __init__.py are still discovered",
+        "impact": "has_initializer() correctly returns False"
+      },
+      {
+        "module": "cli_manager",
+        "category": "feature",
+        "description": "Short name conflicts handled by removing duplicate",
+        "impact": "Good - warns user"
+      }
+    ]
+  },
+  "attack_scripts": [
+    ".agent_plan/red_team/p5_migration/attacks/attack_modules_controller.py",
+    ".agent_plan/red_team/p5_migration/attacks/attack_cli_manager.py",
+    ".agent_plan/red_team/p5_migration/attacks/attack_adhd_mcp.py",
+    ".agent_plan/red_team/p5_migration/attacks/attack_adhd_refresh.py"
+  ]
+}

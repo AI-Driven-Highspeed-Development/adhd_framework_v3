@@ -207,7 +207,10 @@ class ADHDFramework:
         warnings = [i for i in report.issues if i.severity == DoctorIssueSeverity.WARNING]
         infos = [i for i in report.issues if i.severity == DoctorIssueSeverity.INFO]
         
-        print(f"\n🩺 Doctor Report: {report.modules_checked} modules checked\n")
+        print(f"\n🩺 Doctor Report: {report.modules_checked} modules checked")
+        if report.workspace_members_declared:
+            print(f"📦 Workspace: {report.workspace_members_declared} members declared in root pyproject.toml")
+        print()
         
         if report.is_healthy and not warnings:
             print("✅ All modules are healthy!\n")
@@ -252,9 +255,14 @@ class ADHDFramework:
         
         controller = ModulesController()
         
+        # Handle --closure-all flag: check all modules
+        if getattr(args, 'closure_all', False):
+            self._deps_check_all(controller)
+            return
+        
         module_name = getattr(args, 'closure', None) or getattr(args, 'module', None)
         if not module_name:
-            self.logger.error("Please specify a module with --closure <module_name>")
+            self.logger.error("Please specify a module with --closure <module_name> or use --closure-all")
             sys.exit(1)
         
         # Handle 'type/name' format
@@ -301,12 +309,64 @@ class ADHDFramework:
         else:
             print("\n✅ No layer violations found!")
 
+    def _deps_check_all(self, controller) -> None:
+        """Check layer violations across ALL modules.
+        
+        Iterates through all modules, runs closure validation on each,
+        and aggregates all violations for a comprehensive report.
+        """
+        from modules_controller_core import DependencyWalker, ViolationType
+        
+        report = controller.list_all_modules()
+        walker = DependencyWalker(controller)
+        
+        all_violations = []
+        modules_checked = 0
+        modules_with_violations = []
+        
+        print(f"\n🔍 Checking layer violations across {len(report.modules)} modules...\n")
+        
+        for module in report.modules:
+            modules_checked += 1
+            try:
+                closure = walker.walk_dependencies(module.name)
+                if closure.has_violations:
+                    modules_with_violations.append(module.name)
+                    for violation in closure.violations:
+                        all_violations.append((module.name, violation))
+            except Exception as e:
+                self.logger.warning(f"⚠️  Could not check {module.name}: {e}")
+        
+        # Print summary
+        print(f"📊 Summary:")
+        print(f"  • Modules checked: {modules_checked}")
+        print(f"  • Modules with violations: {len(modules_with_violations)}")
+        print(f"  • Total violations: {len(all_violations)}")
+        
+        # Print violations if any
+        if all_violations:
+            print(f"\n❌ Layer Violations Found ({len(all_violations)}):\n")
+            
+            # Group violations by module
+            current_module = None
+            for module_name, violation in all_violations:
+                if module_name != current_module:
+                    print(f"\n  📦 {module_name}:")
+                    current_module = module_name
+                print(f"    • {violation.message}")
+            
+            print("\n💡 Tip: Layer hierarchy is foundation < runtime < dev")
+            print("   A module can only depend on modules at the same or lower layer.")
+            sys.exit(1)
+        else:
+            print("\n✅ No layer violations found across all modules!")
+
     def refresh_project(self, args) -> None:
         """Refresh project modules."""
         from modules_controller_core import ModulesController
         
-        # Handle --sync flag: run uv sync first
-        if getattr(args, 'sync', False):
+        # Run uv sync by default (unless --no-sync is specified)
+        if not getattr(args, 'no_sync', False):
             self.logger.info("Running uv sync before refresh...")
             try:
                 _run_uv_sync()
@@ -384,14 +444,15 @@ class ADHDFramework:
         for module in modules:
             status = "⚠️ " if module.issues else "✅"
             layer_str = module.layer.value if module.layer else "?"
-            print(f"  {status} {module.name} ({module.module_type.name}) [{layer_str}] - v{module.version}")
+            mcp_tag = " [MCP]" if module.is_mcp else ""
+            print(f"  {status} {module.name} ({module.folder}){mcp_tag} [{layer_str}] - v{module.version}")
             if module.issues:
                 for issue in module.issues:
                     print(f"     - {issue.message}")
     
     def _add_filter_value(self, filter_obj: "ModuleFilter", value: str) -> "ModuleFilter":
         """Add a filter value, auto-detecting the dimension."""
-        from modules_controller_core import ModuleLayer, ModuleTypeEnum, GitState
+        from modules_controller_core import ModuleLayer, MODULE_FOLDERS, GitState
         
         value_lower = value.lower()
         
@@ -399,12 +460,9 @@ class ADHDFramework:
         if ModuleLayer.validate(value_lower):
             return filter_obj.add_layer(value_lower)
         
-        # Try type
-        try:
-            ModuleTypeEnum(value_lower)
-            return filter_obj.add_type(value_lower)
-        except ValueError:
-            pass
+        # Try folder
+        if value_lower in MODULE_FOLDERS:
+            return filter_obj.add_folder(value_lower)
         
         # Try git state
         try:
@@ -435,7 +493,8 @@ class ADHDFramework:
 
         print(f"\n📦 MODULE INFORMATION: {module.name}")
         print(f"  📁 Path: {module.path}")
-        print(f"  📂 Type: {module.module_type.name}")
+        mcp_tag = " [MCP]" if module.is_mcp else ""
+        print(f"  📂 Folder: {module.folder}{mcp_tag}")
         print(f"  🏷️  Version: {module.version}")
         layer_display = module.layer.value if module.layer else "N/A"
         print(f"  📊 Layer: {layer_display}")
@@ -503,11 +562,13 @@ class ADHDFramework:
             if mode == WorkspaceGenerationMode.INCLUDE_ALL:
                 current_visibility = True
             elif mode == WorkspaceGenerationMode.IGNORE_OVERRIDES:
-                current_visibility = module.module_type.shows_in_workspace
+                from modules_controller_core import folder_shows_in_workspace
+                current_visibility = folder_shows_in_workspace(module.folder)
             else:
                 current_visibility = module.shows_in_workspace
                 if current_visibility is None:
-                    current_visibility = module.module_type.shows_in_workspace
+                    from modules_controller_core import folder_shows_in_workspace
+                    current_visibility = folder_shows_in_workspace(module.folder)
             
             new_visibility = not current_visibility
             overrides[module.name] = new_visibility
@@ -531,13 +592,12 @@ def module_completer(prefix, parsed_args, **kwargs):
         controller = ModulesController()
         report = controller.list_all_modules()
         
-        # Return modules in 'type/name' format for better organization
+        # Return modules in 'folder/name' format for better organization
         # e.g. 'managers/config_manager', 'cores/project_init_core'
         options = []
         for m in report.modules:
-            # Use plural name for grouping (e.g. 'managers', 'cores')
-            type_name = m.module_type.plural_name.lower()
-            option = f"{type_name}/{m.name}"
+            # Use folder for grouping (e.g. 'managers', 'cores')
+            option = f"{m.folder}/{m.name}"
             options.append(option)
             
         return [o for o in options if o.startswith(prefix)]
@@ -562,7 +622,7 @@ def setup_parser() -> argparse.ArgumentParser:
     subparsers.add_parser('init', aliases=['i'], help='Initialize project (alias for sync)')
     
     refresh_parser = subparsers.add_parser('refresh', aliases=['r'], help='Refresh project modules')
-    refresh_parser.add_argument('--sync', '-s', action='store_true', help='Run uv sync before refreshing')
+    refresh_parser.add_argument('--no-sync', '-n', action='store_true', help='Skip running uv sync before refreshing')
     refresh_arg = refresh_parser.add_argument('--module', '-m', help='Refresh specific module by name')
     if argcomplete:
         refresh_arg.completer = module_completer
@@ -609,13 +669,13 @@ def setup_parser() -> argparse.ArgumentParser:
 
     # Doctor command
     doctor_parser = subparsers.add_parser('doctor', aliases=['doc'], help='Check module health and report issues')
-    doctor_parser.add_argument('--fix', '-f', action='store_true', help='Attempt to fix simple issues (placeholder)')
-    doctor_parser.add_argument('--json', '-j', action='store_true', help='Output in JSON format (placeholder)')
 
     # Deps command - dependency closure and violation detection
     deps_parser = subparsers.add_parser('deps', aliases=['dp'], help='Analyze module dependencies')
     deps_closure_arg = deps_parser.add_argument('--closure', '-c', metavar='MODULE',
                                                  help='Show dependency tree for a module with layer labels')
+    deps_parser.add_argument('--closure-all', action='store_true',
+                             help='Check layer violations across ALL modules (for CI)')
     if argcomplete:
         deps_closure_arg.completer = module_completer
 
