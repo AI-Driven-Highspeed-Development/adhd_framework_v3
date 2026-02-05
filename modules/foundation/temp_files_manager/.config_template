@@ -1,0 +1,8 @@
+{
+    "module_name": "temp_files_manager",
+    "path": {
+        "data": "./project/data/temp_files_manager",
+        "unix_temp": "/tmp/github_api_core",
+        "windows_temp": "C:\\\\Temp\\\\github_api_core"
+    }
+}

@@ -52,7 +52,7 @@ class ADHDFramework:
         from config_manager import ConfigManager
         from logger_util import Logger
         from github_api_core import GithubApi
-        from questionary_core import QuestionaryCore
+        from creator_common_core import QuestionaryCore
 
         self.logger = Logger(__class__.__name__)
         self.prompter = QuestionaryCore()
@@ -456,18 +456,29 @@ class ADHDFramework:
         
         value_lower = value.lower()
         
+        # Normalize singular folder names to plural for better UX
+        # Users commonly type 'manager' instead of 'managers'
+        singular_to_plural = {
+            "core": "cores",
+            "manager": "managers",
+            "util": "utils",
+            "plugin": "plugins",
+            "mcp": "mcps",
+        }
+        normalized = singular_to_plural.get(value_lower, value_lower)
+        
         # Try layer first
-        if ModuleLayer.validate(value_lower):
-            return filter_obj.add_layer(value_lower)
+        if ModuleLayer.validate(normalized):
+            return filter_obj.add_layer(normalized)
         
         # Try folder
-        if value_lower in MODULE_FOLDERS:
-            return filter_obj.add_folder(value_lower)
+        if normalized in MODULE_FOLDERS:
+            return filter_obj.add_folder(normalized)
         
         # Try git state
         try:
-            GitState(value_lower)
-            return filter_obj.add_state(value_lower)
+            GitState(normalized)
+            return filter_obj.add_state(normalized)
         except ValueError:
             pass
         

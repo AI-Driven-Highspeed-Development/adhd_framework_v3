@@ -13,10 +13,10 @@ dependencies = [
     "config-manager",
     "exceptions-core",
     "modules-controller-core",
-    "questionary-core",
     "github-api-core",
     "project-creator-core",
     "module-creator-core",
+    "creator-common-core",
 ]
 
 [project.optional-dependencies]
@@ -34,12 +34,10 @@ logger-util = { workspace = true }
 config-manager = { workspace = true }
 exceptions-core = { workspace = true }
 modules-controller-core = { workspace = true }
-questionary-core = { workspace = true }
 github-api-core = { workspace = true }
 project-creator-core = { workspace = true }
 module-creator-core = { workspace = true }
 # Additional dependencies used by workspace members
-yaml-reading-core = { workspace = true }
 creator-common-core = { workspace = true }
 temp-files-manager = { workspace = true }
 workspace-core = { workspace = true }
@@ -49,11 +47,9 @@ adhd-mcp = { workspace = true }
 
 [tool.uv.workspace]
 members = [
-    "cores/*",
-    "managers/*",
-    "utils/*",
-    "plugins/*",
-    "mcps/*",
+    "modules/foundation/*",
+    "modules/runtime/*",
+    "modules/dev/*",
 ]
 
 [build-system]

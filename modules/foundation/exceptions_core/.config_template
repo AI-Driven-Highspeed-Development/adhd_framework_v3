@@ -1,0 +1,6 @@
+{
+    "module_name": "exceptions_core",
+    "path": {
+        "data": "./project/data/exceptions_core"
+    }
+}

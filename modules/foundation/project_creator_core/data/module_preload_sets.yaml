@@ -1,0 +1,70 @@
+# Module Preload Sets - v2 Format
+# Defines modules that are automatically added to new ADHD Framework projects.
+#
+# Supports multiple source types:
+# - Monorepo subdirectories: `repo: <alias>` + `subdirectory: <path>`
+# - Explicit monorepo URL: `url: <git_url>` + `subdirectory: <path>`
+# - Standalone repos: `url: <git_url>` (no subdirectory)
+# - Plain string URLs: `- https://github.com/org/module.git` (backward compat)
+#
+# The `repos:` section defines reusable aliases for DRY configuration.
+
+# Define reusable repo aliases (optional, for DRY)
+repos:
+  adhd: https://github.com/AI-Driven-Highspeed-Development/adhd_framework_v3.git
+
+always:
+  # Foundation modules (core infrastructure)
+  - repo: adhd
+    subdirectory: modules/foundation/config_manager
+  - repo: adhd
+    subdirectory: modules/foundation/logger_util
+  - repo: adhd
+    subdirectory: modules/foundation/exceptions_core
+  - repo: adhd
+    subdirectory: modules/foundation/temp_files_manager
+  - repo: adhd
+    subdirectory: modules/foundation/workspace_core
+  - repo: adhd
+    subdirectory: modules/foundation/instruction_core
+  
+  # Creator modules (project/module creation)
+  - repo: adhd
+    subdirectory: modules/foundation/creator_common_core
+  - repo: adhd
+    subdirectory: modules/foundation/github_api_core
+  - repo: adhd
+    subdirectory: modules/foundation/module_creator_core
+  - repo: adhd
+    subdirectory: modules/foundation/modules_controller_core
+  - repo: adhd
+    subdirectory: modules/foundation/project_creator_core
+  - repo: adhd
+    subdirectory: modules/foundation/uv_migrator_core
+  
+  # CLI infrastructure
+  - repo: adhd
+    subdirectory: modules/foundation/cli_manager
+  
+  # Development tools
+  - repo: adhd
+    subdirectory: modules/dev/adhd_mcp
+
+options:
+  Default:
+    description: The rawest form of freedom with minimal things in it.
+  HyperPM:
+    description: Adding HyperPM for AI agentic project management!
+    modules:
+      - repo: adhd
+        subdirectory: modules/runtime/hyperpm_core
+  Webcams:
+    description: Webcam control modules
+    modules:
+      - repo: adhd
+        subdirectory: modules/runtime/webcam_plugin
+  Comfyui:
+    description: Comfyui API
+    modules:
+      - repo: adhd
+        subdirectory: modules/runtime/comfyui_plugin

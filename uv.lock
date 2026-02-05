@@ -16,11 +16,9 @@ members = [
     "module-creator-core",
     "modules-controller-core",
     "project-creator-core",
-    "questionary-core",
     "temp-files-manager",
     "uv-migrator-core",
     "workspace-core",
-    "yaml-reading-core",
 ]
 
 [[package]]
@@ -30,6 +28,7 @@ source = { editable = "." }
 dependencies = [
     { name = "argcomplete" },
     { name = "config-manager" },
+    { name = "creator-common-core" },
     { name = "exceptions-core" },
     { name = "github-api-core" },
     { name = "logger-util" },
@@ -37,7 +36,6 @@ dependencies = [
     { name = "module-creator-core" },
     { name = "modules-controller-core" },
     { name = "project-creator-core" },
-    { name = "questionary-core" },
 ]
 
 [package.optional-dependencies]
@@ -54,16 +52,16 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "argcomplete", specifier = ">=3.0" },
-    { name = "config-manager", editable = "managers/config_manager" },
-    { name = "exceptions-core", editable = "cores/exceptions_core" },
-    { name = "github-api-core", editable = "cores/github_api_core" },
-    { name = "logger-util", editable = "utils/logger_util" },
+    { name = "config-manager", editable = "modules/foundation/config_manager" },
+    { name = "creator-common-core", editable = "modules/foundation/creator_common_core" },
+    { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
+    { name = "github-api-core", editable = "modules/foundation/github_api_core" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
     { name = "mcp", specifier = ">=1.0" },
-    { name = "module-creator-core", editable = "cores/module_creator_core" },
-    { name = "modules-controller-core", editable = "cores/modules_controller_core" },
-    { name = "project-creator-core", editable = "cores/project_creator_core" },
+    { name = "module-creator-core", editable = "modules/foundation/module_creator_core" },
+    { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
+    { name = "project-creator-core", editable = "modules/foundation/project_creator_core" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
-    { name = "questionary-core", editable = "cores/questionary_core" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1" },
 ]
 provides-extras = ["dev"]
@@ -74,7 +72,7 @@ dev = [{ name = "pytest", specifier = ">=9.0.2" }]
 [[package]]
 name = "adhd-mcp"
 version = "0.0.1"
-source = { editable = "mcps/adhd_mcp" }
+source = { editable = "modules/dev/adhd_mcp" }
 dependencies = [
     { name = "config-manager" },
     { name = "creator-common-core" },
@@ -84,20 +82,20 @@ dependencies = [
     { name = "mcp" },
     { name = "module-creator-core" },
     { name = "modules-controller-core" },
-    { name = "yaml-reading-core" },
+    { name = "pyyaml" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "config-manager", editable = "managers/config_manager" },
-    { name = "creator-common-core", editable = "cores/creator_common_core" },
-    { name = "exceptions-core", editable = "cores/exceptions_core" },
-    { name = "github-api-core", editable = "cores/github_api_core" },
-    { name = "logger-util", editable = "utils/logger_util" },
+    { name = "config-manager", editable = "modules/foundation/config_manager" },
+    { name = "creator-common-core", editable = "modules/foundation/creator_common_core" },
+    { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
+    { name = "github-api-core", editable = "modules/foundation/github_api_core" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
     { name = "mcp", specifier = ">=1.1.0" },
-    { name = "module-creator-core", editable = "cores/module_creator_core" },
-    { name = "modules-controller-core", editable = "cores/modules_controller_core" },
-    { name = "yaml-reading-core", editable = "cores/yaml_reading_core" },
+    { name = "module-creator-core", editable = "modules/foundation/module_creator_core" },
+    { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
+    { name = "pyyaml", specifier = ">=6.0" },
 ]
 
 [[package]]
@@ -222,7 +220,7 @@ wheels = [
 [[package]]
 name = "cli-manager"
 version = "0.0.1"
-source = { editable = "managers/cli_manager" }
+source = { editable = "modules/foundation/cli_manager" }
 dependencies = [
     { name = "config-manager" },
     { name = "logger-util" },
@@ -230,8 +228,8 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "config-manager", editable = "managers/config_manager" },
-    { name = "logger-util", editable = "utils/logger_util" },
+    { name = "config-manager", editable = "modules/foundation/config_manager" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
 ]
 
 [[package]]
@@ -258,7 +256,7 @@ wheels = [
 [[package]]
 name = "config-manager"
 version = "0.0.2"
-source = { editable = "managers/config_manager" }
+source = { editable = "modules/foundation/config_manager" }
 dependencies = [
     { name = "logger-util" },
     { name = "modules-controller-core" },
@@ -267,24 +265,26 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "logger-util", editable = "utils/logger_util" },
-    { name = "modules-controller-core", editable = "cores/modules_controller_core" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
+    { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 
 [[package]]
 name = "creator-common-core"
 version = "0.0.1"
-source = { editable = "cores/creator_common_core" }
+source = { editable = "modules/foundation/creator_common_core" }
 dependencies = [
     { name = "exceptions-core" },
     { name = "github-api-core" },
+    { name = "questionary" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "exceptions-core", editable = "cores/exceptions_core" },
-    { name = "github-api-core", editable = "cores/github_api_core" },
+    { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
+    { name = "github-api-core", editable = "modules/foundation/github_api_core" },
+    { name = "questionary", specifier = ">=2.0" },
 ]
 
 [[package]]
@@ -349,12 +349,12 @@ wheels = [
 [[package]]
 name = "exceptions-core"
 version = "0.0.1"
-source = { editable = "cores/exceptions_core" }
+source = { editable = "modules/foundation/exceptions_core" }
 
 [[package]]
 name = "github-api-core"
 version = "0.0.1"
-source = { editable = "cores/github_api_core" }
+source = { editable = "modules/foundation/github_api_core" }
 dependencies = [
     { name = "exceptions-core" },
     { name = "logger-util" },
@@ -363,9 +363,9 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "exceptions-core", editable = "cores/exceptions_core" },
-    { name = "logger-util", editable = "utils/logger_util" },
-    { name = "temp-files-manager", editable = "managers/temp_files_manager" },
+    { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
+    { name = "temp-files-manager", editable = "modules/foundation/temp_files_manager" },
 ]
 
 [[package]]
@@ -435,7 +435,7 @@ wheels = [
 [[package]]
 name = "instruction-core"
 version = "0.0.1"
-source = { editable = "cores/instruction_core" }
+source = { editable = "modules/foundation/instruction_core" }
 dependencies = [
     { name = "config-manager" },
     { name = "exceptions-core" },
@@ -446,10 +446,10 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "config-manager", editable = "managers/config_manager" },
-    { name = "exceptions-core", editable = "cores/exceptions_core" },
-    { name = "logger-util", editable = "utils/logger_util" },
-    { name = "modules-controller-core", editable = "cores/modules_controller_core" },
+    { name = "config-manager", editable = "modules/foundation/config_manager" },
+    { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
+    { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 
@@ -483,7 +483,7 @@ wheels = [
 [[package]]
 name = "logger-util"
 version = "0.0.1"
-source = { editable = "utils/logger_util" }
+source = { editable = "modules/foundation/logger_util" }
 dependencies = [
     { name = "rich" },
 ]
@@ -540,7 +540,7 @@ wheels = [
 [[package]]
 name = "module-creator-core"
 version = "0.0.1"
-source = { editable = "cores/module_creator_core" }
+source = { editable = "modules/foundation/module_creator_core" }
 dependencies = [
     { name = "config-manager" },
     { name = "creator-common-core" },
@@ -548,37 +548,31 @@ dependencies = [
     { name = "github-api-core" },
     { name = "logger-util" },
     { name = "modules-controller-core" },
-    { name = "questionary-core" },
-    { name = "yaml-reading-core" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "config-manager", editable = "managers/config_manager" },
-    { name = "creator-common-core", editable = "cores/creator_common_core" },
-    { name = "exceptions-core", editable = "cores/exceptions_core" },
-    { name = "github-api-core", editable = "cores/github_api_core" },
-    { name = "logger-util", editable = "utils/logger_util" },
-    { name = "modules-controller-core", editable = "cores/modules_controller_core" },
-    { name = "questionary-core", editable = "cores/questionary_core" },
-    { name = "yaml-reading-core", editable = "cores/yaml_reading_core" },
+    { name = "config-manager", editable = "modules/foundation/config_manager" },
+    { name = "creator-common-core", editable = "modules/foundation/creator_common_core" },
+    { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
+    { name = "github-api-core", editable = "modules/foundation/github_api_core" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
+    { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
 ]
 
 [[package]]
 name = "modules-controller-core"
 version = "0.0.1"
-source = { editable = "cores/modules_controller_core" }
+source = { editable = "modules/foundation/modules_controller_core" }
 dependencies = [
     { name = "exceptions-core" },
     { name = "logger-util" },
-    { name = "yaml-reading-core" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "exceptions-core", editable = "cores/exceptions_core" },
-    { name = "logger-util", editable = "utils/logger_util" },
-    { name = "yaml-reading-core", editable = "cores/yaml_reading_core" },
+    { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
 ]
 
 [[package]]
@@ -602,26 +596,24 @@ wheels = [
 [[package]]
 name = "project-creator-core"
 version = "0.0.1"
-source = { editable = "cores/project_creator_core" }
+source = { editable = "modules/foundation/project_creator_core" }
 dependencies = [
     { name = "creator-common-core" },
     { name = "exceptions-core" },
     { name = "github-api-core" },
     { name = "logger-util" },
     { name = "modules-controller-core" },
-    { name = "questionary-core" },
-    { name = "yaml-reading-core" },
+    { name = "pyyaml" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "creator-common-core", editable = "cores/creator_common_core" },
-    { name = "exceptions-core", editable = "cores/exceptions_core" },
-    { name = "github-api-core", editable = "cores/github_api_core" },
-    { name = "logger-util", editable = "utils/logger_util" },
-    { name = "modules-controller-core", editable = "cores/modules_controller_core" },
-    { name = "questionary-core", editable = "cores/questionary_core" },
-    { name = "yaml-reading-core", editable = "cores/yaml_reading_core" },
+    { name = "creator-common-core", editable = "modules/foundation/creator_common_core" },
+    { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
+    { name = "github-api-core", editable = "modules/foundation/github_api_core" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
+    { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
+    { name = "pyyaml", specifier = ">=6.0" },
 ]
 
 [[package]]
@@ -915,17 +907,6 @@ wheels = [
 ]
 
 [[package]]
-name = "questionary-core"
-version = "0.0.1"
-source = { editable = "cores/questionary_core" }
-dependencies = [
-    { name = "questionary" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "questionary", specifier = ">=2.0" }]
-
-[[package]]
 name = "referencing"
 version = "0.37.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1115,7 +1096,7 @@ wheels = [
 [[package]]
 name = "temp-files-manager"
 version = "0.0.1"
-source = { editable = "managers/temp_files_manager" }
+source = { editable = "modules/foundation/temp_files_manager" }
 dependencies = [
     { name = "config-manager" },
     { name = "logger-util" },
@@ -1123,8 +1104,8 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "config-manager", editable = "managers/config_manager" },
-    { name = "logger-util", editable = "utils/logger_util" },
+    { name = "config-manager", editable = "modules/foundation/config_manager" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
 ]
 
 [[package]]
@@ -1151,18 +1132,18 @@ wheels = [
 [[package]]
 name = "uv-migrator-core"
 version = "0.0.1"
-source = { editable = "cores/uv_migrator_core" }
+source = { editable = "modules/foundation/uv_migrator_core" }
 dependencies = [
     { name = "logger-util" },
     { name = "modules-controller-core" },
-    { name = "yaml-reading-core" },
+    { name = "pyyaml" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "logger-util", editable = "utils/logger_util" },
-    { name = "modules-controller-core", editable = "cores/modules_controller_core" },
-    { name = "yaml-reading-core", editable = "cores/yaml_reading_core" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
+    { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
+    { name = "pyyaml", specifier = ">=6.0" },
 ]
 
 [[package]]
@@ -1190,7 +1171,7 @@ wheels = [
 [[package]]
 name = "workspace-core"
 version = "0.0.1"
-source = { editable = "cores/workspace_core" }
+source = { editable = "modules/foundation/workspace_core" }
 dependencies = [
     { name = "exceptions-core" },
     { name = "logger-util" },
@@ -1198,17 +1179,6 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "exceptions-core", editable = "cores/exceptions_core" },
-    { name = "logger-util", editable = "utils/logger_util" },
+    { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
 ]
-
-[[package]]
-name = "yaml-reading-core"
-version = "0.0.1"
-source = { editable = "cores/yaml_reading_core" }
-dependencies = [
-    { name = "pyyaml" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "pyyaml", specifier = ">=6.0" }]

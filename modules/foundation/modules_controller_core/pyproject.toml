@@ -1,0 +1,25 @@
+[project]
+name = "modules-controller-core"
+version = "0.0.1"
+description = "ADHD Framework core: modules_controller_core"
+requires-python = ">=3.11"
+dependencies = [
+    "logger-util",
+    "exceptions-core",
+]
+
+[project.urls]
+Repository = "https://github.com/AI-Driven-Highspeed-Development/modules_controller_core.git"
+
+[tool.adhd]
+layer = "foundation"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.hatch.build]
+dev-mode-dirs = [".."]

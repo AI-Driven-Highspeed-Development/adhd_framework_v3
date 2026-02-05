@@ -137,8 +137,8 @@ class TestRefreshIntegrationScenarios:
         """Create a project with a module that has a refresh.py script."""
         root = tmp_path / "project"
         
-        # Create module with refresh script
-        manager_dir = root / "managers" / "refreshable_manager"
+        # Create module with refresh script (using new modules/foundation/ structure)
+        manager_dir = root / "modules" / "foundation" / "refreshable_manager"
         manager_dir.mkdir(parents=True)
         (manager_dir / "pyproject.toml").write_text("""
 [project]
