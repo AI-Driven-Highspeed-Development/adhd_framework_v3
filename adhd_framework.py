@@ -87,6 +87,8 @@ class ADHDFramework:
             'doc': self.doctor_check,
             'deps': self.deps_check,
             'dp': self.deps_check,
+            'add': self.add_module,
+            'a': self.add_module,
         }
 
         handler = command_map.get(args.command)
@@ -593,6 +595,258 @@ class ADHDFramework:
         
         self.logger.info(f"✅ Workspace file updated at: {path}")
 
+    def add_module(self, args) -> None:
+        """Add a module to the workspace by cloning and optionally adding to root pyproject.toml."""
+        from pathlib import Path
+        from exceptions_core import ADHDError
+        import tomllib
+        import tempfile
+        
+        repo_url = args.repo_url
+        
+        # Validate URL format
+        if not (repo_url.startswith("http://") or repo_url.startswith("https://")):
+            self.logger.error("❌ Invalid URL format. Must start with http:// or https://")
+            sys.exit(1)
+        
+        # Extract module name from URL
+        module_name = repo_url.rstrip('/').removesuffix('.git').split('/')[-1]
+        module_name = module_name.lower().replace('-', '_')
+        
+        self.logger.info(f"📥 Adding module from: {repo_url}")
+        self.logger.info(f"📦 Module name: {module_name}")
+        
+        # [FIX #2] Check collision BEFORE cloning to save time/bandwidth
+        modules_dir = Path.cwd() / "modules"
+        possible_targets = [
+            modules_dir / "foundation" / module_name,
+            modules_dir / "runtime" / module_name,
+            modules_dir / "dev" / module_name,
+        ]
+        for target in possible_targets:
+            if target.exists():
+                self.logger.error(f"❌ Module '{module_name}' already exists at: {target}")
+                sys.exit(1)
+        
+        # [FIX #1] Use unique temp directory to avoid race conditions
+        temp_dir = Path(tempfile.mkdtemp(prefix=f"adhd_{module_name}_"))
+        
+        try:
+            # Clone the repository
+            self.logger.info("🔄 Cloning repository...")
+            result = subprocess.run(
+                ["git", "clone", "--depth", "1", repo_url, str(temp_dir / module_name)],
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
+            if result.returncode != 0:
+                # [FIX #3] Sanitize git error output for security
+                error_msg = result.stderr[:500] if result.stderr else "Unknown error"
+                error_msg = error_msg.replace(repo_url, "<URL>")  # Redact URL from errors
+                raise ADHDError(f"git clone failed: {error_msg}")
+            
+            clone_path = temp_dir / module_name
+            
+            # Read pyproject.toml to get metadata
+            pyproject_path = clone_path / "pyproject.toml"
+            if not pyproject_path.exists():
+                raise ADHDError(f"Module missing pyproject.toml. Cannot determine package name and layer.")
+            
+            # [FIX #5] Handle TOML decode errors gracefully
+            try:
+                with pyproject_path.open("rb") as f:
+                    pyproject_data = tomllib.load(f)
+            except tomllib.TOMLDecodeError as e:
+                raise ADHDError(f"Invalid pyproject.toml in {module_name}: {e}")
+            
+            # Extract package name and layer
+            package_name = pyproject_data.get("project", {}).get("name")
+            if not package_name:
+                raise ADHDError("pyproject.toml missing [project] name field")
+            
+            layer = pyproject_data.get("tool", {}).get("adhd", {}).get("layer", "runtime")
+            
+            # Validate layer
+            valid_layers = ["foundation", "runtime", "dev"]
+            if layer not in valid_layers:
+                raise ADHDError(
+                    f"Unknown layer '{layer}' in pyproject.toml. Expected one of: {valid_layers}"
+                )
+            
+            self.logger.info(f"📊 Layer: {layer}")
+            self.logger.info(f"🏷️  Package name: {package_name}")
+            
+            # Determine target directory (already validated above, but layer may differ)
+            target_dir = Path.cwd() / "modules" / layer / module_name
+            if target_dir.exists():
+                self.logger.error(f"❌ Module already exists at: {target_dir}")
+                sys.exit(1)
+            
+            # Move module to target directory
+            self.logger.info(f"📂 Moving to: {target_dir}")
+            shutil.move(str(clone_path), str(target_dir))
+            
+            # [FIX #4] Remove .git directory after move (ADHD convention)
+            git_dir = target_dir / ".git"
+            if git_dir.exists():
+                shutil.rmtree(git_dir)
+                self.logger.debug(f"Removed .git directory from {target_dir}")
+            
+            # Run uv sync to register workspace member
+            self.logger.info("🔄 Running uv sync to register workspace member...")
+            _run_uv_sync()
+            self.logger.info("✅ Module registered in workspace")
+            
+            # Ask if should add to root dependencies
+            should_add_to_root = False
+            if not args.skip_prompt:
+                response = self.prompter.confirm(
+                    f"Add '{package_name}' to root dependencies (needed if adhd CLI imports it)?",
+                    default=False
+                )
+                should_add_to_root = response
+            
+            if should_add_to_root:
+                self.logger.info(f"📝 Adding '{package_name}' to root pyproject.toml...")
+                self._add_to_root_pyproject(package_name)
+                
+                # Run uv sync again to update lockfile
+                self.logger.info("🔄 Running uv sync to update dependencies...")
+                _run_uv_sync()
+            
+            self.logger.info(f"✅ Module '{module_name}' added successfully!")
+            self.logger.info(f"📁 Location: {target_dir}")
+            
+        except ADHDError as e:
+            self.logger.error(f"❌ {e}")
+            sys.exit(1)
+        except subprocess.TimeoutExpired:
+            self.logger.error("❌ git clone timed out")
+            sys.exit(1)
+        except subprocess.CalledProcessError as e:
+            self.logger.error(f"❌ Command failed: {e}")
+            sys.exit(1)
+        except Exception as e:
+            self.logger.error(f"❌ Unexpected error: {e}")
+            sys.exit(1)
+        finally:
+            # Clean up temp directory
+            if temp_dir.exists():
+                shutil.rmtree(temp_dir, ignore_errors=True)
+
+    def _add_to_root_pyproject(self, package_name: str) -> None:
+        """Add a package to root pyproject.toml dependencies and uv.sources.
+        
+        Reads the existing pyproject.toml, adds the package to both:
+        - dependencies list
+        - [tool.uv.sources] with { workspace = true }
+        
+        Preserves formatting by using string manipulation.
+        """
+        from pathlib import Path
+        import tomllib
+        
+        root_pyproject = Path.cwd() / "pyproject.toml"
+        if not root_pyproject.exists():
+            raise ADHDError("Root pyproject.toml not found")
+        
+        # Read current content
+        original_content = root_pyproject.read_text(encoding="utf-8")
+        
+        # Parse to validate and check if already exists
+        with root_pyproject.open("rb") as f:
+            data = tomllib.load(f)
+        
+        # Check if already in dependencies
+        dependencies = data.get("project", {}).get("dependencies", [])
+        if package_name in dependencies:
+            self.logger.warning(f"Package '{package_name}' already in dependencies")
+            return
+        
+        # Check if already in sources
+        sources = data.get("tool", {}).get("uv", {}).get("sources", {})
+        if package_name in sources:
+            self.logger.warning(f"Package '{package_name}' already in [tool.uv.sources]")
+            return
+        
+        modified_content = original_content
+        
+        # Add to dependencies section
+        # Find the closing bracket of dependencies and insert before it
+        dep_pattern = 'dependencies = ['
+        dep_start = modified_content.find(dep_pattern)
+        if dep_start == -1:
+            raise ADHDError("Could not find dependencies section in pyproject.toml")
+        
+        # Find the closing bracket
+        bracket_depth = 0
+        idx = dep_start + len(dep_pattern)
+        dep_end = -1
+        while idx < len(modified_content):
+            if modified_content[idx] == '[':
+                bracket_depth += 1
+            elif modified_content[idx] == ']':
+                if bracket_depth == 0:
+                    dep_end = idx
+                    break
+                bracket_depth -= 1
+            idx += 1
+        
+        if dep_end == -1:
+            raise ADHDError("Could not find end of dependencies list")
+        
+        # Insert the new dependency before the closing bracket
+        # Check if we need a comma (if there are existing dependencies)
+        dep_section = modified_content[dep_start:dep_end]
+        needs_comma = any(c == ',' for c in dep_section)
+        
+        # Find proper indentation by looking at existing entries
+        lines_before = modified_content[:dep_end].split('\n')
+        last_line = lines_before[-1]
+        indent = '    '  # Default 4 spaces
+        if last_line.strip() and not last_line.strip().startswith(']'):
+            # Get indent from last line
+            indent = len(last_line) - len(last_line.lstrip())
+            indent = ' ' * indent if indent > 0 else '    '
+        
+        new_dep = f'{indent}"{package_name}",\n'
+        modified_content = modified_content[:dep_end] + new_dep + modified_content[dep_end:]
+        
+        # Add to [tool.uv.sources]
+        sources_pattern = '[tool.uv.sources]'
+        sources_start = modified_content.find(sources_pattern)
+        if sources_start == -1:
+            raise ADHDError("Could not find [tool.uv.sources] section in pyproject.toml")
+        
+        # Find the end of the [tool.uv.sources] section (next section or end of file)
+        next_section_start = modified_content.find('\n[', sources_start + len(sources_pattern))
+        if next_section_start == -1:
+            # No next section, add at end
+            insertion_point = len(modified_content)
+        else:
+            insertion_point = next_section_start
+        
+        # Insert the new source
+        new_source = f'{package_name} = {{ workspace = true }}\n'
+        
+        # Find the last line before insertion point to match indentation
+        lines_before = modified_content[:insertion_point].split('\n')
+        # Find last non-empty line in the sources section
+        for line in reversed(lines_before):
+            if line.strip() and not line.strip().startswith('#') and line.strip() != sources_pattern:
+                indent_match = len(line) - len(line.lstrip())
+                if indent_match > 0:
+                    new_source = ' ' * indent_match + new_source.lstrip()
+                break
+        
+        modified_content = modified_content[:insertion_point] + new_source + modified_content[insertion_point:]
+        
+        # Write back
+        root_pyproject.write_text(modified_content, encoding="utf-8")
+        self.logger.info(f"✅ Added '{package_name}' to root pyproject.toml")
+
+
 
 def module_completer(prefix, parsed_args, **kwargs):
     """Autocomplete module names with type grouping."""
@@ -689,6 +943,12 @@ def setup_parser() -> argparse.ArgumentParser:
                              help='Check layer violations across ALL modules (for CI)')
     if argcomplete:
         deps_closure_arg.completer = module_completer
+
+    # Add command - add a module to the workspace
+    add_parser = subparsers.add_parser('add', aliases=['a'], help='Add a module to the workspace from a git repository')
+    add_parser.add_argument('repo_url', help='Git repository URL of the module to add')
+    add_parser.add_argument('--skip-prompt', '-y', action='store_true', 
+                           help='Skip confirmation prompt for adding to root dependencies')
 
     if argcomplete:
         argcomplete.autocomplete(parser)

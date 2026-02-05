@@ -70,6 +70,7 @@ uv run adhd <command> [options]
 |---------|-------|-------------|
 | `create-project` | `cp` | Interactive wizard to create a new ADHD project |
 | `create-module` | `cm` | Interactive wizard to create a new module from templates |
+| `add` | `a` | Add an existing module to the workspace from a git repository |
 | `sync` | `s` | Synchronize dependencies with `uv sync` |
 | `init` | `i` | Alias for `sync` (backward compatibility) |
 | `refresh` | `r` | Run module refresh scripts and sync instructions |
@@ -89,6 +90,12 @@ uv run adhd ls
 # List only foundation layer modules
 uv run adhd ls --layer foundation
 
+# Add an existing module from a git repository
+uv run adhd add https://github.com/org/my-module.git
+
+# Add a module without confirmation prompt
+uv run adhd add https://github.com/org/my-module.git --skip-prompt
+
 # Show info about a specific module
 uv run adhd info -m config-manager
 
@@ -101,6 +108,46 @@ uv run adhd doctor
 # Check for dependency issues
 uv run adhd deps
 ```
+
+### Adding External Modules
+
+The `adhd add` command lets you add external ADHD modules to your workspace:
+
+```bash
+uv run adhd add <git_repository_url>
+```
+
+**What it does:**
+1. Clones the module repository to a temporary location
+2. Reads `pyproject.toml` to determine the module's layer and package name
+3. Moves the module to the correct workspace directory (`modules/<layer>/<module_name>`)
+4. Runs `uv sync` to register the module as a workspace member
+5. Optionally adds the module to root `dependencies` if needed by the framework CLI
+
+**Example:**
+
+```bash
+# Add a module from GitHub
+uv run adhd add https://github.com/AI-Driven-Highspeed-Development/session_manager.git
+
+# Output:
+# 📥 Adding module from: https://github.com/.../session_manager.git
+# 📦 Module name: session_manager
+# 🔄 Cloning repository...
+# 📊 Layer: runtime
+# 🏷️  Package name: session-manager
+# 📂 Moving to: modules/runtime/session_manager
+# 🔄 Running uv sync to register workspace member...
+# ✅ Module registered in workspace
+# Add 'session-manager' to root dependencies (needed if adhd CLI imports it)? [y/N]: n
+# ✅ Module 'session_manager' added successfully!
+```
+
+**Notes:**
+- The module MUST have a valid `pyproject.toml` with `[project] name` and `[tool.adhd] layer`
+- Auto-discovery works via UV workspace patterns - no manual configuration needed
+- Only add to root dependencies if the framework CLI script imports the module at startup
+- Most modules don't need to be in root dependencies (workspace auto-discovery handles them)
 
 ---
 

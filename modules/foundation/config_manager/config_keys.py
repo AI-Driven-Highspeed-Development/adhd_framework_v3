@@ -19,6 +19,7 @@ class ConfigKeys:
 	workspace_core: Optional['WorkspaceCore'] = None
 	exceptions_core: Optional['ExceptionsCore'] = None
 	cli_manager: Optional['Cli_M'] = None
+	my_module: Optional['MyModule'] = None
 	adhd_mcp: Optional['AdhdMcp'] = None
 	uv_migrator_core: Optional['UvMigratorCore'] = None
 	instruction_core: Optional['InstructionCore'] = None
@@ -44,6 +45,7 @@ class ConfigKeys:
 		self.workspace_core = self.WorkspaceCore.from_raw(data.get('workspace_core', {}))
 		self.exceptions_core = self.ExceptionsCore.from_raw(data.get('exceptions_core', {}))
 		self.cli_manager = self.Cli_M.from_raw(data.get('cli_manager', {}))
+		self.my_module = self.MyModule.from_raw(data.get('my_module', {}))
 		self.adhd_mcp = self.AdhdMcp.from_raw(data.get('adhd_mcp', {}))
 		self.uv_migrator_core = self.UvMigratorCore.from_raw(data.get('uv_migrator_core', {}))
 		self.instruction_core = self.InstructionCore.from_raw(data.get('instruction_core', {}))
@@ -56,7 +58,7 @@ class ConfigKeys:
 		self.project_init_core = self.ProjectInitCore.from_raw(data.get('project_init_core', {}))
 
 	def __init__(self):
-		self._populate({'temp_files_manager': {'module_name': 'temp_files_manager', 'path': {'data': './project/data/temp_files_manager', 'unix_temp': '/tmp/github_api_core', 'windows_temp': 'C:\\\\Temp\\\\github_api_core'}}, 'modules_controller_core': {'module_name': 'modules_controller_core', 'path': {'data': './project/data/modules_controller_core'}}, 'workspace_core': {'module_name': 'workspace_core', 'path': {'data': './project/data/workspace_core'}}, 'exceptions_core': {'module_name': 'exceptions_core', 'path': {'data': './project/data/exceptions_core'}}, 'cli_manager': {'module_name': 'cli_manager', 'path': {'data': './project/data/cli_manager'}, 'admin_cli': {'filename': 'admin_cli.py', 'output_dir': './'}}, 'adhd_mcp': {'module_name': 'adhd_mcp', 'path': {'data': './project/data/adhd_mcp'}}, 'uv_migrator_core': {'module_name': 'uv_migrator_core', 'path': {'data': './project/data/uv_migrator_core'}}, 'instruction_core': {'module_name': 'instruction_core', 'path': {'data': './project/data/instruction_core', 'official_target_dir': ['./.github'], 'custom_target_dir': [], 'mcp_permission_injection_json': './project/data/instruction_core/mcp_permission_injection.json'}}, 'project_creator_core': {'module_name': 'project_creator_core', 'path': {'data': './project/data/project_creator_core', 'project_templates': './project/data/project_creator_core/project_templates.yaml', 'module_preload_sets': './project/data/project_creator_core/module_preload_sets.yaml'}}, 'module_creator_core': {'module_name': 'module_creator_core', 'path': {'data': './project/data/module_creator_core', 'module_templates': './project/data/module_creator_core/module_templates.yaml'}}, 'creator_common_core': {'module_name': 'creator_common_core', 'path': {'data': './project/data/creator_common_core'}}, 'github_api_core': {'module_name': 'github_api_core', 'path': {'data': './project/data/github_api_core'}}, 'questionary_core': {'module_name': 'questionary_core', 'path': {'data': './project/data/questionary_core'}}, 'yaml_reading_core': {'module_name': 'yaml_reading_core', 'path': {'data': './project/data/yaml_reading_core'}}, 'project_init_core': {'module_name': 'project_init_core', 'path': {'data': './project/data/project_init_core'}, 'framework_repo_url': 'https://github.com/AI-Driven-Highspeed-Development/ai_driven_highspeed_development_framework_bootstrapped'}})
+		self._populate({'temp_files_manager': {'module_name': 'temp_files_manager', 'path': {'data': './project/data/temp_files_manager', 'unix_temp': '/tmp/github_api_core', 'windows_temp': 'C:\\\\Temp\\\\github_api_core'}}, 'modules_controller_core': {'module_name': 'modules_controller_core', 'path': {'data': './project/data/modules_controller_core'}}, 'workspace_core': {'module_name': 'workspace_core', 'path': {'data': './project/data/workspace_core'}}, 'exceptions_core': {'module_name': 'exceptions_core', 'path': {'data': './project/data/exceptions_core'}}, 'cli_manager': {'module_name': 'cli_manager', 'path': {'data': './project/data/cli_manager'}, 'admin_cli': {'filename': 'admin_cli.py', 'output_dir': './'}}, 'my_module': {'module_name': 'my_module', 'path': {'data': './project/data/my_module'}}, 'adhd_mcp': {'module_name': 'adhd_mcp', 'path': {'data': './project/data/adhd_mcp'}}, 'uv_migrator_core': {'module_name': 'uv_migrator_core', 'path': {'data': './project/data/uv_migrator_core'}}, 'instruction_core': {'module_name': 'instruction_core', 'path': {'data': './project/data/instruction_core', 'official_target_dir': ['./.github'], 'custom_target_dir': [], 'mcp_permission_injection_json': './project/data/instruction_core/mcp_permission_injection.json'}}, 'project_creator_core': {'module_name': 'project_creator_core', 'path': {'data': './project/data/project_creator_core', 'project_templates': './project/data/project_creator_core/project_templates.yaml', 'module_preload_sets': './project/data/project_creator_core/module_preload_sets.yaml'}}, 'module_creator_core': {'module_name': 'module_creator_core', 'path': {'data': './project/data/module_creator_core', 'module_templates': './project/data/module_creator_core/module_templates.yaml'}}, 'creator_common_core': {'module_name': 'creator_common_core', 'path': {'data': './project/data/creator_common_core'}}, 'github_api_core': {'module_name': 'github_api_core', 'path': {'data': './project/data/github_api_core'}}, 'questionary_core': {'module_name': 'questionary_core', 'path': {'data': './project/data/questionary_core'}}, 'yaml_reading_core': {'module_name': 'yaml_reading_core', 'path': {'data': './project/data/yaml_reading_core'}}, 'project_init_core': {'module_name': 'project_init_core', 'path': {'data': './project/data/project_init_core'}, 'framework_repo_url': 'https://github.com/AI-Driven-Highspeed-Development/ai_driven_highspeed_development_framework_bootstrapped'}})
 
 	@dataclass
 	class TempFiles_M:
@@ -389,6 +391,66 @@ class ConfigKeys:
 				self.___DATA___ = data
 				self.filename = data.get('filename', self.filename)
 				self.output_dir = data.get('output_dir', self.output_dir)
+
+			def __init__(self):
+				pass
+
+
+
+	@dataclass
+	class MyModule:
+		___DATA___: Dict[str, Any] | None = None
+		def dict_get(self, key: str, default: Any = None) -> Any:
+			'Dictionary-style access to raw data. Prefer typed attributes when possible.'
+			if self.___DATA___ is None:
+				return default
+			return self.___DATA___.get(key, default)
+		def __getitem__(self, key: str) -> Any:
+			if self.___DATA___ is None or key not in self.___DATA___:
+				raise KeyError(key)
+			return self.___DATA___[key]
+		module_name: Optional[str] = "my_module"
+		path: Optional['Path'] = None
+
+		@staticmethod
+		def from_raw(raw: Dict[str, Any] | None) -> 'MyModule':
+			inst = ConfigKeys.MyModule()
+			inst.___DATA___ = raw or {}
+			inst._populate(raw or {})
+			return inst
+
+		def _populate(self, data: Dict[str, Any]):
+			self.___DATA___ = data
+			self.module_name = data.get('module_name', self.module_name)
+			self.path = self.Path.from_raw(data.get('path', {}))
+
+		def __init__(self):
+			pass
+
+		@dataclass
+		class Path:
+			___DATA___: Dict[str, Any] | None = None
+			def dict_get(self, key: str, default: Any = None) -> Any:
+				'Dictionary-style access to raw data. Prefer typed attributes when possible.'
+				if self.___DATA___ is None:
+					return default
+				return self.___DATA___.get(key, default)
+			def __getitem__(self, key: str) -> Any:
+				if self.___DATA___ is None or key not in self.___DATA___:
+					raise KeyError(key)
+				return self.___DATA___[key]
+			data: Optional[str] = "./project/data/my_module"
+
+			@staticmethod
+			def from_raw(raw: Dict[str, Any] | None) -> 'Path':
+				inst = ConfigKeys.MyModule.Path()
+				inst.___DATA___ = raw or {}
+				inst._populate(raw or {})
+				return inst
+
+			def _populate(self, data: Dict[str, Any]):
+				self.___DATA___ = data
+				self.data = data.get('data', self.data)
 
 			def __init__(self):
 				pass

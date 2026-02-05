@@ -11,6 +11,7 @@ dependencies = [
     # Workspace member dependencies (required for adhd CLI)
     "logger-util",
     "config-manager",
+    "cli-manager",
     "exceptions-core",
     "modules-controller-core",
     "github-api-core",
@@ -32,6 +33,7 @@ adhd = "adhd_framework:main"
 # All ADHD module dependencies must be declared here for workspace resolution
 logger-util = { workspace = true }
 config-manager = { workspace = true }
+cli-manager = { workspace = true }
 exceptions-core = { workspace = true }
 modules-controller-core = { workspace = true }
 github-api-core = { workspace = true }

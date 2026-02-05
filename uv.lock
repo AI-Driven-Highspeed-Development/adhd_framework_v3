@@ -27,6 +27,7 @@ version = "3.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "argcomplete" },
+    { name = "cli-manager" },
     { name = "config-manager" },
     { name = "creator-common-core" },
     { name = "exceptions-core" },
@@ -52,6 +53,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "argcomplete", specifier = ">=3.0" },
+    { name = "cli-manager", editable = "modules/runtime/cli_manager" },
     { name = "config-manager", editable = "modules/foundation/config_manager" },
     { name = "creator-common-core", editable = "modules/dev/creator_common_core" },
     { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },

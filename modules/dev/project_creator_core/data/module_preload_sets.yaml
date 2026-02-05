@@ -44,7 +44,7 @@ always:
   
   # CLI infrastructure
   - repo: adhd
-    subdirectory: modules/runtime/cli_manager
+    subdirectory: modules/foundation/cli_manager
   
   # Development tools
   - repo: adhd

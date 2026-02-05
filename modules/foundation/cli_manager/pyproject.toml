@@ -12,7 +12,7 @@ dependencies = [
 Repository = "https://github.com/AI-Driven-Highspeed-Development/cli_manager.git"
 
 [tool.adhd]
-layer = "runtime"
+layer = "foundation"
 
 [build-system]
 requires = ["hatchling"]
