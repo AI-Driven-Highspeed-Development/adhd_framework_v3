@@ -17,7 +17,7 @@ from logger_util import Logger
 def _register_cli() -> None:
     """Register CLI commands if cli_manager is available."""
     try:
-        from adhd_cli import register_cli
+        from .adhd_cli import register_cli
         register_cli()
     except ImportError:
         # cli_manager not available or CLI file not created yet - skip silently
