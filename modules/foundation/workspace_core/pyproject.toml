@@ -12,7 +12,7 @@ dependencies = [
 Repository = "https://github.com/AI-Driven-Highspeed-Development/workspace_core.git"
 
 [tool.adhd]
-layer = "dev"
+layer = "foundation"
 
 [build-system]
 requires = ["hatchling"]
