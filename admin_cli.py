@@ -13,10 +13,15 @@ Examples:
     python admin_cli.py sm list  # if 'sm' is registered as short_name
 """
 
-import os
 import sys
+import os
 
-from cli_manager import CLIManager
+# Add project root to path
+project_root = os.path.dirname(os.path.abspath(__file__))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+from managers.cli_manager import CLIManager
 
 
 def main() -> int:

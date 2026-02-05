@@ -4,6 +4,7 @@ Copies admin_cli.txt to configured location. If the target filename changed
 but an old file exists, creates new file without deleting old one.
 """
 
+import os
 import shutil
 from pathlib import Path
 

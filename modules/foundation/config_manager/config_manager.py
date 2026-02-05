@@ -1,5 +1,7 @@
+import importlib.util
 import json
 import os
+import sys
 from typing import Any, Dict, List
 
 from logger_util import Logger
@@ -29,7 +31,9 @@ class ConfigManager:
         self.logger.debug("Initializing ConfigManager...")
         if not os.path.exists(self.config_path):
             self.logger.debug("Configuration file not found, creating a new one.")
-            os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
+            config_dir = os.path.dirname(self.config_path)
+            if config_dir:  # Only create directory if path has a directory component
+                os.makedirs(config_dir, exist_ok=True)
             with open(self.config_path, 'w') as file:
                 file.write('{}')
                     
@@ -38,7 +42,17 @@ class ConfigManager:
         self.ckg = ConfigKeysGenerator(self.raw_config)
         self.ckg.generate()
         
-        from .config_keys import ConfigKeys
+        # Dynamically load the generated config_keys module
+        config_keys_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config_keys.py')
+        spec = importlib.util.spec_from_file_location("config_keys", config_keys_path)
+        if spec and spec.loader:
+            config_keys_module = importlib.util.module_from_spec(spec)
+            sys.modules["config_keys"] = config_keys_module
+            spec.loader.exec_module(config_keys_module)
+            ConfigKeys = config_keys_module.ConfigKeys
+        else:
+            raise ImportError(f"Could not load config_keys from {config_keys_path}")
+        
         self.config = ConfigKeys()
 
     @staticmethod
