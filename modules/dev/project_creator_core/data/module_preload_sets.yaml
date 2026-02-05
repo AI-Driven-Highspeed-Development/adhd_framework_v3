@@ -24,27 +24,27 @@ always:
   - repo: adhd
     subdirectory: modules/foundation/temp_files_manager
   - repo: adhd
-    subdirectory: modules/foundation/workspace_core
+    subdirectory: modules/dev/workspace_core
   - repo: adhd
-    subdirectory: modules/foundation/instruction_core
+    subdirectory: modules/dev/instruction_core
   
   # Creator modules (project/module creation)
   - repo: adhd
-    subdirectory: modules/foundation/creator_common_core
+    subdirectory: modules/dev/creator_common_core
   - repo: adhd
-    subdirectory: modules/foundation/github_api_core
+    subdirectory: modules/dev/github_api_core
   - repo: adhd
-    subdirectory: modules/foundation/module_creator_core
+    subdirectory: modules/dev/module_creator_core
   - repo: adhd
     subdirectory: modules/foundation/modules_controller_core
   - repo: adhd
-    subdirectory: modules/foundation/project_creator_core
+    subdirectory: modules/dev/project_creator_core
   - repo: adhd
-    subdirectory: modules/foundation/uv_migrator_core
+    subdirectory: modules/dev/uv_migrator_core
   
   # CLI infrastructure
   - repo: adhd
-    subdirectory: modules/foundation/cli_manager
+    subdirectory: modules/runtime/cli_manager
   
   # Development tools
   - repo: adhd
