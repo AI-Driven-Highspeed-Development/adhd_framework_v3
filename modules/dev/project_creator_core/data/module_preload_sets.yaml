@@ -24,7 +24,7 @@ always:
   - repo: adhd
     subdirectory: modules/foundation/temp_files_manager
   - repo: adhd
-    subdirectory: modules/dev/workspace_core
+    subdirectory: modules/foundation/workspace_core
   - repo: adhd
     subdirectory: modules/dev/instruction_core
   
