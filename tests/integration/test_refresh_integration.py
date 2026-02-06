@@ -10,6 +10,8 @@ import subprocess
 from pathlib import Path
 from unittest.mock import patch, MagicMock, call
 
+from exceptions_core import ADHDError
+
 
 def parse_refresh_args(args_list: list[str]):
     """Helper to parse args using the framework's parser."""
@@ -22,48 +24,40 @@ class TestRefreshProjectFunction:
     """Test the refresh_project method logic."""
 
     def test_refresh_project_runs_uv_sync_by_default(self, monkeypatch, tmp_path: Path):
-        """refresh_project should run uv sync by default."""
-        # Track subprocess calls
+        """ModulesController.sync() should run uv sync."""
         run_calls = []
         original_run = subprocess.run
-        
+
         def mock_run(args, **kwargs):
             run_calls.append(args)
             if args[1] == "sync":
                 return MagicMock(returncode=0)
             return original_run(args, **kwargs)
-        
-        # Create mock args without no_sync
-        mock_args = MagicMock()
-        mock_args.no_sync = False
-        mock_args.module = None
-        
-        # Mock the framework to avoid full initialization
+
         with patch('subprocess.run', mock_run):
             with patch('shutil.which', return_value='/usr/bin/uv'):
-                # Import after patching to avoid import-time issues
-                from adhd_framework import _run_uv_sync
-                
-                # Should not raise
-                _run_uv_sync()
-        
-        # Verify uv sync was called
+                from modules_controller_core import ModulesController
+                controller = ModulesController(root_path=tmp_path)
+                controller.sync()
+
         assert any('sync' in str(call) for call in run_calls)
 
-    def test_run_uv_sync_raises_when_uv_not_found(self):
-        """_run_uv_sync should raise UVNotFoundError when uv not in PATH."""
+    def test_sync_raises_when_uv_not_found(self):
+        """ModulesController.sync() should raise ADHDError when uv not in PATH."""
         with patch('shutil.which', return_value=None):
-            from adhd_framework import _run_uv_sync, UVNotFoundError
-            
-            with pytest.raises(UVNotFoundError):
-                _run_uv_sync()
+            from modules_controller_core import ModulesController
+            controller = ModulesController.__new__(ModulesController)
+            controller._initialized = False
+            controller.__init__()
+
+            with pytest.raises(ADHDError, match="uv"):
+                controller.sync()
 
     def test_require_uv_returns_path_when_found(self):
         """_require_uv should return uv path when found."""
         with patch('shutil.which', return_value='/usr/local/bin/uv'):
-            from adhd_framework import _require_uv
-            
-            result = _require_uv()
+            from modules_controller_core import ModulesController
+            result = ModulesController._require_uv()
             assert result == '/usr/local/bin/uv'
 
 
@@ -191,29 +185,35 @@ class TestUVSyncBehavior:
     """Test uv sync related behavior."""
 
     def test_uv_sync_command_format(self):
-        """uv sync should be called with correct arguments."""
+        """ModulesController.sync() should call uv sync with correct arguments."""
         with patch('subprocess.run') as mock_run:
             with patch('shutil.which', return_value='/usr/bin/uv'):
                 mock_run.return_value = MagicMock(returncode=0)
-                
-                from adhd_framework import _run_uv_sync
-                _run_uv_sync()
-                
+
+                from modules_controller_core import ModulesController
+                controller = ModulesController.__new__(ModulesController)
+                controller._initialized = False
+                controller.__init__()
+                controller.sync()
+
                 mock_run.assert_called_once()
                 call_args = mock_run.call_args[0][0]
                 assert call_args[0] == '/usr/bin/uv'
                 assert call_args[1] == 'sync'
 
     def test_uv_sync_failure_raises(self):
-        """_run_uv_sync should raise on subprocess failure."""
+        """ModulesController.sync() should raise ADHDError on subprocess failure."""
         with patch('subprocess.run') as mock_run:
             with patch('shutil.which', return_value='/usr/bin/uv'):
                 mock_run.side_effect = subprocess.CalledProcessError(1, 'uv sync')
-                
-                from adhd_framework import _run_uv_sync
-                
-                with pytest.raises(subprocess.CalledProcessError):
-                    _run_uv_sync()
+
+                from modules_controller_core import ModulesController
+                controller = ModulesController.__new__(ModulesController)
+                controller._initialized = False
+                controller.__init__()
+
+                with pytest.raises(ADHDError):
+                    controller.sync()
 
 
 class TestRefreshDefaultBehaviorChange:

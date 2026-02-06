@@ -61,6 +61,25 @@ class DependencyClosure:
     def has_violations(self) -> bool:
         return len(self.violations) > 0
 
+    def format(self) -> str:
+        """Format closure result for terminal output."""
+        lines = []
+        lines.append(f"\n\U0001f333 Dependency Tree for {self.root_module}:\n")
+        lines.append(format_dependency_tree(self.tree))
+        lines.append(f"\n\U0001f4ca Summary:")
+        lines.append(f"  \u2022 ADHD modules: {len(self.adhd_deps)}")
+        lines.append(f"  \u2022 External packages: {len(self.external_deps)}")
+        lines.append(f"  \u2022 Total dependencies: {len(self.all_deps)}")
+        if self.has_violations:
+            lines.append(f"\n\u274c Layer Violations Found ({len(self.violations)}):\n")
+            for v in self.violations:
+                lines.append(f"  \u2022 {v.message}")
+            lines.append("\n\U0001f4a1 Tip: Layer hierarchy is foundation < runtime < dev")
+            lines.append("   A module can only depend on modules at the same or lower layer.")
+        else:
+            lines.append("\n\u2705 No layer violations found!")
+        return "\n".join(lines)
+
 
 # Layer hierarchy: foundation < runtime < dev
 # A module can only depend on modules at the same level or lower
@@ -281,6 +300,40 @@ class DependencyWalker:
                 node.children.append(child_node)
         
         return node
+
+
+def format_all_violations(
+    results: List[tuple[str, DependencyClosure]],
+    modules_checked: int,
+) -> str:
+    """Format aggregated violation report from checking all modules."""
+    all_violations: list[tuple[str, DependencyViolation]] = []
+    modules_with_violations: list[str] = []
+    for name, closure in results:
+        if closure.has_violations:
+            modules_with_violations.append(name)
+            for v in closure.violations:
+                all_violations.append((name, v))
+
+    lines = [
+        f"\U0001f4ca Summary:",
+        f"  \u2022 Modules checked: {modules_checked}",
+        f"  \u2022 Modules with violations: {len(modules_with_violations)}",
+        f"  \u2022 Total violations: {len(all_violations)}",
+    ]
+    if all_violations:
+        lines.append(f"\n\u274c Layer Violations Found ({len(all_violations)}):\n")
+        current_module = None
+        for module_name, violation in all_violations:
+            if module_name != current_module:
+                lines.append(f"\n  \U0001f4e6 {module_name}:")
+                current_module = module_name
+            lines.append(f"    \u2022 {violation.message}")
+        lines.append("\n\U0001f4a1 Tip: Layer hierarchy is foundation < runtime < dev")
+        lines.append("   A module can only depend on modules at the same or lower layer.")
+    else:
+        lines.append("\n\u2705 No layer violations found across all modules!")
+    return "\n".join(lines)
 
 
 def format_dependency_tree(node: DependencyNode, prefix: str = "", is_last: bool = True) -> str:

@@ -34,6 +34,15 @@ from .module_filter import (
     FilterInfo,
     GitState,
 )
+from .dependency_walker import (
+    DependencyWalker,
+    DependencyClosure,
+    DependencyNode,
+    DependencyViolation,
+    ViolationType,
+    format_dependency_tree,
+    format_all_violations,
+)
 
 __all__ = [
     "ModulesController",
@@ -61,4 +70,12 @@ __all__ = [
     "FilterDimension",
     "FilterInfo",
     "GitState",
+    # Dependency Walker
+    "DependencyWalker",
+    "DependencyClosure",
+    "DependencyNode",
+    "DependencyViolation",
+    "ViolationType",
+    "format_dependency_tree",
+    "format_all_violations",
 ]

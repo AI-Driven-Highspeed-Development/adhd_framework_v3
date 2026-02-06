@@ -18,6 +18,7 @@ dependencies = [
     "project-creator-core",
     "module-creator-core",
     "creator-common-core",
+    "module-adder-core",
 ]
 
 [project.optional-dependencies]
@@ -46,6 +47,7 @@ workspace-core = { workspace = true }
 instruction-core = { workspace = true }
 uv-migrator-core = { workspace = true }
 adhd-mcp = { workspace = true }
+module-adder-core = { workspace = true }
 
 [tool.uv.workspace]
 members = [

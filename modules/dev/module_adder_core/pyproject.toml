@@ -1,0 +1,21 @@
+[project]
+name = "module-adder-core"
+version = "0.1.0"
+description = "Module adder for ADHD Framework - adds external modules from git repos or monorepo subfolders"
+requires-python = ">=3.11"
+dependencies = [
+    "exceptions-core",
+    "logger-util",
+    "modules-controller-core",
+    "creator-common-core",
+]
+
+[tool.adhd]
+layer = "dev"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]

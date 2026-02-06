@@ -9,7 +9,9 @@ This controller provides:
 
 from __future__ import annotations
 
+import difflib
 import os
+import shutil
 import subprocess
 import sys
 import tomllib
@@ -96,12 +98,50 @@ class ModuleInfo:
         """Return default workspace visibility. All modules visible by default."""
         return True
 
+    def format_detail(self) -> str:
+        """Format a detailed info card for this module."""
+        lines = []
+        lines.append(f"\n\U0001f4e6 MODULE INFORMATION: {self.name}")
+        lines.append(f"  \U0001f4c1 Path: {self.path}")
+        mcp_tag = " [MCP]" if self.is_mcp else ""
+        lines.append(f"  \U0001f4c2 Folder: {self.folder}{mcp_tag}")
+        lines.append(f"  \U0001f3f7\ufe0f  Version: {self.version}")
+        layer_display = self.layer.value if self.layer else "N/A"
+        lines.append(f"  \U0001f4ca Layer: {layer_display}")
+        lines.append(f"  \U0001f517 Repo URL: {self.repo_url or 'N/A'}")
+        reqs = ", ".join(self.requirements) if self.requirements else "None"
+        lines.append(f"  \U0001f9f1 Requirements: {reqs}")
+        lines.append(f"  \U0001f504 Has Refresh Script: {'Yes' if self.has_refresh_script() else 'No'}")
+        lines.append(f"  \U0001f680 Has Initializer: {'Yes' if self.has_initializer() else 'No'}")
+        if self.issues:
+            lines.append("  \u26a0\ufe0f  Issues:")
+            for issue in self.issues:
+                lines.append(f"    - {issue.message}")
+        return "\n".join(lines)
+
 
 @dataclass
 class ModulesReport:
     modules: List[ModuleInfo] = field(default_factory=list)
     issued_modules: List[ModuleInfo] = field(default_factory=list)
     root_path: Path = Path.cwd()
+
+    def format(self, module_filter: Optional["ModuleFilter"] = None) -> str:
+        """Format module list for terminal output with optional filtering."""
+        modules = self.modules
+        if module_filter and module_filter.has_filters:
+            modules = module_filter.filter_modules(modules)
+
+        lines = [f"\n\U0001f4e6 Found {len(modules)} modules:"]
+        for module in modules:
+            status = "\u26a0\ufe0f " if module.issues else "\u2705"
+            layer_str = module.layer.value if module.layer else "?"
+            mcp_tag = " [MCP]" if module.is_mcp else ""
+            lines.append(f"  {status} {module.name} ({module.folder}){mcp_tag} [{layer_str}] - v{module.version}")
+            if module.issues:
+                for issue in module.issues:
+                    lines.append(f"     - {issue.message}")
+        return "\n".join(lines)
 
     def print_report(self) -> None:
         logger = Logger(name=__class__.__name__)
@@ -336,20 +376,40 @@ class ModulesController:
 
     def get_module_by_name(self, module_name: str) -> Optional[ModuleInfo]:
         """Find a module by its name (case-insensitive).
-        
+
         Supports 'layer/name' format (e.g. 'foundation/config_manager') by stripping the prefix.
         """
         report = self.list_all_modules()
-        
+
         # Handle 'layer/name' format
         if "/" in module_name:
             module_name = module_name.split("/")[-1]
-            
+
         target_name = module_name.lower().strip()
         for module in report.modules:
             if module.name.lower() == target_name:
                 return module
         return None
+
+    def require_module(self, module_name: str) -> ModuleInfo:
+        """Get module by name or raise ADHDError with fuzzy suggestions.
+
+        This consolidates the repeated pattern of get_module_by_name + difflib suggestions.
+
+        Raises:
+            ADHDError: If the module is not found (message includes suggestions).
+        """
+        module = self.get_module_by_name(module_name)
+        if module is not None:
+            return module
+
+        report = self.list_all_modules()
+        all_names = [m.name for m in report.modules]
+        suggestions = difflib.get_close_matches(module_name, all_names, n=3, cutoff=0.4)
+        if suggestions:
+            raise ADHDError(f"Module '{module_name}' not found. Did you mean: {', '.join(suggestions)}?")
+        else:
+            raise ADHDError(f"Module '{module_name}' not found. Use 'adhd list' to see available modules.")
 
     def run_module_initializer(
         self,
@@ -493,6 +553,76 @@ class ModulesController:
         from workspace_core import generate_workspace_file as ws_generate
         
         return ws_generate(modules_data=visible_modules, root_path=self.root_path)
+
+    # ========================================================================
+    # SYNC / REFRESH
+    # ========================================================================
+
+    @staticmethod
+    def _require_uv() -> str:
+        """Ensure uv is available and return its path.
+
+        Raises:
+            ADHDError: If uv is not found in PATH.
+        """
+        uv_path = shutil.which("uv")
+        if not uv_path:
+            raise ADHDError(
+                "'uv' command not found. Please install uv: "
+                "https://docs.astral.sh/uv/getting-started/installation/"
+            )
+        return uv_path
+
+    def sync(self, *, frozen: bool = False) -> None:
+        """Run uv sync to synchronize project dependencies.
+
+        Args:
+            frozen: If True, pass --frozen to uv sync.
+
+        Raises:
+            ADHDError: If uv is not found or sync fails.
+        """
+        uv_path = self._require_uv()
+        cmd = [uv_path, "sync"]
+        if frozen:
+            cmd.append("--frozen")
+        try:
+            subprocess.run(cmd, check=True)
+        except subprocess.CalledProcessError as exc:
+            raise ADHDError(f"uv sync failed: {exc}") from exc
+
+    def refresh(
+        self,
+        module_name: Optional[str] = None,
+        *,
+        skip_sync: bool = False,
+    ) -> None:
+        """Refresh project: optionally sync, then run refresh scripts.
+
+        Args:
+            module_name: If provided, refresh only this module. Otherwise refresh all.
+            skip_sync: If True, skip the uv sync step.
+
+        Raises:
+            ADHDError: If module not found, uv missing, or refresh script fails.
+        """
+        if not skip_sync:
+            self.logger.info("Running uv sync before refresh...")
+            self.sync()
+            self.logger.info("\u2705 uv sync completed")
+
+        if module_name:
+            module = self.require_module(module_name)
+            self.logger.info(f"Refreshing module: {module_name}")
+            self.run_module_refresh_script(module)
+            self.logger.info(f"\u2705 Module {module_name} refreshed!")
+        else:
+            self.logger.info("Refreshing all modules...")
+            report = self.list_all_modules()
+            for module in report.modules:
+                if module.has_refresh_script():
+                    self.run_module_refresh_script(module)
+            self.logger.info("\u2705 Project refresh completed!")
 
     # ========================================================================
     # DOCTOR COMMAND (delegated)

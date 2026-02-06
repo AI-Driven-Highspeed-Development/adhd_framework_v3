@@ -13,6 +13,7 @@ members = [
     "github-api-core",
     "instruction-core",
     "logger-util",
+    "module-adder-core",
     "module-creator-core",
     "modules-controller-core",
     "project-creator-core",
@@ -34,6 +35,7 @@ dependencies = [
     { name = "github-api-core" },
     { name = "logger-util" },
     { name = "mcp" },
+    { name = "module-adder-core" },
     { name = "module-creator-core" },
     { name = "modules-controller-core" },
     { name = "project-creator-core" },
@@ -53,13 +55,14 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "argcomplete", specifier = ">=3.0" },
-    { name = "cli-manager", editable = "modules/runtime/cli_manager" },
+    { name = "cli-manager", editable = "modules/foundation/cli_manager" },
     { name = "config-manager", editable = "modules/foundation/config_manager" },
     { name = "creator-common-core", editable = "modules/dev/creator_common_core" },
     { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
     { name = "github-api-core", editable = "modules/dev/github_api_core" },
     { name = "logger-util", editable = "modules/foundation/logger_util" },
     { name = "mcp", specifier = ">=1.0" },
+    { name = "module-adder-core", editable = "modules/dev/module_adder_core" },
     { name = "module-creator-core", editable = "modules/dev/module_creator_core" },
     { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
     { name = "project-creator-core", editable = "modules/dev/project_creator_core" },
@@ -222,7 +225,7 @@ wheels = [
 [[package]]
 name = "cli-manager"
 version = "0.0.1"
-source = { editable = "modules/runtime/cli_manager" }
+source = { editable = "modules/foundation/cli_manager" }
 dependencies = [
     { name = "config-manager" },
     { name = "logger-util" },
@@ -537,6 +540,25 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba", size = 8729, upload-time = "2022-08-14T12:40:10.846Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
+]
+
+[[package]]
+name = "module-adder-core"
+version = "0.1.0"
+source = { editable = "modules/dev/module_adder_core" }
+dependencies = [
+    { name = "creator-common-core" },
+    { name = "exceptions-core" },
+    { name = "logger-util" },
+    { name = "modules-controller-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "creator-common-core", editable = "modules/dev/creator_common_core" },
+    { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
+    { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
 ]
 
 [[package]]

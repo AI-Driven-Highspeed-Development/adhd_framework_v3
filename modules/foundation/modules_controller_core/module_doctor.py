@@ -58,6 +58,47 @@ class DoctorReport:
     def is_healthy(self) -> bool:
         return self.error_count == 0
 
+    def format(self) -> str:
+        """Format the doctor report for terminal output."""
+        lines = []
+        errors = [i for i in self.issues if i.severity == DoctorIssueSeverity.ERROR]
+        warnings = [i for i in self.issues if i.severity == DoctorIssueSeverity.WARNING]
+        infos = [i for i in self.issues if i.severity == DoctorIssueSeverity.INFO]
+
+        lines.append(f"\n\U0001fa7a Doctor Report: {self.modules_checked} modules checked")
+        if self.workspace_members_declared:
+            lines.append(f"\U0001f4e6 Workspace: {self.workspace_members_declared} members declared in root pyproject.toml")
+        lines.append("")
+
+        if self.is_healthy and not warnings:
+            lines.append("\u2705 All modules are healthy!\n")
+            return "\n".join(lines)
+
+        if errors:
+            lines.append("\u274c Errors (must fix):")
+            for issue in errors:
+                lines.append(f"  \u2022 {issue.message}")
+                if issue.suggestion:
+                    lines.append(f"    \U0001f4a1 {issue.suggestion}")
+            lines.append("")
+
+        if warnings:
+            lines.append("\u26a0\ufe0f  Warnings (should fix):")
+            for issue in warnings:
+                lines.append(f"  \u2022 {issue.message}")
+                if issue.suggestion:
+                    lines.append(f"    \U0001f4a1 {issue.suggestion}")
+            lines.append("")
+
+        if infos:
+            lines.append("\u2139\ufe0f  Info:")
+            for issue in infos:
+                lines.append(f"  \u2022 {issue.message}")
+            lines.append("")
+
+        lines.append(f"Summary: {self.error_count} errors, {self.warning_count} warnings, {self.info_count} info")
+        return "\n".join(lines)
+
 
 class ModuleDoctor:
     """Health checker for ADHD Framework modules."""

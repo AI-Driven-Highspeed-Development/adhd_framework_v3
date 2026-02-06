@@ -56,7 +56,7 @@ class TestModuleFilterConstruction:
     def test_filter_chaining(self):
         """Filter methods should return self for chaining."""
         f = ModuleFilter()
-        result = f.add_folder("managers").add_layer("runtime")
+        result = f.add_folder("foundation").add_layer("runtime")
         assert result is f
         assert f.has_filters
 
@@ -71,28 +71,24 @@ class TestLayerFiltering:
             ModuleInfo(
                 name="foundation_module",
                 version="1.0.0",
-                folder="cores",
                 path=Path("/test"),
                 layer=ModuleLayer.FOUNDATION,
             ),
             ModuleInfo(
                 name="runtime_module",
                 version="1.0.0",
-                folder="managers",
                 path=Path("/test"),
                 layer=ModuleLayer.RUNTIME,
             ),
             ModuleInfo(
                 name="dev_module",
                 version="1.0.0",
-                folder="utils",
                 path=Path("/test"),
                 layer=ModuleLayer.DEV,
             ),
             ModuleInfo(
                 name="no_layer_module",
                 version="1.0.0",
-                folder="plugins",
                 path=Path("/test"),
                 layer=None,
             ),
@@ -129,10 +125,10 @@ class TestLayerFiltering:
         """Including runtime should also match foundation modules (inheritance)."""
         f = ModuleFilter(mode=FilterMode.INCLUDE)
         f.add_layer("runtime")
-        
+
         filtered = f.filter_modules(modules)
         names = {m.name for m in filtered}
-        
+
         assert "foundation_module" in names
         assert "runtime_module" in names
         assert "dev_module" not in names
@@ -141,10 +137,10 @@ class TestLayerFiltering:
         """Excluding dev should only exclude dev modules."""
         f = ModuleFilter(mode=FilterMode.EXCLUDE)
         f.add_layer("dev", inherit=False)
-        
+
         filtered = f.filter_modules(modules)
         names = {m.name for m in filtered}
-        
+
         assert "foundation_module" in names
         assert "runtime_module" in names
         assert "dev_module" not in names
@@ -153,31 +149,29 @@ class TestLayerFiltering:
         """Module with layer=None should not match layer filters."""
         f = ModuleFilter(mode=FilterMode.INCLUDE)
         f.add_layer("foundation")
-        
+
         filtered = f.filter_modules(modules)
         names = {m.name for m in filtered}
-        
+
         assert "no_layer_module" not in names
 
 
 class TestFolderFiltering:
-    """Test filtering by module folder."""
+    """Test filtering by module folder (layer-based)."""
 
     @pytest.fixture
     def modules(self) -> list[ModuleInfo]:
-        """Create test modules in different folders."""
+        """Create test modules in different layers (folders)."""
         return [
-            ModuleInfo(name="core1", version="1.0.0", folder="cores", path=Path("/test")),
-            ModuleInfo(name="manager1", version="1.0.0", folder="managers", path=Path("/test")),
-            ModuleInfo(name="util1", version="1.0.0", folder="utils", path=Path("/test")),
-            ModuleInfo(name="plugin1", version="1.0.0", folder="plugins", path=Path("/test")),
-            ModuleInfo(name="mcp1", version="1.0.0", folder="mcps", path=Path("/test")),
+            ModuleInfo(name="core1", version="1.0.0", path=Path("/test"), layer=ModuleLayer.FOUNDATION),
+            ModuleInfo(name="manager1", version="1.0.0", path=Path("/test"), layer=ModuleLayer.RUNTIME),
+            ModuleInfo(name="dev1", version="1.0.0", path=Path("/test"), layer=ModuleLayer.DEV),
         ]
 
     def test_add_folder_with_valid_value(self):
-        """add_folder should accept valid folder values."""
+        """add_folder should accept valid folder (layer) values."""
         f = ModuleFilter()
-        f.add_folder("managers")
+        f.add_folder("foundation")
         assert f.has_filters
 
     def test_add_folder_with_invalid_value_raises(self):
@@ -189,33 +183,33 @@ class TestFolderFiltering:
     def test_include_single_folder(self, modules):
         """Should filter to only modules in specified folder."""
         f = ModuleFilter(mode=FilterMode.INCLUDE)
-        f.add_folder("managers")
-        
+        f.add_folder("foundation")
+
         filtered = f.filter_modules(modules)
         assert len(filtered) == 1
-        assert filtered[0].name == "manager1"
+        assert filtered[0].name == "core1"
 
     def test_include_multiple_folders(self, modules):
         """Should filter to modules in any of specified folders."""
         f = ModuleFilter(mode=FilterMode.INCLUDE)
-        f.add_folder("managers")
-        f.add_folder("utils")
-        
+        f.add_folder("foundation")
+        f.add_folder("runtime")
+
         filtered = f.filter_modules(modules)
         names = {m.name for m in filtered}
-        
-        assert names == {"manager1", "util1"}
+
+        assert names == {"core1", "manager1"}
 
     def test_exclude_folder(self, modules):
         """Exclude mode should remove modules in specified folder."""
         f = ModuleFilter(mode=FilterMode.EXCLUDE)
-        f.add_folder("cores")
-        
+        f.add_folder("dev")
+
         filtered = f.filter_modules(modules)
         names = {m.name for m in filtered}
-        
-        assert "core1" not in names
-        assert "manager1" in names
+
+        assert "dev1" not in names
+        assert "core1" in names
 
 
 class TestMcpFiltering:
@@ -228,29 +222,29 @@ class TestMcpFiltering:
             ModuleInfo(
                 name="regular_module",
                 version="1.0.0",
-                folder="managers",
                 path=Path("/test"),
+                layer=ModuleLayer.RUNTIME,
                 is_mcp=False,
             ),
             ModuleInfo(
-                name="mcp_in_managers",
+                name="mcp_runtime",
                 version="1.0.0",
-                folder="managers",
                 path=Path("/test"),
+                layer=ModuleLayer.RUNTIME,
                 is_mcp=True,
             ),
             ModuleInfo(
-                name="mcp_in_mcps",
+                name="mcp_dev",
                 version="1.0.0",
-                folder="mcps",
                 path=Path("/test"),
+                layer=ModuleLayer.DEV,
                 is_mcp=True,
             ),
             ModuleInfo(
-                name="non_mcp_in_mcps",
+                name="non_mcp_dev",
                 version="1.0.0",
-                folder="mcps",
                 path=Path("/test"),
+                layer=ModuleLayer.DEV,
                 is_mcp=False,
             ),
         ]
@@ -265,26 +259,26 @@ class TestMcpFiltering:
         """MCP filter should only include modules with is_mcp=True."""
         f = ModuleFilter(mode=FilterMode.INCLUDE)
         f.add_mcp()
-        
+
         filtered = f.filter_modules(modules)
         names = {m.name for m in filtered}
-        
-        assert "mcp_in_managers" in names
-        assert "mcp_in_mcps" in names
+
+        assert "mcp_runtime" in names
+        assert "mcp_dev" in names
         assert "regular_module" not in names
-        assert "non_mcp_in_mcps" not in names
+        assert "non_mcp_dev" not in names
 
     def test_mcp_filter_is_independent_of_folder(self, modules):
-        """MCP filter should work regardless of folder."""
+        """MCP filter should work regardless of folder/layer."""
         f = ModuleFilter(mode=FilterMode.INCLUDE)
         f.add_mcp()
-        
+
         filtered = f.filter_modules(modules)
-        
-        # Should include MCPs from any folder
-        folders = {m.folder for m in filtered}
-        assert "managers" in folders
-        assert "mcps" in folders
+
+        # Should include MCPs from any layer
+        layers = {m.layer for m in filtered}
+        assert ModuleLayer.RUNTIME in layers
+        assert ModuleLayer.DEV in layers
 
 
 class TestCombinedFiltering:
@@ -297,7 +291,6 @@ class TestCombinedFiltering:
             ModuleInfo(
                 name="foundation_core",
                 version="1.0.0",
-                folder="cores",
                 path=Path("/test"),
                 layer=ModuleLayer.FOUNDATION,
                 is_mcp=False,
@@ -305,7 +298,6 @@ class TestCombinedFiltering:
             ModuleInfo(
                 name="runtime_manager",
                 version="1.0.0",
-                folder="managers",
                 path=Path("/test"),
                 layer=ModuleLayer.RUNTIME,
                 is_mcp=False,
@@ -313,7 +305,6 @@ class TestCombinedFiltering:
             ModuleInfo(
                 name="dev_mcp",
                 version="1.0.0",
-                folder="mcps",
                 path=Path("/test"),
                 layer=ModuleLayer.DEV,
                 is_mcp=True,
@@ -321,7 +312,6 @@ class TestCombinedFiltering:
             ModuleInfo(
                 name="runtime_mcp",
                 version="1.0.0",
-                folder="mcps",
                 path=Path("/test"),
                 layer=ModuleLayer.RUNTIME,
                 is_mcp=True,
@@ -331,26 +321,26 @@ class TestCombinedFiltering:
     def test_require_mode_needs_all_filters_to_match(self, modules):
         """REQUIRE mode should only match when all filters match (AND logic)."""
         f = ModuleFilter(mode=FilterMode.REQUIRE)
-        f.add_folder("mcps")
+        f.add_mcp()
         f.add_layer("runtime", inherit=False)
-        
+
         filtered = f.filter_modules(modules)
-        
-        # Only runtime_mcp is in mcps AND has runtime layer
+
+        # Only runtime_mcp is MCP AND has runtime layer
         assert len(filtered) == 1
         assert filtered[0].name == "runtime_mcp"
 
     def test_include_mode_matches_any_filter(self, modules):
         """INCLUDE mode should match if any filter matches (OR logic)."""
         f = ModuleFilter(mode=FilterMode.INCLUDE)
-        f.add_folder("cores")
+        f.add_layer("foundation", inherit=False)
         f.add_mcp()
-        
+
         filtered = f.filter_modules(modules)
         names = {m.name for m in filtered}
-        
-        # cores folder OR is_mcp=True
-        assert "foundation_core" in names  # in cores
+
+        # foundation layer OR is_mcp=True
+        assert "foundation_core" in names  # foundation layer
         assert "dev_mcp" in names  # is_mcp
         assert "runtime_mcp" in names  # is_mcp
         assert "runtime_manager" not in names  # neither
@@ -358,13 +348,13 @@ class TestCombinedFiltering:
     def test_exclude_multiple_criteria(self, modules):
         """EXCLUDE mode should exclude if any filter matches."""
         f = ModuleFilter(mode=FilterMode.EXCLUDE)
-        f.add_folder("cores")
+        f.add_layer("foundation", inherit=False)
         f.add_mcp()
-        
+
         filtered = f.filter_modules(modules)
         names = {m.name for m in filtered}
-        
-        # Exclude cores AND MCPs
+
+        # Exclude foundation AND MCPs
         assert names == {"runtime_manager"}
 
 
@@ -374,13 +364,13 @@ class TestFilterWithNoFilters:
     def test_empty_filter_matches_all(self):
         """Filter with no criteria should match all modules."""
         modules = [
-            ModuleInfo(name="m1", version="1.0.0", folder="cores", path=Path("/test")),
-            ModuleInfo(name="m2", version="1.0.0", folder="managers", path=Path("/test")),
+            ModuleInfo(name="m1", version="1.0.0", path=Path("/test"), layer=ModuleLayer.FOUNDATION),
+            ModuleInfo(name="m2", version="1.0.0", path=Path("/test"), layer=ModuleLayer.RUNTIME),
         ]
-        
+
         f = ModuleFilter()
         filtered = f.filter_modules(modules)
-        
+
         assert len(filtered) == 2
 
 
@@ -390,10 +380,10 @@ class TestFilterInfo:
     def test_get_available_returns_all_values(self):
         """get_available should return all valid filter values."""
         info = FilterInfo.get_available()
-        
+
         assert set(info.layers) == {l.value for l in ModuleLayer}
-        # Folders include both legacy (cores, managers, etc.) and new (foundation, runtime, dev)
-        expected_folders = set(MODULE_FOLDERS) | set(LAYER_SUBFOLDERS)
+        # Folders are the layer subfolders (foundation, runtime, dev)
+        expected_folders = set(LAYER_SUBFOLDERS)
         assert set(info.folders) == expected_folders
         assert set(info.states) == {s.value for s in GitState}
 
@@ -401,7 +391,7 @@ class TestFilterInfo:
         """format should return a non-empty string."""
         info = FilterInfo.get_available()
         formatted = info.format()
-        
+
         assert isinstance(formatted, str)
         assert len(formatted) > 0
         assert "Layers" in formatted
@@ -420,7 +410,7 @@ class TestAddFilterByDimension:
     def test_add_filter_folder(self):
         """add_filter should work for folder dimension."""
         f = ModuleFilter()
-        f.add_filter("folder", "managers")
+        f.add_filter("folder", "foundation")
         assert f.has_filters
 
     def test_add_filter_mcp(self):
@@ -440,3 +430,29 @@ class TestAddFilterByDimension:
         f = ModuleFilter()
         with pytest.raises(ValueError):
             f.add_filter("invalid", "value")
+
+
+class TestFromArgs:
+    """Test ModuleFilter.from_args() classmethod."""
+
+    def test_from_args_with_layer_values(self):
+        """from_args should detect layer values."""
+        f = ModuleFilter.from_args(FilterMode.INCLUDE, ["runtime", "foundation"])
+        assert f.has_filters
+        assert f.mode == FilterMode.INCLUDE
+
+    def test_from_args_with_git_state(self):
+        """from_args should detect git state values."""
+        f = ModuleFilter.from_args(FilterMode.EXCLUDE, ["dirty"])
+        assert f.has_filters
+
+    def test_from_args_with_mixed_values(self):
+        """from_args should handle mixed layer/state values."""
+        f = ModuleFilter.from_args(FilterMode.REQUIRE, ["runtime", "dirty"])
+        assert f.has_filters
+
+    def test_from_args_with_unknown_value_warns(self):
+        """from_args should skip unknown values."""
+        # Should not raise, just log a warning
+        f = ModuleFilter.from_args(FilterMode.INCLUDE, ["nonexistent"])
+        # May or may not have filters depending on whether the value was skipped

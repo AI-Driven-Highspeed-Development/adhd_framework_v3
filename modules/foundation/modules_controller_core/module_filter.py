@@ -98,6 +98,49 @@ class ModuleFilter:
     
     mode: FilterMode = FilterMode.INCLUDE
     filters: List[FilterSpec] = field(default_factory=list)
+
+    @classmethod
+    def from_args(cls, mode: FilterMode, values: List[str]) -> "ModuleFilter":
+        """Build a ModuleFilter from raw CLI string values, auto-detecting dimensions.
+
+        Each value is tested against known layers, folder names, and git states.
+        Unknown values are logged as warnings and skipped.
+
+        Args:
+            mode: The filter mode (include, require, exclude)
+            values: Raw CLI string values to classify and add
+
+        Returns:
+            A configured ModuleFilter instance
+        """
+        from logger_util import Logger
+        logger = Logger(name="ModuleFilter")
+
+        filt = cls(mode=mode)
+        for value in values:
+            value_lower = value.lower()
+
+            # Try layer first
+            if ModuleLayer.validate(value_lower):
+                filt.add_layer(value_lower)
+                continue
+
+            # Try layer subfolder names
+            if value_lower in LAYER_SUBFOLDERS:
+                filt.add_layer(value_lower)
+                continue
+
+            # Try git state
+            try:
+                GitState(value_lower)
+                filt.add_state(value_lower)
+                continue
+            except ValueError:
+                pass
+
+            logger.warning(f"Unknown filter value: {value}")
+
+        return filt
     
     # Caches for resolved filter values
     _layer_filters: Set[ModuleLayer] = field(default_factory=set, init=False, repr=False)
