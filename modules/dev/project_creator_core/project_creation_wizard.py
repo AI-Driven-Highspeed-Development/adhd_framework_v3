@@ -47,32 +47,48 @@ def run_project_creation_wizard(
         prefilled = ProjectWizardArgs()
 
     try:
-        # Project name
-        if prefilled.name:
-            project_name = to_snake_case(prefilled.name)
-            if project_name != prefilled.name:
-                logger.info(f"Project name normalized to '{project_name}'")
-        else:
-            raw_project_name = prompter.autocomplete_input(
-                "Project name",
-                choices=[],
-                default="my_project",
-            )
-            project_name = to_snake_case(raw_project_name)
-            if project_name != raw_project_name:
-                logger.info(f"Project name normalized to '{project_name}'")
-        
-        # Parent directory
-        if prefilled.parent_dir:
-            parent_dir = prefilled.parent_dir
-        else:
-            parent_dir = prompter.path_input(
-                "Destination parent directory",
-                default=".",
-                only_directories=True,
-            )
-        dest_path = str(Path(parent_dir) / project_name)
-        
+        # Loop until we get a valid (non-existing) project path
+        while True:
+            # Project name
+            if prefilled.name:
+                project_name = to_snake_case(prefilled.name)
+                if project_name != prefilled.name:
+                    logger.info(f"Project name normalized to '{project_name}'")
+            else:
+                raw_project_name = prompter.autocomplete_input(
+                    "Project name",
+                    choices=[],
+                    default="my_project",
+                )
+                project_name = to_snake_case(raw_project_name)
+                if project_name != raw_project_name:
+                    logger.info(f"Project name normalized to '{project_name}'")
+
+            # Parent directory
+            if prefilled.parent_dir:
+                parent_dir = prefilled.parent_dir
+            else:
+                parent_dir = prompter.path_input(
+                    "Destination parent directory",
+                    default=".",
+                    only_directories=True,
+                )
+
+            dest_path_obj = Path(parent_dir) / project_name
+            dest_path = str(dest_path_obj)
+
+            # Check if the destination path already exists
+            if dest_path_obj.exists():
+                logger.warning(f"⚠️  Path already exists: {dest_path}")
+                logger.info("Please enter a different project name or parent directory.")
+                # Clear prefilled values so user is prompted again
+                prefilled.name = None
+                prefilled.parent_dir = None
+                continue
+
+            # Valid path found, break out of loop
+            break
+
         # Optional description
         description = prefilled.description or ""
 
