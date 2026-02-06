@@ -107,6 +107,7 @@ class ADHDFramework:
             ModulesController().refresh(
                 module_name=getattr(args, 'module', None),
                 skip_sync=getattr(args, 'no_sync', False),
+                full=getattr(args, 'full', False),
             )
         except ADHDError as e:
             self.logger.error(f"\u274c {e}")
@@ -371,6 +372,7 @@ def setup_parser() -> argparse.ArgumentParser:
 
     refresh_parser = subparsers.add_parser('refresh', aliases=['r'], help='Refresh project modules')
     refresh_parser.add_argument('--no-sync', '-n', action='store_true', help='Skip running uv sync before refreshing')
+    refresh_parser.add_argument('--full', '-f', action='store_true', help='Also run refresh_full.py scripts (heavy operations)')
     refresh_arg = refresh_parser.add_argument('--module', '-m', help='Refresh specific module by name')
     if argcomplete:
         refresh_arg.completer = module_completer

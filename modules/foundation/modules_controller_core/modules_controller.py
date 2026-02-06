@@ -87,7 +87,13 @@ class ModuleInfo:
 
     def has_refresh_script(self) -> bool:
         return self.refresh_script_path().exists()
-    
+
+    def refresh_full_script_path(self) -> Path:
+        return self.path / "refresh_full.py"
+
+    def has_refresh_full_script(self) -> bool:
+        return self.refresh_full_script_path().exists()
+
     def get_instructions_path(self) -> Path:
         return self.path / f"{self.name}.instructions.md"
     
@@ -441,23 +447,34 @@ class ModulesController:
         except Exception:
             return False
 
-    def run_module_refresh_script(
+    def _execute_module_script(
         self,
         module: ModuleInfo,
+        script_path: Path,
+        script_label: str,
         *,
         project_root: Optional[Path] = None,
         logger: Optional[Logger] = None,
     ) -> None:
-        """Execute the refresh.py for a single module if present."""
-        if not module.has_refresh_script():
-            return
+        """Execute a Python script for a module (refresh.py, refresh_full.py, etc.).
 
+        Handles relative import detection and PYTHONPATH setup.
+
+        Args:
+            module: The module that owns the script.
+            script_path: Absolute path to the script file.
+            script_label: Human-readable label for log messages.
+            project_root: Override for project root directory.
+            logger: Override logger instance.
+
+        Raises:
+            ADHDError: If the subprocess exits with non-zero status.
+        """
         target_root = Path(project_root).resolve() if project_root else self.root_path
         log = logger or self.logger
-        refresh_py = module.refresh_script_path()
-        
-        uses_relative = self._refresh_uses_relative_imports(refresh_py)
-        
+
+        uses_relative = self._refresh_uses_relative_imports(script_path)
+
         if uses_relative:
             # Run as module to preserve package context for relative imports
             try:
@@ -472,18 +489,48 @@ class ModulesController:
                     env = None
             except ValueError:
                 env = None
-            
-            module_name = f"{module.name}.refresh"
-            cmd = [sys.executable, "-m", module_name]
+
+            run_module_name = f"{module.name}.{script_path.stem}"
+            cmd = [sys.executable, "-m", run_module_name]
         else:
-            cmd = [sys.executable, str(refresh_py)]
+            cmd = [sys.executable, str(script_path)]
             env = None
-        
+
         try:
-            log.info(f"Running refresh script for {module.name}")
+            log.info(f"{script_label} {module.name}...")
             subprocess.run(cmd, cwd=str(target_root), check=True, env=env)
         except subprocess.CalledProcessError as exc:
-            raise ADHDError(f"Refresh script failed for {module.name}: {exc}") from exc
+            raise ADHDError(f"{script_path.name} failed for {module.name}: {exc}") from exc
+
+    def run_module_refresh_script(
+        self,
+        module: ModuleInfo,
+        *,
+        project_root: Optional[Path] = None,
+        logger: Optional[Logger] = None,
+    ) -> None:
+        """Execute the refresh.py for a single module if present."""
+        if not module.has_refresh_script():
+            return
+        self._execute_module_script(
+            module, module.refresh_script_path(), "Refreshing",
+            project_root=project_root, logger=logger,
+        )
+
+    def run_module_refresh_full_script(
+        self,
+        module: ModuleInfo,
+        *,
+        project_root: Optional[Path] = None,
+        logger: Optional[Logger] = None,
+    ) -> None:
+        """Execute the refresh_full.py for a single module if present."""
+        if not module.has_refresh_full_script():
+            return
+        self._execute_module_script(
+            module, module.refresh_full_script_path(), "Running full refresh for",
+            project_root=project_root, logger=logger,
+        )
 
     def run_initializers(
         self,
@@ -596,15 +643,22 @@ class ModulesController:
         module_name: Optional[str] = None,
         *,
         skip_sync: bool = False,
+        full: bool = False,
     ) -> None:
         """Refresh project: optionally sync, then run refresh scripts.
+
+        Modules are executed in dependency order (topological sort). Each module's
+        refresh.py runs first; on --full, refresh_full.py runs after it. Modules
+        without refresh scripts are silently skipped.
 
         Args:
             module_name: If provided, refresh only this module. Otherwise refresh all.
             skip_sync: If True, skip the uv sync step.
+            full: If True, also run refresh_full.py scripts (heavy tier).
 
         Raises:
-            ADHDError: If module not found, uv missing, or refresh script fails.
+            ADHDError: If module not found or uv missing. Individual script failures
+                are logged and do not halt the refresh.
         """
         if not skip_sync:
             self.logger.info("Running uv sync before refresh...")
@@ -613,16 +667,38 @@ class ModulesController:
 
         if module_name:
             module = self.require_module(module_name)
-            self.logger.info(f"Refreshing module: {module_name}")
-            self.run_module_refresh_script(module)
+            self._run_refresh_for_module(module, full=full)
             self.logger.info(f"\u2705 Module {module_name} refreshed!")
         else:
             self.logger.info("Refreshing all modules...")
             report = self.list_all_modules()
-            for module in report.modules:
-                if module.has_refresh_script():
-                    self.run_module_refresh_script(module)
+
+            from .refresh_order import sort_modules_for_refresh
+            ordered_modules = sort_modules_for_refresh(report.modules)
+            self.logger.debug(f"Refresh order: {[m.name for m in ordered_modules]}")
+
+            for module in ordered_modules:
+                self._run_refresh_for_module(module, full=full)
+
             self.logger.info("\u2705 Project refresh completed!")
+
+    def _run_refresh_for_module(self, module: ModuleInfo, *, full: bool = False) -> None:
+        """Run refresh scripts for a single module, logging errors without halting.
+
+        Silently skips scripts that don't exist. On failure, logs the error and
+        continues (does not raise).
+        """
+        if module.has_refresh_script():
+            try:
+                self.run_module_refresh_script(module)
+            except ADHDError as e:
+                self.logger.error(str(e))
+
+        if full and module.has_refresh_full_script():
+            try:
+                self.run_module_refresh_full_script(module)
+            except ADHDError as e:
+                self.logger.error(str(e))
 
     # ========================================================================
     # DOCTOR COMMAND (delegated)

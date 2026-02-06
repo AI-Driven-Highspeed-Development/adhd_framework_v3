@@ -43,6 +43,7 @@ from .dependency_walker import (
     format_dependency_tree,
     format_all_violations,
 )
+from .refresh_order import sort_modules_for_refresh
 
 __all__ = [
     "ModulesController",
@@ -78,4 +79,6 @@ __all__ = [
     "ViolationType",
     "format_dependency_tree",
     "format_all_violations",
+    # Refresh ordering
+    "sort_modules_for_refresh",
 ]
