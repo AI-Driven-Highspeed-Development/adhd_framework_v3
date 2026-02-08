@@ -1,5 +1,5 @@
 ---
-applyTo: "**/*.agent.md,cores/instruction_core/data/agents/hyper_expedition.adhd.agent.md,cores/instruction_core/data/agents/hyper_san_checker.adhd.agent.md"
+applyTo: "**/*.agent.md,modules/dev/instruction_core/data/agents/hyper_expedition.adhd.agent.md,modules/dev/instruction_core/data/agents/hyper_san_checker.adhd.agent.md"
 ---
 
 # Expedition Pipeline Schema Reference
@@ -133,7 +133,7 @@ expedition:
   
   artifacts:
     agents:
-      - source: "cores/instruction_core/data/agents/xxx.adhd.agent.md"
+      - source: "modules/dev/instruction_core/data/agents/xxx.adhd.agent.md"
         target: ".github/agents/xxx.agent.md"
         adaptation: transform | copy
         transformations:
@@ -208,7 +208,7 @@ expedition:
 |----------|---------|--------|
 | Semantic | "NEVER edit source files" | VERBATIM |
 | Python-specific | "Use pytest" | ADAPT |
-| ADHD-specific | "Check init.yaml" | REMOVE |
+| ADHD-specific | "Check pyproject.toml" | REMOVE |
 ```
 
 ---
@@ -298,5 +298,5 @@ When adapting agents for target:
 | **Semantic** | "NEVER edit source files directly" | VERBATIM copy |
 | **Behavioral** | "STOP if user says 'no edit'" | VERBATIM copy |
 | **Python-specific** | "Use `python -m pytest`" | ADAPT to target ecosystem |
-| **ADHD-specific** | "Check `init.yaml` before..." | ADAPT or REMOVE |
+| **ADHD-specific** | "Check `pyproject.toml` before..." | ADAPT or REMOVE |
 | **Tool-specific** | References to ADHD MCP tools | ADAPT or REMOVE |

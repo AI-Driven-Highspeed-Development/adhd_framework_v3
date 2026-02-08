@@ -66,7 +66,7 @@ examples:
 | Project Management | HyperPM | "kanbn", "board", "tasks", "sprint" |
 
 **Not Only Keywords**: You are an advanced AI, consider context and intent beyond keywords.
-**When Unsure**: Read the agent's source file at `cores/instruction_core/data/agents/<name>.adhd.agent.md`
+**When Unsure**: Read the agent's source file at `modules/dev/instruction_core/data/agents/<name>.adhd.agent.md`
 
 ## Prompt Construction Guidance
 

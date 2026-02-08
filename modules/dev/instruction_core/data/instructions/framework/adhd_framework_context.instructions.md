@@ -26,7 +26,7 @@ AI agents hit a **Context Wall** as complexity grows. This framework solves it v
 - **Entry Points**: `adhd_framework.py` (framework CLI), `<app_name>.py` (app).
 - **Module Assets** (`modules/<layer>/<name>/`):
   - `__init__.py`, `pyproject.toml`, `.config_template`, `data/`, `refresh.py`
-  - `<name>.instructions.md`, `requirements.txt` (PyPI only)
+  - `<name>.instructions.md`
   - `tests/` (optional), `playground/` (optional)
 
 ## Module Taxonomy
@@ -40,24 +40,24 @@ Every module declares a `layer` in `pyproject.toml` indicating when it loads:
 | **runtime** | Normal operational modules | Most modules (default choice) |
 | **dev** | Development/testing tools only | Build tools, test utilities |
 
-### Folders (Derived from Path)
-Folder location determines module category - no explicit `type` field needed:
+### Module Roles (Indicated by Name Suffix)
+The module name suffix communicates its role. All modules live under `modules/{layer}/{name}/`:
 
-| Folder | Purpose | When |
+| Suffix | Purpose | When |
 |:---|:---|:---|
-| `cores/` | Framework internals | NEVER create unless extending framework |
-| `managers/` | Stateful singletons, coordination | Needs state/lifecycle |
-| `utils/` | Stateless pure functions | No state |
-| `plugins/` | Project-specific extensions | Only for THIS project |
-| `mcps/` | AI tool integrations | Extending agent capabilities |
+| `*_core` | Framework internals | Extending framework capabilities |
+| `*_manager` | Stateful singletons, coordination | Needs state/lifecycle |
+| `*_util` | Stateless pure functions | No state |
+| `*_plugin` | Project-specific extensions | Only for THIS project |
+| `*_mcp` | AI tool integrations | Extending agent capabilities |
+
+**Decision**: State? → `*_manager`. Stateless? → `*_util`. Reusable? → `*_manager`. Project-only? → `*_plugin`.
 
 ### MCP Flag (Optional)
 MCP servers add `mcp = true` in `[tool.adhd]` to enable special handling.
 
-**Decision**: State? → `managers/`. Stateless? → `utils/`. Reusable? → `managers/`. Project-only? → `plugins/`.
-
 ## Module Naming
-- **Suffix matches folder**: `*_manager`, `*_util`, `*_plugin`, `*_core`, `*_mcp`
+- **Suffix matches role**: `*_manager`, `*_util`, `*_plugin`, `*_core`, `*_mcp`
 - **Snake_case**, specific, descriptive
 - ✅ `oauth2_auth_manager` ❌ `auth`
 
@@ -97,6 +97,6 @@ Used by --> anime_library_scanner  or  photo_library_scanner (Project: domain pa
 
 ## AI-Native Context System
 `instruction_core` syncs to `.github/` for VS Code Copilot:
-- **Source**: `cores/instruction_core/data/`, `<module>/<name>.instructions.md`
+- **Source**: `modules/dev/instruction_core/data/`, `<module>/<name>.instructions.md`
 - **Dest**: `.github/instructions/`, `.github/agents/`, `.github/prompts/`
 - **Trigger**: `./adhd_framework.py refresh`

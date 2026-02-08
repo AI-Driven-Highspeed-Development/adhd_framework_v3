@@ -89,7 +89,7 @@ execution_guidance: |
   - **Structure**: OOP, Type Hints always, docstrings minimal (module/class level)
   - **File Size**: ~400 lines target, 600 max. Refactor if exceeded
   - **Imports**: Absolute imports only. NEVER invent imports—search first
-  - **Module Design**: No side-effects on import. Declare ADHD deps in `init.yaml`
+  - **Module Design**: No side-effects on import. Declare ADHD deps in `pyproject.toml`
   
   ## Patterns
   - Use `ADHDError` for application errors

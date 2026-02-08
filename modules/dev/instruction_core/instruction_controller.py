@@ -28,7 +28,7 @@ class InstructionController:
     Controller for managing instruction and agent files.
     
     Supports two sync modes via config (both accept lists of target directories):
-    - official_target_dir: List of paths. Syncs from cores/instruction_core/data to each target
+    - official_target_dir: List of paths. Syncs from instruction_core's data directory to each target
     - custom_target_dir: List of paths. Syncs from ./project/data/instruction_core (or config path) to each target
     
     Empty lists or empty strings within lists are skipped.
@@ -43,8 +43,8 @@ class InstructionController:
         cm = ConfigManager()
         self.config = cm.config.instruction_core
         
-        # Official source: cores/instruction_core/data
-        self.official_source_path = self.root_path / "cores" / "instruction_core" / "data"
+        # Official source: instruction_core/data (relative to this module)
+        self.official_source_path = Path(__file__).resolve().parent / "data"
         
         # Custom source: from config path.data or default
         custom_data_path = self.config.path.data

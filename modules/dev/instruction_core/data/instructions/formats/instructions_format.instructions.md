@@ -47,14 +47,13 @@ applyTo: "<glob pattern for target files>"
 ## applyTo Patterns
 The `applyTo` field uses glob patterns to match files:
 - `**/*.py` - All Python files
-- `cores/**/*.py` - Python files in cores/
+- `modules/**/*.py` - Python files in modules/
 - `**/*.agent.md` - All agent definition files
-- `**/init.yaml` - All init.yaml files
-- `cores/**/README.md, managers/**/README.md` - Multiple patterns (comma-separated)
+- `modules/**/README.md` - Multiple patterns (comma-separated)
 
 ## Naming Convention
 - Use lowercase snake_case ending in `.instructions.md` (e.g., `logger_util.instructions.md`).
-- Place in `cores/instruction_core/data/instructions/`.
+- Place in `modules/dev/instruction_core/data/instructions/`.
 
 ## Best Practices
 - Be specific with `applyTo` patterns to avoid over-matching.

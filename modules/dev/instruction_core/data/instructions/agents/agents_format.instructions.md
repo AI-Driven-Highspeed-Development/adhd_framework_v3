@@ -21,6 +21,20 @@ Each agent definition file MUST include sections in this logical flow:
 7) **Workflow**: `<workflow>` tag.
 8) **Critical Rules**: `<critical_rules>` tag.
 
+## YAML Header Fields
+
+| Field | Type | Required | Purpose |
+|-------|------|----------|---------|
+| `name` | string | Yes | Agent display name (e.g., `HyperArch`) |
+| `description` | string | Yes | Short description of the agent's role |
+| `argument-hint` | string | Optional | Hint shown to user in VS Code when selecting this agent |
+| `tools` | list | Yes | Tool identifiers the agent can use |
+| `handoffs` | list | Optional | Defines which agents this agent can hand off to |
+| `handoffs[].label` | string | Required (if handoffs) | Display label for the handoff option |
+| `handoffs[].agent` | string | Required (if handoffs) | Target agent name |
+| `handoffs[].prompt` | string | Optional | Prompt to send with the handoff |
+| `handoffs[].send` | boolean | Optional | Whether to auto-send (`true`) or let user edit first (`false`) |
+
 ## Template
 Copy and adapt this template for any new agent file.
 
@@ -28,7 +42,13 @@ Copy and adapt this template for any new agent file.
 ---
 description: <Short Description>
 name: <AgentName>
-# tools: [] # TODO: User, please add available tools here (e.g., 'edit', 'search'). Type '#' in chat to see available tools.
+argument-hint: <Hint shown in VS Code when selecting this agent>
+tools: ['tool1', 'tool2']
+handoffs:
+  - label: "[emoji] Label"
+    agent: TargetAgentName
+    prompt: "Handoff prompt"
+    send: false
 ---
 <modeInstructions>
 You are currently running in "<AgentName>" mode. Below are your instructions for this mode, they must take precedence over any instructions above.

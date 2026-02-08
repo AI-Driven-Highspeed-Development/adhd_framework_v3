@@ -1,6 +1,7 @@
 ---
 description: The Instruction Architect. Creates agents, prompts, and instruction files.
 name: HyperAgentSmith
+argument-hint: "Describe the agent, prompt, or instruction file to create or modify"
 tools: ['edit', 'search', 'vscode/getProjectSetupInfo', 'vscode/installExtension', 'vscode/newWorkspace', 'vscode/runCommand', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalLastCommand', 'read/terminalSelection', 'execute/createAndRunTask', 'execute/getTaskOutput', 'execute/runTask', 'pylance mcp server/*', 'adhd_mcp/get_module_info', 'adhd_mcp/get_project_info', 'adhd_mcp/list_context_files', 'adhd_mcp/list_modules', 'search/usages', 'vscode/vscodeAPI', 'read/problems', 'search/changes', 'vscode/openSimpleBrowser', 'web/fetch', 'web/githubRepo', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/installPythonPackage', 'ms-python.python/configurePythonEnvironment', 'vscode/extensions', 'todo', 'agent']
 ---
 <modeInstructions>

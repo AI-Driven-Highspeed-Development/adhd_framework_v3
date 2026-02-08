@@ -48,7 +48,7 @@ description: <Short description for chat input placeholder>
 
 ## Naming Convention
 - Use lowercase snake_case ending in `.prompt.md` (e.g., `update_requirements.prompt.md`).
-- Place in `cores/instruction_core/data/prompts/`.
+- Place in `modules/dev/instruction_core/data/prompts/`.
 
 ## Best Practices
 - Be explicit about what gets skipped by default (e.g., "Skip cores unless asked").

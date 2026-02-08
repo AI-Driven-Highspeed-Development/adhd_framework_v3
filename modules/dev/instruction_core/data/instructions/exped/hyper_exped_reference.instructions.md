@@ -1,5 +1,5 @@
 ---
-applyTo: "cores/instruction_core/data/agents/hyper_expedition.adhd.agent.md"
+applyTo: "modules/dev/instruction_core/data/agents/hyper_expedition.adhd.agent.md"
 ---
 
 # HyperExped Reference Guide
@@ -54,7 +54,7 @@ HyperExped must **dynamically discover** what special files the target uses. Do 
 | C#/.NET | `*.csproj`, `*.sln` | `Directory.Build.props`, `Program.cs`, `appsettings.json` |
 | Java/Kotlin | `build.gradle`, `pom.xml` | `settings.gradle`, `src/main/java/`, `Application.kt` |
 | Unity | `ProjectSettings/ProjectSettings.asset` | `Packages/manifest.json`, `Assets/`, `Editor/`, `*.asmdef` |
-| ADHD Framework | `init.yaml`, `.config_template` | `refresh.py`, `data/` — **triggers "Why are you here?" check** |
+| ADHD Framework | `pyproject.toml`, `.config_template` | `refresh.py`, `data/` — **triggers "Why are you here?" check** |
 
 ## ADHD Concept → Target Mapping
 
@@ -62,7 +62,7 @@ HyperExped must **dynamically discover** what special files the target uses. Do 
 |--------------|-----------|---------------|-------|------|-----|
 | `utils/` | `src/utils/` | `lib/utils/` | `Assets/Scripts/Utils/` | `src/utils/` | `internal/utils/` |
 | `managers/` | `src/composables/` | `hooks/` or `services/` | `Assets/Scripts/Managers/` | `src/services/` | `internal/services/` |
-| `cores/` | `src/core/` | `lib/core/` | `Assets/Scripts/Core/` | `src/core/` | `pkg/core/` |
+| `modules/dev/` | `src/core/` | `lib/core/` | `Assets/Scripts/Core/` | `src/core/` | `pkg/core/` |
 | `playground/` | `playground/` | `examples/` | `Assets/Examples/` | `examples/` | `examples/` |
 
 > ⚠️ **These are GUIDANCE, not prescription.** Observe actual target structure first. If Vue3 project uses `helpers/`, export to `helpers/`.
@@ -79,7 +79,7 @@ HyperExped must **dynamically discover** what special files the target uses. Do 
 ## Edge Cases
 
 ### Case: ADHD-to-ADHD Export
-If target has `init.yaml` + `cores/instruction_core/`:
+If target has `pyproject.toml` with `[tool.adhd]` + `modules/dev/instruction_core/`:
 ```
 🤨 HOLD UP — TARGET IS ALREADY AN ADHD PROJECT
 

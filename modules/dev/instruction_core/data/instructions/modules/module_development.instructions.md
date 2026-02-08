@@ -24,15 +24,13 @@ Before writing or modifying module code, READ these instruction files:
 
 - Templates exist for a reason—use them.
 
-### Path Handling (MANDATORY)
-Every `__init__.py` and `refresh.py` MUST include at the top:
+### Path Handling
+All imports use package imports via uv editable installs. No `sys.path.insert()` needed:
 ```python
-import os
-import sys
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.getcwd()
-sys.path.insert(0, project_root)
+# v3 pattern: direct package imports
+from logger_util import Logger
+from config_manager import ConfigManager
+from exceptions_core import ADHDError
 ```
 
 ## Anti-Hallucination Rules
@@ -48,12 +46,11 @@ Every module MUST include these core files:
 
 | File | Purpose |
 |:---|:---|
-| `__init__.py` | Exports, path setup, auto-refresh triggers |
-| `init.yaml` | Module metadata: name, version, description, requirements, testing scope |
+| `__init__.py` | Exports, package entry point |
+| `pyproject.toml` | Module metadata: name, version, dependencies, `[tool.adhd]` layer/mcp config |
 | `refresh.py` | Re-runnable setup logic (register configs, CLI, etc.) |
 | `README.md` | Human-readable documentation |
 | `.config_template` | Default config schema (optional) |
-| `requirements.txt` | PyPI dependencies ONLY (not ADHD modules) |
 | `<name>.instructions.md` | AI context for this module (optional but recommended) |
 | `data/` | Module-specific data files (optional) |
 | `tests/` | Unit tests (pytest). **Optional** for <200 LOC, recommended for complex modules. Run with `pytest <module>/tests/`. |
@@ -78,7 +75,7 @@ See `testing_folders.instructions.md` for full decision tree.
 
 ## Verification Checklist
 Before marking module work complete:
-- [ ] Path handling in `__init__.py` and `refresh.py`
+- [ ] Using package imports (no `sys.path.insert`)
 - [ ] Using `Logger`, not `print()`
 - [ ] Using `ConfigManager` for paths/config
 - [ ] Using `ADHDError` for operational errors

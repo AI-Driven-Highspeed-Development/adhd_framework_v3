@@ -30,17 +30,14 @@ Each README MUST include sections in this exact order (omit a section only if tr
 - Prefer code over prose where helpful.
 
 ## Import rules for examples
-- Cores: prefer `from cores.<module_name> import <ExportedClass>` if `__init__.py` exports it; otherwise import from the implementation file (e.g., `from cores.<module_name>.<file> import Class`).
-- Managers: prefer `from managers.<module_name> import Class` if exported; otherwise `from managers.<module_name>.<module_name> import Class`.
-- Utils: same rule; prefer top-level exports if present.
-- Mcps/Plugins: follow the package’s export; if none, import the primary class/function from its implementation file.
-
-When in doubt, check `__init__.py` for `__all__` or explicit exports. Avoid star imports.
+- Use package imports: `from <package_name> import <ExportedClass>` (e.g., `from logger_util import Logger`).
+- Check `__init__.py` for `__all__` or explicit exports.
+- Avoid star imports.
 
 ## Requirements guidance
-- Module-level `requirements.txt` MUST list only dependencies specific to that module.
+- All dependencies (ADHD modules and PyPI packages) are declared in `pyproject.toml` under `[project].dependencies`.
+- ADHD workspace dependencies are resolved via `[tool.uv.sources]` in the root workspace.
 - No version pins unless a strict version is required to avoid known breakage.
-- Root-level `requirements.txt` may include shared deps used across modules.
 
 ## Cross-linking
 - In “See also”, reference sibling modules by human name (e.g., “YAML Reading Core”, “Temp Files Manager”, “GitHub API Core”).
@@ -107,7 +104,7 @@ Notes
 - Sections follow the required order.
 - Quickstart imports are correct and runnable.
 - API section reflects current public surface.
-- Requirements match module `requirements.txt`; no version pins unless necessary.
+- Requirements match module `pyproject.toml` dependencies; no version pins unless necessary.
 - Module structure matches actual files.
 - “See also” lists 2–4 relevant modules.
 

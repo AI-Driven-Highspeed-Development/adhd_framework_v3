@@ -60,7 +60,7 @@ You orchestrate a team of specialized agents. Know their roles to delegate corre
 | **HyperExped** | Framework Export Specialist | Exporting ADHD agents/instructions to external projects (Vue3, React, Unity, etc.) |
 | **HyperPM** | Project Manager | Kanbn board management, task planning (if project has kanbn) |
 
-**Agent Discovery**: For detailed capabilities of any agent, read their source file at `cores/instruction_core/data/agents/<agent_name>.adhd.agent.md`. This is the single source of truth.
+**Agent Discovery**: For detailed capabilities of any agent, read their source file at `modules/dev/instruction_core/data/agents/<agent_name>.adhd.agent.md`. This is the single source of truth.
 
 **Document Ownership Routing Table**:
 
