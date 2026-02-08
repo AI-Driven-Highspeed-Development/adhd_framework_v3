@@ -1,8 +1,320 @@
 {
-  "same_key": {
-    "module_name": "same_key",
-    "short_name": null,
-    "description": "From thread 49",
-    "commands": []
+  "flow_core": {
+    "module_name": "flow_core",
+    "short_name": "flow",
+    "description": "Flow language compiler - tokenize, parse, resolve, compile, graph, validate",
+    "commands": [
+      {
+        "name": "tokenize",
+        "help": "Tokenize a Flow file and display tokens",
+        "handler": "flow_core.flow_cli:tokenize_command",
+        "args": [
+          {
+            "name": "file",
+            "help": "Path to the .flow file",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--verbose",
+            "help": "Show detailed token info",
+            "short": "-v",
+            "type": "str",
+            "required": false,
+            "action": "store_true"
+          }
+        ]
+      },
+      {
+        "name": "parse",
+        "help": "Parse a Flow file and show AST structure",
+        "handler": "flow_core.flow_cli:parse_command",
+        "args": [
+          {
+            "name": "file",
+            "help": "Path to the .flow file",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--verbose",
+            "help": "Show detailed AST info",
+            "short": "-v",
+            "type": "str",
+            "required": false,
+            "action": "store_true"
+          }
+        ]
+      },
+      {
+        "name": "resolve",
+        "help": "Resolve a Flow file and show resolved structure",
+        "handler": "flow_core.flow_cli:resolve_command",
+        "args": [
+          {
+            "name": "file",
+            "help": "Path to the .flow file",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--verbose",
+            "help": "Show detailed resolution info",
+            "short": "-v",
+            "type": "str",
+            "required": false,
+            "action": "store_true"
+          }
+        ]
+      },
+      {
+        "name": "compile",
+        "help": "Compile a Flow file to Markdown",
+        "handler": "flow_core.flow_cli:compile_command",
+        "args": [
+          {
+            "name": "file",
+            "help": "Path to the .flow file",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--output",
+            "help": "Output file path",
+            "short": "-o",
+            "type": "str",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "graph",
+        "help": "Export dependency graph (DOT, JSON, Mermaid)",
+        "handler": "flow_core.flow_cli:graph_command",
+        "args": [
+          {
+            "name": "file",
+            "help": "Path to the .flow file",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--format",
+            "help": "Output format",
+            "short": "-f",
+            "type": "str",
+            "required": false,
+            "default": "mermaid",
+            "choices": [
+              "dot",
+              "json",
+              "mermaid"
+            ]
+          },
+          {
+            "name": "--tier",
+            "help": "Visibility tier (0=structural, 1=detailed)",
+            "short": "-t",
+            "type": "str",
+            "required": false,
+            "default": "0",
+            "choices": [
+              "0",
+              "1"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "validate",
+        "help": "Validate a Flow file with multi-error reporting",
+        "handler": "flow_core.flow_cli:validate_unused_command",
+        "args": [
+          {
+            "name": "file",
+            "help": "Path to the .flow file",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--warn-unused",
+            "help": "Warn about nodes defined but never referenced (dead code)",
+            "type": "str",
+            "required": false,
+            "action": "store_true"
+          }
+        ]
+      },
+      {
+        "name": "inspect",
+        "help": "Inspect a specific node's structure with optional slot details",
+        "handler": "flow_core.flow_cli:inspect_command",
+        "args": [
+          {
+            "name": "file",
+            "help": "Path to the .flow file",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "node",
+            "help": "Node name to inspect (without @)",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--slots",
+            "help": "Show detailed slot information",
+            "short": "-s",
+            "type": "str",
+            "required": false,
+            "action": "store_true"
+          }
+        ]
+      },
+      {
+        "name": "debug",
+        "help": "Debug command for tracing slot mutations",
+        "handler": "flow_core.flow_cli:debug_command",
+        "args": [
+          {
+            "name": "file",
+            "help": "Path to the .flow file",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--trace-slots",
+            "help": "Trace slot mutations and insertions",
+            "type": "str",
+            "required": false,
+            "action": "store_true"
+          }
+        ]
+      },
+      {
+        "name": "impact",
+        "help": "Show all nodes affected if a given node changes",
+        "handler": "flow_core.flow_cli:impact_command",
+        "args": [
+          {
+            "name": "file",
+            "help": "Path to the .flow file",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "node",
+            "help": "Node name to analyze impact for (without @)",
+            "type": "str",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "usages",
+        "help": "Find all references to a node across files",
+        "handler": "flow_core.flow_cli:usages_command",
+        "args": [
+          {
+            "name": "file",
+            "help": "Path to the .flow file",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "node",
+            "help": "Node name to find usages for (without @)",
+            "type": "str",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "rename",
+        "help": "Rename a node across all files (dry-run by default)",
+        "handler": "flow_core.flow_cli:rename_command",
+        "args": [
+          {
+            "name": "file",
+            "help": "Path to the .flow file",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "old_id",
+            "help": "Current node name (without @)",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "new_id",
+            "help": "New node name (without @)",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--apply",
+            "help": "Actually apply the rename (default is dry-run)",
+            "type": "str",
+            "required": false,
+            "action": "store_true"
+          }
+        ]
+      },
+      {
+        "name": "stats",
+        "help": "Show complexity metrics for a Flow file",
+        "handler": "flow_core.flow_cli:stats_command",
+        "args": [
+          {
+            "name": "file",
+            "help": "Path to the .flow file",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--format",
+            "help": "Output format",
+            "short": "-f",
+            "type": "str",
+            "required": false,
+            "default": "json",
+            "choices": [
+              "json",
+              "table"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "lsp",
+        "help": "Start the FLOW Language Server Protocol (LSP) server",
+        "handler": "flow_core.flow_cli:lsp_command",
+        "args": [
+          {
+            "name": "--tcp",
+            "help": "Use TCP transport instead of stdio",
+            "type": "str",
+            "required": false,
+            "action": "store_true"
+          },
+          {
+            "name": "--host",
+            "help": "Host for TCP mode (default: 127.0.0.1)",
+            "type": "str",
+            "required": false,
+            "default": "127.0.0.1"
+          },
+          {
+            "name": "--port",
+            "help": "Port for TCP mode (default: 2087)",
+            "type": "int",
+            "required": false,
+            "default": 2087
+          }
+        ]
+      }
+    ]
   }
 }

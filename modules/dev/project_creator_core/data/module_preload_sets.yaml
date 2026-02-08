@@ -41,6 +41,8 @@ always:
     subdirectory: modules/dev/project_creator_core
   - repo: adhd
     subdirectory: modules/dev/uv_migrator_core
+  - repo: adhd
+    subdirectory: modules/dev/module_adder_core
   
   # CLI infrastructure
   - repo: adhd

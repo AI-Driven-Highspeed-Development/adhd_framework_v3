@@ -48,8 +48,8 @@ def main() -> None:
         
         # MCP server configuration
         mcp_key = "adhd_mcp"
-        module_path = "mcps.adhd_mcp.adhd_mcp"
-        
+        module_path = "adhd_mcp.adhd_mcp"
+    
         # Only add if not already present
         if mcp_key not in mcp_config["servers"]:
             mcp_config["servers"][mcp_key] = {
