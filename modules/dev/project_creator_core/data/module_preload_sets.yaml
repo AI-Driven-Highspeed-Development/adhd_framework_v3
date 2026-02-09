@@ -51,6 +51,8 @@ always:
   # Development tools
   - repo: adhd
     subdirectory: modules/dev/adhd_mcp
+  - repo: adhd
+    subdirectory: modules/dev/flow_core
 
 options:
   Default:
