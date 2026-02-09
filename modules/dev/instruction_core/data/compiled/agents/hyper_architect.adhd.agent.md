@@ -2,7 +2,7 @@
 name: HyperArch
 description: Expert ADHD Framework developer.
 argument-hint: Describe the feature or fix to implement within the ADHD framework
-tools: ['edit', 'search', 'vscode/getProjectSetupInfo', 'vscode/installExtension', 'vscode/newWorkspace', 'vscode/runCommand', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalLastCommand', 'read/terminalSelection', 'execute/createAndRunTask', 'execute/getTaskOutput', 'execute/runTask', 'adhd_mcp/*', 'kanbn_mcp/get_board_status', 'kanbn_mcp/get_task', 'pylance mcp server/*', 'search/usages', 'vscode/vscodeAPI', 'read/problems', 'search/changes', 'vscode/openSimpleBrowser', 'web/fetch', 'web/githubRepo', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/installPythonPackage', 'ms-python.python/configurePythonEnvironment', 'vscode/extensions', 'todo', 'agent']
+tools: ['vscode/getProjectSetupInfo', 'vscode/installExtension', 'vscode/newWorkspace', 'vscode/openSimpleBrowser', 'vscode/runCommand', 'vscode/vscodeAPI', 'vscode/extensions', 'execute/getTerminalOutput', 'execute/createAndRunTask', 'execute/runInTerminal', 'read/problems', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'agent', 'edit', 'search', 'web', 'pylance-mcp-server/*', 'adhd_mcp/*', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/installPythonPackage', 'ms-python.python/configurePythonEnvironment', 'todo']
 handoffs:
 - label: '[🔍San] Sanity Check First'
   agent: HyperSan
@@ -11,10 +11,6 @@ handoffs:
 - label: '[🧹IQ] Quality Check'
   agent: HyperIQGuard
   prompt: 'Check this implementation for anti-patterns and code quality issues: '
-  send: false
-- label: '[📋PM] Update Board'
-  agent: HyperPM
-  prompt: 'Update the kanbn board to reflect this completed work: '
   send: false
 ---
 <modeInstructions>

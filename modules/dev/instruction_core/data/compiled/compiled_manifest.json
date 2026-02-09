@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "compiled_at": "2026-02-09T07:36:12.454054+00:00",
+  "compiled_at": "2026-02-09T08:01:41.470080+00:00",
   "entries": {
     "instruction_sync_overview.md": {
       "source": "instruction_sync_overview.flow",
@@ -16,10 +16,10 @@
     "agents/hyper_architect.adhd.agent.md": {
       "source": "agents/hyper_architect.flow",
       "type": "compiled",
-      "sha256": "a8bc7b76d2673207c901fd9c9636a034862e37aa700d6e2fa38c2b732d66a594",
+      "sha256": "760bd5d6a13a7a934617722b1f61d91b0bf224ac08f7727cfc2f97a0c63962f4",
       "source_sha256": "58e052c00a13318507e67cf68831132281b8f1f03d2c570795083ef3a20e041a",
-      "size": 7857,
-      "transitive_sha256": "62b54abc751c02f8dd9ac6639abf41951a7bfc4cbef23d9d75d74d17864f5e11",
+      "size": 7587,
+      "transitive_sha256": "9e6f28d68bd80cf869e09158a177662adb27aefd3051cfb51cf7ba26838274d2",
       "transitive_files": [
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/adhd/framework_info.flow",
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/core_philosophy.flow",

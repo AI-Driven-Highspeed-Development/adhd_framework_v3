@@ -1,9 +1,0 @@
-03:26:32 I ConfigTemplate: Starting configuration template processing...
-03:26:32 W ModulesController: [ModuleIssueCode.MISSING_REPO_URL] instruction_core: Module is missing 'repo_url' in pyproject.toml. Please add a canonical repository URL under [project.urls].Repository. (file: cores/instruction_core/pyproject.toml)
-03:26:32 W ModulesController: [ModuleIssueCode.MISSING_REPO_URL] config_manager: Module is missing 'repo_url' in pyproject.toml. Please add a canonical repository URL under [project.urls].Repository. (file: managers/config_manager/pyproject.toml)
-03:26:32 I ConfigTemplate: Successfully saved 14 module configurations
-03:26:32 I ConfigTemplate: Configuration processing complete!
-03:26:32 I ConfigTemplate: Modules processed: 14
-03:26:32 I ModuleCreatorInit: Module templates ensured at: project/data/module_creator_core/module_templates.yaml
-✅ MCP server module imports OK
-Tools: ['get_project_info', 'list_modules', 'get_module_info', 'create_module', 'list_context_files', 'git_modules']
