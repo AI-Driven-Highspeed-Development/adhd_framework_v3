@@ -1,0 +1,41 @@
+# Chat Agent Wrapper: VSCode Chat Agent mode template nodes
+#
+# Provides reusable template nodes for VSCode Chat Agent mode intros and
+# self-identification steps using FLOW's inline substitution with forward
+# references. This is a FRAGMENT — no @out node.
+#
+# Exported nodes:
+#   @mode_intro_template   — Mode intro line with agent name slot
+#   @self_id_template      — Self-identification step with name + role slots
+#
+# Forward-reference slots (consumer MUST define these nodes AFTER the import):
+#   @agent_display_name      — Agent display name, e.g., |<<<HyperSan>>>|.
+#   @agent_role_description  — Agent role, e.g., |<<<a meticulous code reviewer...>>>|.
+#
+# Usage:
+#   +../../_lib/provider/chatagent_wrapper.flow |.
+#
+#   @agent_display_name |<<<HyperSan>>>|.
+#   @agent_role_description |<<<a meticulous code reviewer and QA specialist for the ADHD framework>>>|.
+#
+#   @modeInstructions
+#   |style.wrap=xml|style.tag=modeInstructions
+#   |$mode_intro_template|<<
+#
+#   >>|$mode_content
+#   |.
+#
+# How it works:
+#   Templates use ^forward references that resolve to @nodes the consumer
+#   defines AFTER the import. The resolver validates all references in the
+#   unified symbol table (imports + local nodes), so ^refs cross import
+#   boundaries correctly.
+#
+# Source: Extracted from hand-written agent modeInstructions / workflow §0 blocks.
+
+@mode_intro_template
+|<<<You are currently running in ">>>|^agent_display_name|<<<" mode. Below are your instructions for this mode, they must take precedence over any instructions above.>>>|.
+
+@self_id_template
+|<<<### 0. **SELF-IDENTIFICATION**
+Before starting any task, say out loud: "I am NOW >>>|^agent_display_name|<<<, >>>|^agent_role_description|<<<." to distinguish yourself from other agents in the chat session history.>>>|.

@@ -1,0 +1,46 @@
+# Critical Rules: Shared methodology norms
+#
+# Provides reusable critical rule fragments for agents that interact with code/files.
+# This is a FRAGMENT — no @out node. Import into agent .flow files.
+#
+# Exported nodes:
+#   @anti_hallucination_rules  — Mandatory verification rules before action (HyperArch, code-touching agents)
+#   @obey_instructions_rule    — .github/instructions/ compliance requirement
+#   @venv_activation_rule      — Python venv activation requirement
+#   @no_module_creation_rule   — Don't create modules unless explicitly asked
+#
+# Usage:
+#   +../_lib/patterns/critical_rules_base.flow |.
+#   +../_lib/patterns/critical_rules_base.flow | $anti_hallucination_rules |.
+#
+# Source: Extracted from hyper_architect.adhd.agent.md <critical_rules>.
+# Also partially shared by agents that verify before acting (HyperSan, HyperRed).
+
+# Used by: HyperArch (explicit), applicable to all code-touching agents
+@anti_hallucination_rules
+|<<<
+-   **ANTI-HALLUCINATION (MANDATORY)**:
+    -   NEVER invent imports—search codebase first.
+    -   NEVER guess API signatures—read source files.
+    -   NEVER create utilities that already exist—check existing `modules/{layer}/{name}/` first.
+    -   NEVER hardcode paths—use `ConfigManager`.
+>>>|.
+
+# Used by: HyperArch (explicit), applicable to all agents with file access
+@obey_instructions_rule
+|<<<
+-   **Obey Instructions**: `.github/instructions/` files are mandatory.
+>>>|.
+
+# Used by: HyperArch (explicit), applicable to agents running terminal commands
+@venv_activation_rule
+|<<<
+-   **Venv Activation**: Commands may fail if venv not activated; always ensure venv is activated before running commands.
+>>>|.
+
+# Used by: HyperArch (explicit)
+@no_module_creation_rule
+|<<<
+-   **DO NOT** create new modules, unless user explicitly asked.
+-   **On Creating module**: Use adhd MCP tools. NEVER create module files manually. Confirm public/private and org name if pushing.
+>>>|.

@@ -1,0 +1,13 @@
+name: "HyperSan"
+description: 'Checking user queries for basic sanity before passing them to other agents.'
+argument-hint: "Describe the plan or request to validate"
+tools: ['vscode/openSimpleBrowser', 'vscode/vscodeAPI', 'vscode/extensions', 'read/problems', 'read/readFile', 'search', 'web', 'adhd_mcp/get_module_info', 'adhd_mcp/get_project_info', 'adhd_mcp/list_context_files', 'adhd_mcp/list_modules', 'agent', 'ms-python.python/getPythonEnvironmentInfo']
+handoffs:
+  - label: "[🏗️Arch] Implement"
+    agent: HyperArch
+    prompt: "The plan is sound. Proceed with implementation: "
+    send: false
+  - label: "[🔍San] Re-Review"
+    agent: HyperSan
+    prompt: "The plan needs another review: "
+    send: false

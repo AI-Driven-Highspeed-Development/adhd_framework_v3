@@ -1,0 +1,41 @@
+# ADHD Framework Information: Project context reference
+#
+# Provides the <ADHD_framework_information> section with variants for different urgency levels.
+# This is a FRAGMENT — no @out node. Import into agent .flow files.
+#
+# Exported nodes:
+#   @adhd_framework_info_mandatory — "Read the ADHD framework's..." (HyperArch)
+#   @adhd_framework_info_optional  — "If needed, read the ADHD framework's..." (HyperSan, HyperDream, HyperIQGuard, HyperRed)
+#   @adhd_framework_info_must      — "MUST read the ADHD framework's..." (HyperOrch)
+#
+# Usage:
+#   +../_lib/adhd/framework_info.flow |.
+#   +../_lib/adhd/framework_info.flow | $adhd_framework_info_mandatory |.
+#
+# Source: Extracted from all 8 hand-written agent files.
+# The <ADHD_framework_information> XML tag is preserved for AI gas-lighting
+# (makes the LLM treat the section as a structured directive).
+
+# Used by: HyperArch
+@adhd_framework_info_mandatory
+|<<<
+<ADHD_framework_information>
+Read the ADHD framework's core philosophy and project structure in `.github/instructions/adhd_framework_context.instructions.md` before proceeding.
+</ADHD_framework_information>
+>>>|.
+
+# Used by: HyperSan, HyperDream, HyperIQGuard, HyperRed
+@adhd_framework_info_optional
+|<<<
+<ADHD_framework_information>
+If needed, read the ADHD framework's core philosophy and project structure in `.github/instructions/adhd_framework_context.instructions.md` before proceeding.
+</ADHD_framework_information>
+>>>|.
+
+# Used by: HyperOrch
+@adhd_framework_info_must
+|<<<
+<ADHD_framework_information>
+MUST read the ADHD framework's core philosophy and project structure in `.github/instructions/adhd_framework_context.instructions.md` before starting to do anything.
+</ADHD_framework_information>
+>>>|.

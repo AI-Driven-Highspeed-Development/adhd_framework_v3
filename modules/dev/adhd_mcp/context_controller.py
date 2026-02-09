@@ -6,8 +6,12 @@ Handles scanning and listing of instructions, agents, and prompts.
 
 from __future__ import annotations
 
+import json
+import re
 from pathlib import Path
 from typing import Any
+
+import yaml
 
 from logger_util import Logger
 from modules_controller_core import ModulesController
@@ -165,3 +169,94 @@ class ContextController:
                     "source": source,
                 })
         return files
+
+    def get_compilation_manifest(self) -> dict[str, Any]:
+        """Read the flow compilation manifest from instruction_core.
+
+        Returns:
+            Dict with manifest data or error if manifest doesn't exist.
+        """
+        try:
+            module = self.modules_controller.get_module_by_name("instruction_core")
+            if not module:
+                return {
+                    "success": False,
+                    "error": "module_not_found",
+                    "message": "instruction_core module not found",
+                }
+
+            manifest_path = module.path / "data" / "compiled" / "compiled_manifest.json"
+            if not manifest_path.exists():
+                return {
+                    "success": False,
+                    "error": "manifest_not_found",
+                    "message": "No compilation manifest found. Run 'adhd compile' or 'adhd refresh --full' first.",
+                }
+
+            content = manifest_path.read_text(encoding="utf-8")
+            manifest = json.loads(content)
+            manifest["success"] = True
+            return manifest
+        except (json.JSONDecodeError, OSError) as e:
+            return {
+                "success": False,
+                "error": "read_error",
+                "message": f"Failed to read manifest: {e}",
+            }
+
+    def list_skills(self) -> dict[str, Any]:
+        """List available skills with name and description from SKILL.md frontmatter.
+
+        Scans the skills directory in instruction_core and parses each
+        skill's SKILL.md YAML frontmatter for name and description.
+
+        Returns:
+            Dict with count and list of skill dicts (name, description, path).
+        """
+        try:
+            module = self.modules_controller.get_module_by_name("instruction_core")
+            if not module:
+                return {
+                    "success": False,
+                    "error": "module_not_found",
+                    "message": "instruction_core module not found",
+                }
+
+            skills_dir = module.path / "data" / "skills"
+            if not skills_dir.exists():
+                return {"success": True, "count": 0, "skills": []}
+
+            skills: list[dict[str, str]] = []
+            for skill_dir in sorted(skills_dir.iterdir()):
+                if not skill_dir.is_dir():
+                    continue
+
+                skill_md = skill_dir / "SKILL.md"
+                name = skill_dir.name
+                description = ""
+
+                if skill_md.exists():
+                    try:
+                        content = skill_md.read_text(encoding="utf-8")
+                        match = re.match(r"^---\n(.*?)\n---", content, re.DOTALL)
+                        if match:
+                            frontmatter = yaml.safe_load(match.group(1))
+                            if isinstance(frontmatter, dict):
+                                name = frontmatter.get("name", name)
+                                description = frontmatter.get("description", "")
+                    except (yaml.YAMLError, OSError) as e:
+                        self.logger.warning(f"Failed to parse SKILL.md in {skill_dir.name}: {e}")
+
+                skills.append({
+                    "name": name,
+                    "description": description,
+                    "path": str(skill_dir.relative_to(self.root_path)),
+                })
+
+            return {"success": True, "count": len(skills), "skills": skills}
+        except Exception as e:
+            return {
+                "success": False,
+                "error": "scan_error",
+                "message": str(e),
+            }

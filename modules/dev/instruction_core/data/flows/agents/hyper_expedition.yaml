@@ -1,0 +1,17 @@
+name: "HyperExped"
+description: "Framework Export Specialist. Exports ADHD agents and instructions to external projects (Vue3, React, Unity, any framework)."
+argument-hint: "Provide the path to the external project to export ADHD agents/instructions to"
+tools: ['read/readFile', 'search', 'adhd_mcp/list_context_files', 'adhd_mcp/get_module_info', 'adhd_mcp/list_modules', 'context7/*', 'agent', 'todo']
+handoffs:
+  - label: "[🔍San] Validate Export Plan"
+    agent: HyperSan
+    prompt: "Validate this export plan for the external project: "
+    send: false
+  - label: "[💭Dream] Revise Plan"
+    agent: HyperDream
+    prompt: "Revise this export plan based on feedback: "
+    send: false
+  - label: "[🛠️Smith] Implement Export"
+    agent: HyperAgentSmith
+    prompt: "Create exported agents/instructions per this approved plan: "
+    send: false

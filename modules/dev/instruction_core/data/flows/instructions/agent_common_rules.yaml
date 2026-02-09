@@ -1,0 +1,2 @@
+description: Common rules and semantic definitions for all ADHD Framework agents
+applyTo: "**/*.adhd.agent.md"

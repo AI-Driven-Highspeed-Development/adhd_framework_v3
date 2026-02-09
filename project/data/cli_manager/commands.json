@@ -316,5 +316,215 @@
         ]
       }
     ]
+  },
+  "adhd_mcp": {
+    "module_name": "adhd_mcp",
+    "short_name": "adhd",
+    "description": "ADHD framework project management CLI",
+    "commands": [
+      {
+        "name": "info",
+        "help": "Get project-level metadata from root init.yaml",
+        "handler": "mcps.adhd_mcp.adhd_cli:project_info_cmd",
+        "args": []
+      },
+      {
+        "name": "modules",
+        "help": "List discovered modules",
+        "handler": "mcps.adhd_mcp.adhd_cli:list_modules_cmd",
+        "args": [
+          {
+            "name": "--layers",
+            "help": "Comma-separated layers: foundation,runtime,dev",
+            "short": "-l",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--with-imports",
+            "help": "Include import analysis",
+            "short": "-i",
+            "type": "str",
+            "required": false,
+            "action": "store_true"
+          }
+        ]
+      },
+      {
+        "name": "module",
+        "help": "Get detailed info for a single module",
+        "handler": "mcps.adhd_mcp.adhd_cli:get_module_cmd",
+        "args": [
+          {
+            "name": "name",
+            "help": "Module name",
+            "type": "str",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "create",
+        "help": "Create a new module with scaffolding",
+        "handler": "mcps.adhd_mcp.adhd_cli:create_module_cmd",
+        "args": [
+          {
+            "name": "name",
+            "help": "Module name in snake_case",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "type",
+            "help": "Layer: foundation, runtime, dev",
+            "type": "str",
+            "required": false,
+            "choices": [
+              "foundation",
+              "runtime",
+              "dev"
+            ]
+          },
+          {
+            "name": "--create-repo",
+            "help": "Create GitHub repository",
+            "short": "-r",
+            "type": "str",
+            "required": false,
+            "action": "store_true"
+          },
+          {
+            "name": "--owner",
+            "help": "GitHub org/user for repo",
+            "short": "-o",
+            "type": "str",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "context",
+        "help": "List AI context files (instructions, agents, prompts)",
+        "handler": "mcps.adhd_mcp.adhd_cli:list_context_cmd",
+        "args": [
+          {
+            "name": "--file-type",
+            "help": "Filter by type: instruction, agent, prompt",
+            "short": "-t",
+            "type": "str",
+            "required": false,
+            "choices": [
+              "instruction",
+              "agent",
+              "prompt"
+            ]
+          },
+          {
+            "name": "--core-only",
+            "help": "Only show core files, exclude per-module files",
+            "type": "str",
+            "required": false,
+            "action": "store_true"
+          }
+        ]
+      },
+      {
+        "name": "compile",
+        "help": "Compile .flow files and generate manifest (no sync)",
+        "handler": "adhd_mcp.adhd_cli:compile_command",
+        "args": [
+          {
+            "name": "--force",
+            "help": "Force recompile all files, ignoring cache",
+            "short": "-f",
+            "type": "str",
+            "required": false,
+            "action": "store_true"
+          }
+        ]
+      },
+      {
+        "name": "git-status",
+        "help": "Get git status for modules",
+        "handler": "mcps.adhd_mcp.adhd_cli:git_status_cmd",
+        "args": [
+          {
+            "name": "--target-module",
+            "help": "Specific module name",
+            "short": "-m",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--layers",
+            "help": "Comma-separated layers: foundation,runtime,dev",
+            "short": "-l",
+            "type": "str",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "git-diff",
+        "help": "Get detailed git changes for modules",
+        "handler": "mcps.adhd_mcp.adhd_cli:git_diff_cmd",
+        "args": [
+          {
+            "name": "--target-module",
+            "help": "Specific module name",
+            "short": "-m",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--layers",
+            "help": "Comma-separated layers: foundation,runtime,dev",
+            "short": "-l",
+            "type": "str",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "git-pull",
+        "help": "Pull latest changes for modules",
+        "handler": "mcps.adhd_mcp.adhd_cli:git_pull_cmd",
+        "args": [
+          {
+            "name": "--target-module",
+            "help": "Specific module name",
+            "short": "-m",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "--layers",
+            "help": "Comma-separated layers: foundation,runtime,dev",
+            "short": "-l",
+            "type": "str",
+            "required": false
+          }
+        ]
+      },
+      {
+        "name": "git-push",
+        "help": "Commit and push changes for a module",
+        "handler": "mcps.adhd_mcp.adhd_cli:git_push_cmd",
+        "args": [
+          {
+            "name": "target_module",
+            "help": "Module name",
+            "type": "str",
+            "required": false
+          },
+          {
+            "name": "message",
+            "help": "Commit message",
+            "type": "str",
+            "required": false
+          }
+        ]
+      }
+    ]
   }
 }

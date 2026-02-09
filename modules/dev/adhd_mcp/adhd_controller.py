@@ -405,6 +405,50 @@ class AdhdController:
             include_modules=include_modules,
         )
 
+    # --- Tool 5b: get_compilation_manifest (delegates to ContextController) ---
+
+    def get_compilation_manifest(self) -> dict[str, Any]:
+        """Get the flow compilation manifest.
+
+        Returns:
+            Dict with manifest data or error if not found.
+        """
+        return self.context_controller.get_compilation_manifest()
+
+    # --- Tool 5c: list_skills (delegates to ContextController) ---
+
+    def list_skills(self) -> dict[str, Any]:
+        """List available skills with metadata.
+
+        Returns:
+            Dict with count and list of skill dicts.
+        """
+        return self.context_controller.list_skills()
+
+    # --- Tool 5d: compile_only ---
+
+    def compile_only(self, force: bool = False) -> dict[str, Any]:
+        """Compile .flow files and generate manifest without syncing.
+
+        Args:
+            force: If True, recompile everything ignoring cache.
+
+        Returns:
+            Dict with success flag and manifest data.
+        """
+        try:
+            from instruction_core import InstructionController
+
+            controller = InstructionController(root_path=self.root_path)
+            manifest = controller.compile_only(force=force)
+            return {"success": True, **manifest}
+        except Exception as e:
+            return {
+                "success": False,
+                "error": "compilation_error",
+                "message": str(e),
+            }
+
     # --- Tool 6: git_modules (delegates to GitController) ---
 
     def git_modules(

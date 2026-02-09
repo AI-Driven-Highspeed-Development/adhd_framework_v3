@@ -71,7 +71,7 @@ Every module MUST include these core files:
 
 **Rule**: If it should run in CI → `tests/`. If it's for humans to explore → `playground/`.
 
-See `testing_folders.instructions.md` for full decision tree.
+See the `testing` skill for full decision tree.
 
 ## Verification Checklist
 Before marking module work complete:

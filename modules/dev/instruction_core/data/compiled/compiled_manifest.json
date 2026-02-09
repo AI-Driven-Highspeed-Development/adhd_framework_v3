@@ -1,0 +1,145 @@
+{
+  "version": "1.1",
+  "compiled_at": "2026-02-09T07:36:12.454054+00:00",
+  "entries": {
+    "instruction_sync_overview.md": {
+      "source": "instruction_sync_overview.flow",
+      "type": "compiled",
+      "sha256": "a1059c7da969c9241d0030118ec499ef24056132e6e49ead3fefc044e15dc456",
+      "source_sha256": "45add225b16b9d079f850c6d2172ee028ab88c4049c82ec7803d2fb9e071eef8",
+      "size": 620,
+      "transitive_sha256": "45add225b16b9d079f850c6d2172ee028ab88c4049c82ec7803d2fb9e071eef8",
+      "transitive_files": [
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/instruction_sync_overview.flow"
+      ]
+    },
+    "agents/hyper_architect.adhd.agent.md": {
+      "source": "agents/hyper_architect.flow",
+      "type": "compiled",
+      "sha256": "a8bc7b76d2673207c901fd9c9636a034862e37aa700d6e2fa38c2b732d66a594",
+      "source_sha256": "58e052c00a13318507e67cf68831132281b8f1f03d2c570795083ef3a20e041a",
+      "size": 7857,
+      "transitive_sha256": "62b54abc751c02f8dd9ac6639abf41951a7bfc4cbef23d9d75d74d17864f5e11",
+      "transitive_files": [
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/adhd/framework_info.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/core_philosophy.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/critical_rules_base.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/specialist_awareness.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/stopping_rules_base.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_architect.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_architect.yaml"
+      ]
+    },
+    "agents/hyper_san_checker.adhd.agent.md": {
+      "source": "agents/hyper_san_checker.flow",
+      "type": "compiled",
+      "sha256": "d8a2392e3305c34c69afac73177c9717378a239c701cb5b6efc95ffaf46d307c",
+      "source_sha256": "c225ef68fed776283c65103e78de080f62aa2eb535b8bd17efb6af9a278d27fe",
+      "size": 6636,
+      "transitive_sha256": "13fb31b0f9aa92c6040e415f8eeb41520dce57bda9029b521cac6b2d777790dc",
+      "transitive_files": [
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/adhd/framework_info.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/core_philosophy.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/stopping_rules_base.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_san_checker.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_san_checker.yaml"
+      ]
+    },
+    "agents/hyper_iq_guard.adhd.agent.md": {
+      "source": "agents/hyper_iq_guard.flow",
+      "type": "compiled",
+      "sha256": "bb1996342958e251a0ff3ca0292409624867a3377dc11596fd00485bfd18353d",
+      "source_sha256": "6e210ef7cbdd2984639e99fbd458b6cb2f7d74e488d3a04d490f169a13d19e50",
+      "size": 6793,
+      "transitive_sha256": "e8dd53aabbfca634e7f17e75cc718247f7126d9c555539264fb134461834909f",
+      "transitive_files": [
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/adhd/framework_info.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/core_philosophy.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/stopping_rules_base.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_iq_guard.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_iq_guard.yaml"
+      ]
+    },
+    "agents/hyper_orchestrator.adhd.agent.md": {
+      "source": "agents/hyper_orchestrator.flow",
+      "type": "compiled",
+      "sha256": "0a4bd2bfedaf066db4f33f1d32e346295ce91ee9067e928cb9791f6035258663",
+      "source_sha256": "29d266bde0f288cdf1e2a63fccc7ca9e421cb4a507eb6ca04fe5cba613c5538a",
+      "size": 9497,
+      "transitive_sha256": "82e73494d1cf19f0416d7b8410158fcc74f16593902bac0a7971f25deb5ff4d2",
+      "transitive_files": [
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/adhd/framework_info.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/specialist_awareness.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_orchestrator.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_orchestrator.yaml"
+      ]
+    },
+    "agents/hyper_day_dreamer.adhd.agent.md": {
+      "source": "agents/hyper_day_dreamer.flow",
+      "type": "compiled",
+      "sha256": "cf61615dff3ae6b043aa52d2e9ce331d667a51ca2673fd7422494c094fce98c9",
+      "source_sha256": "da4260b38a7b681b6ef82934742d077e7cf7d2787667a1c2d1eecc8ad0659537",
+      "size": 9524,
+      "transitive_sha256": "efdf796debda755fbe5ea8e40cf36972caf7d887099b46fb6659caa79500abc9",
+      "transitive_files": [
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/core_philosophy.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/stopping_rules_base.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_day_dreamer.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_day_dreamer.yaml"
+      ]
+    },
+    "agents/hyper_red.adhd.agent.md": {
+      "source": "agents/hyper_red.flow",
+      "type": "compiled",
+      "sha256": "98ef4b841bee5b83b6a02e73806f5fa97bf83b120328c043881a886e2ea3e845",
+      "source_sha256": "463439548dd1182cf4acddde8c6cd12c3ca241653bd5cf85ba45573d35290e8a",
+      "size": 8610,
+      "transitive_sha256": "bf13402e361933ace73b43bca5b0457c9d677aaecd83d039f633fe2b6a1e1bd1",
+      "transitive_files": [
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/adhd/framework_info.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/stopping_rules_base.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_red.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_red.yaml"
+      ]
+    },
+    "agents/hyper_expedition.adhd.agent.md": {
+      "source": "agents/hyper_expedition.flow",
+      "type": "compiled",
+      "sha256": "5f7102fa2fd4610f3f050143a01b06fd69e213f47e125fe6d04bacfdbc6ffe02",
+      "source_sha256": "d9598032aac2c6430747efc0e2a8d91d9363fff5634109d704961410cfb88f7e",
+      "size": 4915,
+      "transitive_sha256": "e773f0b339c86ff1fe7edc3e46a812eae09197b011b8c4aeca81935520dd8249",
+      "transitive_files": [
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/stopping_rules_base.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_expedition.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_expedition.yaml"
+      ]
+    },
+    "agents/hyper_agent_smith.adhd.agent.md": {
+      "source": "agents/hyper_agent_smith.flow",
+      "type": "compiled",
+      "sha256": "868b209946de3b90fceeb0a2b166ac1ef759531ae8bdf0a5e8399dd879c7cb36",
+      "source_sha256": "7b47fbf655ec9ede73501037b8d2e2730aea000aca3aac199525a664da8b5d7c",
+      "size": 6909,
+      "transitive_sha256": "1944e146e8ebfd0ab2837cf6990090999b000537d1be9d0042edb1b5811e569b",
+      "transitive_files": [
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/core_philosophy.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/stopping_rules_base.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_agent_smith.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/agents/hyper_agent_smith.yaml"
+      ]
+    },
+    "instructions/agent_common_rules.instructions.md": {
+      "source": "instructions/agent_common_rules.flow",
+      "type": "compiled",
+      "sha256": "7e4b6ee9a2424f5f70af62d70c5d862f901af5731d4e1584951fe98bebe62bbc",
+      "source_sha256": "2c300809eddf8aa950bddec5c2de197cf64766b758ba146a9b388e6494adc0d2",
+      "size": 3340,
+      "transitive_sha256": "c1e982e1de9de3abdb18e546750bd335f66def49b527c7a4452bfb4d61f4e0cb",
+      "transitive_files": [
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/instructions/agent_common_rules.flow",
+        "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/instructions/agent_common_rules.yaml"
+      ]
+    }
+  }
+}

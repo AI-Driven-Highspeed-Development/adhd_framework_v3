@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -12,6 +14,7 @@ from exceptions_core import ADHDError
 from modules_controller_core import ModulesController
 from config_manager import ConfigManager
 from logger_util import Logger
+from flow_core import FlowController, FlowError
 
 
 # File type configurations: (pattern, subdirectory, label)
@@ -220,7 +223,433 @@ class InstructionController:
                 else:
                     self.logger.warning(f"Invalid tools format for agent '{agent_key}', expected list.")
 
-    def _sync_files_by_pattern(self, source_dir: Path, target_dir: Path, pattern: str, subdir: str, label: str) -> None:
+    def _load_existing_manifest(self) -> dict:
+        """Load existing compiled manifest for incremental compilation.
+
+        Returns:
+            Manifest dict if found and valid, empty dict otherwise.
+        """
+        manifest_path = self.official_source_path / "compiled" / "compiled_manifest.json"
+        if not manifest_path.exists():
+            return {}
+        try:
+            content = manifest_path.read_text(encoding="utf-8")
+            return json.loads(content)
+        except (json.JSONDecodeError, OSError) as e:
+            self.logger.warning(f"Failed to load existing manifest: {e}")
+            return {}
+
+    def _compute_transitive_hash(self, resolved_files: set[Path]) -> str:
+        """Compute SHA-256 over all resolved files' contents, sorted by path.
+
+        Produces a deterministic hash representing the combined state of all
+        files that participated in a flow compilation (entry + transitive imports).
+
+        Args:
+            resolved_files: Set of absolute file paths to hash.
+
+        Returns:
+            Hex digest of the combined SHA-256 hash, or empty string if no files.
+        """
+        if not resolved_files:
+            return ""
+        hasher = hashlib.sha256()
+        for file_path in sorted(resolved_files):
+            try:
+                hasher.update(file_path.read_bytes())
+            except OSError:
+                # Include path as bytes to force cache miss if file disappears
+                hasher.update(str(file_path).encode("utf-8"))
+        return hasher.hexdigest()
+
+    def _load_sidecar(self, sidecar_path: Path) -> Optional[dict]:
+        """Load and validate a sidecar `.yaml` file for a `.flow` file.
+
+        Sidecar files contain YAML frontmatter metadata (name, tools, handoffs,
+        etc.) that gets prepended to compiled Markdown output.
+
+        Args:
+            sidecar_path: Path to the sidecar `.yaml` file.
+
+        Returns:
+            Parsed YAML dict if valid, or ``None`` if the file doesn't exist
+            or contains invalid YAML.
+        """
+        if not sidecar_path.exists():
+            return None
+
+        try:
+            content = sidecar_path.read_text(encoding="utf-8")
+            data = yaml.safe_load(content)
+            if not isinstance(data, dict):
+                self.logger.warning(
+                    f"Sidecar {sidecar_path.name} must be a YAML mapping, got {type(data).__name__}. Skipping frontmatter."
+                )
+                return None
+            self.logger.debug(f"Loaded sidecar: {sidecar_path.name}")
+            return data
+        except yaml.YAMLError as e:
+            self.logger.warning(f"Failed to parse sidecar {sidecar_path.name}: {e}")
+            return None
+        except OSError as e:
+            self.logger.error(f"Failed to read sidecar {sidecar_path.name}: {e}")
+            return None
+
+    def _prepend_frontmatter(self, body: str, sidecar: dict) -> str:
+        """Prepend YAML frontmatter from sidecar metadata to compiled Markdown body.
+
+        Keys are serialized in the order they appear in the sidecar dict.
+        The ``tools`` key receives special handling: it is always serialized in
+        YAML flow style (``tools: ['tool1', 'tool2']``) so that the MCP
+        injection regex in ``_build_modified_content()`` can match it.
+
+        Args:
+            body: Compiled Markdown content from flow_core.
+            sidecar: Metadata dict loaded from sidecar ``.yaml`` file.
+
+        Returns:
+            Complete agent file content with ``---`` frontmatter prepended.
+        """
+        if not sidecar:
+            return body
+
+        lines: list[str] = []
+        for key, value in sidecar.items():
+            if key == "tools" and isinstance(value, list):
+                # Force flow-style list with single-quoted items for MCP injection compatibility
+                tools_items = ", ".join(f"'{t}'" for t in value)
+                lines.append(f"tools: [{tools_items}]")
+            else:
+                # Use yaml.dump for all other keys (block style, preserves order)
+                chunk = yaml.dump(
+                    {key: value},
+                    default_flow_style=False,
+                    allow_unicode=True,
+                    sort_keys=False,
+                    width=float('inf'),
+                )
+                lines.append(chunk.rstrip("\n"))
+
+        frontmatter = "\n".join(lines)
+        return f"---\n{frontmatter}\n---\n{body}"
+
+    def _get_output_rel_path(self, flow_file: Path, flows_dir: Path) -> str:
+        """Determine compiled output relative path for a flow source file.
+
+        Subdirectory determines output type:
+        - ``flows/agents/foo.flow`` → ``agents/foo.adhd.agent.md``
+        - ``flows/instructions/foo.flow`` → ``instructions/foo.instructions.md``
+        - ``flows/foo.flow`` (flat) → ``foo.md``
+
+        Args:
+            flow_file: Absolute path to the ``.flow`` source file.
+            flows_dir: Absolute path to the ``data/flows/`` directory.
+
+        Returns:
+            Relative output path suitable as key in compiled dict and manifest.
+        """
+        rel = flow_file.relative_to(flows_dir)
+        parts = rel.parts
+        stem = flow_file.stem
+
+        if len(parts) > 1 and parts[0] == "agents":
+            return str(Path("agents") / f"{stem}.adhd.agent.md")
+        elif len(parts) > 1 and parts[0] == "instructions":
+            return str(Path("instructions") / f"{stem}.instructions.md")
+        return f"{stem}.md"
+
+    def _compile_flows(self, force: bool = False) -> dict[str, str]:
+        """
+        Compile all .flow files from data/flows/ using FlowController.
+
+        Supports incremental compilation: if force=False, skips files whose
+        source SHA-256 matches the existing manifest entry.
+
+        Handles subdirectory-based output types:
+        - ``flows/agents/foo.flow`` → key ``agents/foo.adhd.agent.md``
+        - ``flows/foo.flow`` → key ``foo.md``
+
+        Args:
+            force: If True, recompile everything ignoring cache.
+
+        Returns:
+            Dict mapping output relative path to compiled Markdown content.
+            Empty dict if data/flows/ doesn't exist or no files found.
+        """
+        flows_dir = self.official_source_path / "flows"
+        if not flows_dir.exists():
+            self.logger.debug("No data/flows/ directory found, skipping flow compilation.")
+            return {}
+
+        all_flow_files = list(flows_dir.rglob("*.flow"))
+        # Filter out _lib/ fragments — shared imports, not standalone compilable files
+        flow_files = [
+            f for f in all_flow_files
+            if "_lib" not in f.relative_to(flows_dir).parts
+        ]
+        if not flow_files:
+            self.logger.debug("No compilable .flow files found in data/flows/.")
+            return {}
+
+        lib_count = len(all_flow_files) - len(flow_files)
+        if lib_count:
+            self.logger.debug(f"Filtered {lib_count} _lib/ fragment(s) from compilation.")
+        self.logger.info(f"Compiling {len(flow_files)} .flow file(s) from {flows_dir}")
+
+        # Load existing manifest for incremental compilation
+        existing_manifest: dict = {}
+        if not force:
+            existing_manifest = self._load_existing_manifest()
+
+        controller = FlowController(logger=self.logger)
+        compiled: dict[str, str] = {}
+        skipped = 0
+
+        # Transitive hash tracking — read by _generate_manifest()
+        self._transitive_data: dict[str, dict] = {}
+        # Source file mapping — maps output_rel_path to source .flow Path
+        self._source_map: dict[str, Path] = {}
+
+        for flow_file in flow_files:
+            stem = flow_file.stem
+            compiled_name = self._get_output_rel_path(flow_file, flows_dir)
+
+            # Incremental: check if source AND transitive deps haven't changed
+            if not force and existing_manifest:
+                try:
+                    source_hash = hashlib.sha256(flow_file.read_bytes()).hexdigest()
+                    entry = existing_manifest.get("entries", {}).get(compiled_name, {})
+                    if entry.get("source_sha256") == source_hash:
+                        # Entry file unchanged — also verify transitive deps
+                        stored_transitive_sha = entry.get("transitive_sha256")
+                        stored_transitive_files = entry.get("transitive_files", [])
+
+                        transitive_ok = False
+                        if stored_transitive_sha and stored_transitive_files:
+                            stored_paths = {Path(p) for p in stored_transitive_files}
+                            current_transitive = self._compute_transitive_hash(stored_paths)
+                            transitive_ok = current_transitive == stored_transitive_sha
+                        elif not stored_transitive_sha:
+                            # Legacy manifest without transitive hash — source check suffices
+                            transitive_ok = True
+
+                        # Detect new sidecar .yaml that wasn't in previous transitive set
+                        if transitive_ok:
+                            sidecar_path = flow_file.with_suffix(".yaml")
+                            if sidecar_path.exists() and str(sidecar_path) not in (stored_transitive_files or []):
+                                transitive_ok = False
+                                self.logger.info(
+                                    f"New sidecar detected: {sidecar_path.name}, recompiling {flow_file.name}."
+                                )
+
+                        if transitive_ok:
+                            compiled_path = self.official_source_path / "compiled" / compiled_name
+                            if compiled_path.exists():
+                                compiled[compiled_name] = compiled_path.read_text(encoding="utf-8")
+                                self._source_map[compiled_name] = flow_file
+                                # Preserve transitive data for skipped files
+                                if stored_transitive_sha:
+                                    self._transitive_data[compiled_name] = {
+                                        "transitive_sha256": stored_transitive_sha,
+                                        "transitive_files": stored_transitive_files,
+                                    }
+                                self.logger.info(f"Skipped (unchanged): {flow_file.name}")
+                                skipped += 1
+                                continue
+                except OSError as e:
+                    self.logger.warning(f"Failed incremental check for {flow_file.name}: {e}")
+
+            try:
+                markdown = controller.compile_file(flow_file)
+
+                # Load sidecar .yaml and prepend frontmatter if available
+                sidecar_path = flow_file.with_suffix(".yaml")
+                sidecar = self._load_sidecar(sidecar_path)
+                if sidecar:
+                    markdown = self._prepend_frontmatter(markdown, sidecar)
+
+                compiled[compiled_name] = markdown
+                self._source_map[compiled_name] = flow_file
+
+                # Compute transitive hash from all files that participated
+                resolved_files = controller.get_last_resolved_files()
+                # Include sidecar in transitive set so changes trigger recompilation
+                if sidecar_path.exists():
+                    resolved_files = resolved_files | {sidecar_path}
+                if resolved_files:
+                    transitive_sha = self._compute_transitive_hash(resolved_files)
+                    self._transitive_data[compiled_name] = {
+                        "transitive_sha256": transitive_sha,
+                        "transitive_files": [str(p) for p in sorted(resolved_files)],
+                    }
+
+                self.logger.info(f"Compiled flow: {flow_file.name}")
+            except FlowError as e:
+                self.logger.warning(f"Failed to compile {flow_file.name}, skipping: {e}")
+
+        # Pass-through: copy non-.flow files to compiled output (excluding _lib/ and sidecar .yaml)
+        self._passthrough_keys: set[str] = set()
+        all_files_in_flows = [f for f in flows_dir.rglob("*") if f.is_file()]
+        passthrough_candidates = [
+            f for f in all_files_in_flows
+            if f.suffix != ".flow"
+            and "_lib" not in f.relative_to(flows_dir).parts
+            and not (f.suffix == ".yaml" and f.with_suffix(".flow").exists())
+        ]
+        for pt_file in passthrough_candidates:
+            rel = str(pt_file.relative_to(flows_dir))
+            try:
+                content = pt_file.read_text(encoding="utf-8")
+                compiled[rel] = content
+                self._passthrough_keys.add(rel)
+                self._source_map[rel] = pt_file
+                self.logger.info(f"Pass-through: {pt_file.name}")
+            except OSError as e:
+                self.logger.warning(f"Failed to read pass-through file {pt_file.name}: {e}")
+
+        passthrough = len(self._passthrough_keys)
+        compiled_total = len(compiled) - passthrough  # .flow entries (fresh + cached)
+        fresh = compiled_total - skipped
+        failed = len(flow_files) - compiled_total
+        self.logger.info(
+            f"Flow compilation complete: {fresh} compiled, {skipped} skipped (unchanged), "
+            f"{passthrough} pass-through, {failed} failed."
+        )
+        return compiled
+
+    def _write_compiled_output(self, compiled: dict[str, str]) -> list[Path]:
+        """
+        Write compiled Markdown files to data/compiled/.
+
+        Handles subdirectories (e.g., ``compiled/agents/``) automatically.
+
+        Args:
+            compiled: Dict mapping output relative path to compiled Markdown content.
+
+        Returns:
+            List of written file paths.
+        """
+        compiled_dir = self.official_source_path / "compiled"
+        compiled_dir.mkdir(parents=True, exist_ok=True)
+
+        written: list[Path] = []
+        for output_rel, content in compiled.items():
+            out_path = compiled_dir / output_rel
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                out_path.write_text(content, encoding="utf-8")
+                written.append(out_path)
+                self.logger.info(f"Wrote compiled output: {output_rel}")
+            except OSError as e:
+                self.logger.error(f"Failed to write compiled file {output_rel}: {e}")
+
+        return written
+
+    def _generate_manifest(self, compiled: dict[str, str]) -> dict:
+        """
+        Generate compiled_manifest.json in data/compiled/ with SHA-256 hashes.
+
+        Includes both source file hash (for incremental compilation) and
+        compiled output hash (for integrity verification).
+
+        Args:
+            compiled: Dict mapping output relative path to compiled Markdown content.
+
+        Returns:
+            The manifest dict that was written to disk.
+        """
+        compiled_dir = self.official_source_path / "compiled"
+        compiled_dir.mkdir(parents=True, exist_ok=True)
+        flows_dir = self.official_source_path / "flows"
+
+        source_map: dict[str, Path] = getattr(self, "_source_map", {})
+        passthrough_keys: set[str] = getattr(self, "_passthrough_keys", set())
+
+        entries: dict[str, dict] = {}
+        for output_rel, content in compiled.items():
+            content_bytes = content.encode("utf-8")
+
+            # Determine source .flow file
+            source_file = source_map.get(output_rel)
+            if source_file is None:
+                # Fallback for legacy: derive from output_rel stem
+                source_file = flows_dir / f"{Path(output_rel).stem}.flow"
+
+            # Compute relative source path and hash
+            source_sha256 = ""
+            try:
+                source_rel = str(source_file.relative_to(flows_dir))
+            except ValueError:
+                source_rel = source_file.name
+            if source_file.exists():
+                try:
+                    source_sha256 = hashlib.sha256(source_file.read_bytes()).hexdigest()
+                except OSError:
+                    pass
+
+            entry_data: dict = {
+                "source": source_rel,
+                "type": "passthrough" if output_rel in passthrough_keys else "compiled",
+                "sha256": hashlib.sha256(content_bytes).hexdigest(),
+                "source_sha256": source_sha256,
+                "size": len(content_bytes),
+            }
+
+            # Include transitive hash data if available
+            transitive_info = getattr(self, "_transitive_data", {}).get(output_rel, {})
+            if transitive_info:
+                entry_data["transitive_sha256"] = transitive_info.get("transitive_sha256", "")
+                entry_data["transitive_files"] = transitive_info.get("transitive_files", [])
+
+            entries[output_rel] = entry_data
+
+        manifest: dict = {
+            "version": "1.1",
+            "compiled_at": datetime.now(timezone.utc).isoformat(),
+            "entries": entries,
+        }
+
+        manifest_path = compiled_dir / "compiled_manifest.json"
+        try:
+            manifest_path.write_text(
+                json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+            )
+            self.logger.info(f"Generated manifest: {manifest_path.name} ({len(entries)} entries)")
+        except OSError as e:
+            self.logger.error(f"Failed to write manifest: {e}")
+
+        return manifest
+
+    def _sync_skills(self) -> None:
+        """
+        Sync skill directories from data/skills/ to each official target's sibling skills/ directory.
+
+        Skills go to {target}/../skills/ (e.g., .github/skills/, not .github/instructions/skills/).
+        Uses shutil.copytree with dirs_exist_ok=True for each skill subdirectory.
+        """
+        skills_source = self.official_source_path / "skills"
+        if not skills_source.exists():
+            self.logger.debug("No data/skills/ directory found, skipping skills sync.")
+            return
+
+        skill_dirs = [d for d in skills_source.iterdir() if d.is_dir()]
+        if not skill_dirs:
+            self.logger.debug("No skill subdirectories found in data/skills/.")
+            return
+
+        for target_path in self.official_target_paths:
+            skills_target = target_path / "skills"
+            skills_target.mkdir(parents=True, exist_ok=True)
+
+            for skill_dir in skill_dirs:
+                dst = skills_target / skill_dir.name
+                try:
+                    shutil.copytree(skill_dir, dst, dirs_exist_ok=True)
+                    self.logger.info(f"Synced skill: {skill_dir.name} -> {dst}")
+                except OSError as e:
+                    self.logger.error(f"Failed to sync skill {skill_dir.name}: {e}")
+
+    def _sync_files_by_pattern(self, source_dir: Path, target_dir: Path, pattern: str, subdir: str, label: str, compiled_files: set[str] | None = None) -> None:
         """
         Sync files matching a pattern from source subdirectory to target subdirectory.
         Supports nested subdirectories in source - all files are flattened to target.
@@ -231,11 +660,16 @@ class InstructionController:
             pattern: Glob pattern for files (e.g., "*.instructions.md")
             subdir: Subdirectory name (e.g., "instructions", "agents", "prompts")
             label: Label for logging
+            compiled_files: Optional set of compiled filenames to skip (compiled takes priority)
         """
         src = source_dir / subdir
         if src.exists():
             # Use rglob to find files in nested subdirectories, flatten to target
             for file_path in src.rglob(pattern):
+                # Skip files that were already placed by compiled output
+                if compiled_files and file_path.name in compiled_files:
+                    self.logger.debug(f"Skipping static {file_path.name} (compiled version takes priority)")
+                    continue
                 try:
                     # Flatten: all files go to target_dir/subdir/ regardless of source nesting
                     dest_path = target_dir / subdir / file_path.name
@@ -244,15 +678,22 @@ class InstructionController:
                 except OSError as e:
                     self.logger.error(f"Failed to sync {file_path.name} to {subdir}: {e}")
 
-    def _sync_data_to_target(self, source_path: Path, target_path: Path, label: str) -> None:
+    def _sync_data_to_target(self, source_path: Path, target_path: Path, label: str, compiled_files: set[str] | None = None) -> None:
         """
         Sync instruction, agent, and prompt files from source to target.
         Supports nested subdirectories in source - files are flattened to target.
-        
+
+        Compiled files take priority: if compiled_files is provided, any compiled
+        output files are copied first from data/compiled/, routed by subdirectory
+        (agents/ → target/agents/, flat → target/instructions/), and static files
+        with the same name are skipped.
+
         Args:
             source_path: Source directory containing instructions/, agents/, prompts/ subdirs
             target_path: Target directory (e.g., .github)
             label: Label for logging (e.g., "official", "custom")
+            compiled_files: Optional set of compiled output relative paths
+                (e.g., {"foo.md", "agents/bar.adhd.agent.md"}) that take priority
         """
         if not source_path.exists():
             self.logger.info(f"{label} source path not found: {source_path}. Skipping.")
@@ -260,8 +701,32 @@ class InstructionController:
 
         self.logger.info(f"Syncing {label} data from {source_path} to {target_path}")
 
+        # Copy compiled files first (highest priority) — route by subdirectory
+        if compiled_files:
+            compiled_dir = self.official_source_path / "compiled"
+            if compiled_dir.exists():
+                for compiled_rel in compiled_files:
+                    compiled_path = compiled_dir / compiled_rel
+                    if compiled_path.exists():
+                        # Route: agents/ subdir → target/agents/, else → target/instructions/
+                        rel_parts = Path(compiled_rel).parts
+                        if len(rel_parts) > 1 and rel_parts[0] == "agents":
+                            sync_subdir = target_path / "agents"
+                        else:
+                            sync_subdir = target_path / "instructions"
+                        sync_subdir.mkdir(parents=True, exist_ok=True)
+                        try:
+                            dest = sync_subdir / Path(compiled_rel).name
+                            shutil.copy2(compiled_path, dest)
+                            self.logger.info(f"Synced compiled file: {compiled_rel}")
+                        except OSError as e:
+                            self.logger.error(f"Failed to sync compiled file {compiled_rel}: {e}")
+
+        # Build basenames set for skip-check in _sync_files_by_pattern
+        compiled_basenames = {Path(cf).name for cf in compiled_files} if compiled_files else None
+
         for pattern, subdir, _ in FILE_TYPE_CONFIGS:
-            self._sync_files_by_pattern(source_path, target_path, pattern, subdir, label)
+            self._sync_files_by_pattern(source_path, target_path, pattern, subdir, label, compiled_files=compiled_basenames)
 
     def _sync_agent_plan(self, source_path: Path) -> None:
         """
@@ -322,10 +787,40 @@ class InstructionController:
             else:
                 self.logger.debug(f"No {file_type}s found for module {module.name}")
 
+    def compile_only(self, force: bool = False) -> dict:
+        """Compile .flow files and generate manifest without syncing.
+
+        Intended for CI validation — compiles all flows, writes compiled output,
+        generates manifest, but does NOT sync to .github/ or any targets.
+
+        Args:
+            force: If True, recompile everything ignoring cache. Defaults to False.
+
+        Returns:
+            dict with compilation results (manifest data).
+        """
+        compiled = self._compile_flows(force=force)
+        if compiled:
+            self._write_compiled_output(compiled)
+            return self._generate_manifest(compiled)
+        return {
+            "version": "1.1",
+            "compiled_at": datetime.now(timezone.utc).isoformat(),
+            "entries": {},
+        }
+
     def run(self) -> None:
         """Execute the full synchronization process based on config."""
         self.logger.info("Starting instruction synchronization...")
         
+        # Compile .flow files with incremental compilation
+        compiled = self._compile_flows(force=False)
+        compiled_files: set[str] | None = None
+        if compiled:
+            self._write_compiled_output(compiled)
+            self._generate_manifest(compiled)
+            compiled_files = set(compiled.keys())
+
         # Sync .agent_plan from official source to project root
         self._sync_agent_plan(self.official_source_path)
         
@@ -334,7 +829,7 @@ class InstructionController:
             for target_path in self.official_target_paths:
                 self.logger.info(f"Official sync: {self.official_source_path} -> {target_path}")
                 self._ensure_target_structure(target_path)
-                self._sync_data_to_target(self.official_source_path, target_path, "official")
+                self._sync_data_to_target(self.official_source_path, target_path, "official", compiled_files=compiled_files)
                 for pattern, subdir, file_type in FILE_TYPE_CONFIGS:
                     self._sync_module_files_to_target(target_path, pattern, subdir, file_type)
                 # Apply MCP permission injection to copied agents
@@ -353,5 +848,8 @@ class InstructionController:
                 self._apply_mcp_injection_to_agents(target_path)
         else:
             self.logger.info("No custom targets configured, skipping custom sync.")
+        
+        # Sync skills to official targets
+        self._sync_skills()
         
         self.logger.info("Instruction synchronization completed.")

@@ -84,6 +84,7 @@ dependencies = [
     { name = "creator-common-core" },
     { name = "exceptions-core" },
     { name = "github-api-core" },
+    { name = "instruction-core" },
     { name = "logger-util" },
     { name = "mcp" },
     { name = "module-creator-core" },
@@ -97,6 +98,7 @@ requires-dist = [
     { name = "creator-common-core", editable = "modules/dev/creator_common_core" },
     { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
     { name = "github-api-core", editable = "modules/dev/github_api_core" },
+    { name = "instruction-core", editable = "modules/dev/instruction_core" },
     { name = "logger-util", editable = "modules/foundation/logger_util" },
     { name = "mcp", specifier = ">=1.1.0" },
     { name = "module-creator-core", editable = "modules/dev/module_creator_core" },
@@ -372,7 +374,7 @@ source = { editable = "modules/foundation/exceptions_core" }
 
 [[package]]
 name = "flow-core"
-version = "0.0.1"
+version = "0.0.2"
 source = { editable = "modules/dev/flow_core" }
 dependencies = [
     { name = "exceptions-core" },
@@ -477,6 +479,7 @@ source = { editable = "modules/dev/instruction_core" }
 dependencies = [
     { name = "config-manager" },
     { name = "exceptions-core" },
+    { name = "flow-core" },
     { name = "logger-util" },
     { name = "modules-controller-core" },
     { name = "pyyaml" },
@@ -486,6 +489,7 @@ dependencies = [
 requires-dist = [
     { name = "config-manager", editable = "modules/foundation/config_manager" },
     { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
+    { name = "flow-core", editable = "modules/dev/flow_core" },
     { name = "logger-util", editable = "modules/foundation/logger_util" },
     { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
     { name = "pyyaml", specifier = ">=6.0" },

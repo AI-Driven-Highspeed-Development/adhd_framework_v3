@@ -36,7 +36,7 @@ Current Reality:
 After This Feature:
 ┌────────────────────────────────────────────────────────────────────────┐
 │  .github/instructions/ contains 12 ALWAYS-ON coding standards          │
-│  .github/skills/       contains 8 ON-DEMAND capability bundles          │
+│  .github/skills/       contains 8 ON-DEMAND capability bundles         │
 │                                                                        │
 │  Agent doing code review  ──►  Loads 12 instructions only    ✅        │
 │  Agent doing expedition   ──►  + loads expedition skill     ✅         │

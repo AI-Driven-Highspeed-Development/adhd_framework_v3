@@ -172,6 +172,39 @@ def list_context_files(
     )
 
 
+# --- Tool 5b: get_compilation_manifest ---
+
+
+@mcp.tool()
+def get_compilation_manifest() -> dict:
+    """Read the flow compilation manifest.
+
+    Returns the compiled_manifest.json contents with version, compilation timestamp,
+    and per-file entries including source/output SHA-256 hashes.
+
+    Returns:
+        dict with manifest data, or error if manifest doesn't exist.
+        Run 'adhd compile' or 'adhd refresh --full' to generate/update the manifest.
+    """
+    return _get_controller().get_compilation_manifest()
+
+
+# --- Tool 5c: list_skills ---
+
+
+@mcp.tool()
+def list_skills() -> dict:
+    """List available skills with name and description.
+
+    Scans the skills directory in instruction_core and parses SKILL.md
+    frontmatter for each skill subdirectory.
+
+    Returns:
+        dict with count and list of skill dicts (name, description, path).
+    """
+    return _get_controller().list_skills()
+
+
 # --- Tool 6: git_modules ---
 
 

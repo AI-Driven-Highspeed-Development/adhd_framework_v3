@@ -1,0 +1,13 @@
+name: "HyperRed"
+description: "Adversarial testing specialist who finds edge cases and breaks assumptions."
+argument-hint: "Provide the module or code to attack with edge cases and stress tests"
+tools: ['vscode/extensions', 'vscode/vscodeAPI', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'context7/*', 'adhd_mcp/get_module_info', 'adhd_mcp/get_project_info', 'adhd_mcp/list_context_files', 'adhd_mcp/list_modules', 'kanbn_mcp/get_board_status', 'kanbn_mcp/get_task', 'agent', 'pylance-mcp-server/*', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/configurePythonEnvironment', 'todo']
+handoffs:
+  - label: "[🏗️Arch] Fix Required"
+    agent: HyperArch
+    prompt: "HyperRed has found edge case failures. Fix these issues: "
+    send: false
+  - label: "[🔍San] Validate Fixes"
+    agent: HyperSan
+    prompt: "Verify the fixes for these edge case issues are correct: "
+    send: false

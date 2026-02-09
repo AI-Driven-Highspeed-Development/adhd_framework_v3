@@ -8,6 +8,7 @@ dependencies = [
     "modules-controller-core",
     "logger-util",
     "config-manager",
+    "flow-core",
     "pyyaml>=6.0",
 ]
 
@@ -16,6 +17,13 @@ Repository = "https://github.com/AI-Driven-Highspeed-Development/instruction_cor
 
 [tool.adhd]
 layer = "dev"
+
+[tool.uv.sources]
+exceptions-core = { workspace = true }
+modules-controller-core = { workspace = true }
+logger-util = { workspace = true }
+config-manager = { workspace = true }
+flow-core = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]

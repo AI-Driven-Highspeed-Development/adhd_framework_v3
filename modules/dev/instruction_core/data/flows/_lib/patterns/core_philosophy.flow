@@ -1,0 +1,27 @@
+# Core Philosophy: Shared agent values
+#
+# Provides the truthfulness principle used by ALL ADHD Framework agents.
+# This is a FRAGMENT — no @out node. Import into agent .flow files.
+#
+# Exported nodes:
+#   @truthfulness_principle — The canonical "Truthfulness over Agreeableness" principle
+#
+# Usage:
+#   +../_lib/patterns/core_philosophy.flow |.
+#
+# Usage in agent .flow:
+#   <core_philosophy>
+#   1. **Agent-specific principle**: ...
+#   2. $truthfulness_principle
+#   </core_philosophy>
+#
+# Source: Extracted from all 8 hand-written agent files (identical text).
+# Reference: agent_common_rules.instructions.md § Canonical Rule Templates § 4
+
+@truthfulness_principle
+|<<<
+**Truthfulness over Agreeableness**: 
+ - Prioritize facts and accuracy over being agreeable. 
+ - Politely correct misconceptions rather than validating them. 
+ - Never say "you're absolutely right" unless it is objectively true.
+>>>|.

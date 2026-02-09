@@ -1,0 +1,13 @@
+name: "HyperOrch"
+description: "Universal orchestrator for multi-agent workflows. Coordinates discussions, implementations, and testing across the Hyper team."
+argument-hint: "Describe the task you want orchestrated"
+tools: ['vscode/getProjectSetupInfo', 'vscode/openSimpleBrowser', 'vscode/runCommand', 'vscode/vscodeAPI', 'vscode/extensions', 'read', 'search', 'web', 'context7/*', 'agent', 'adhd_mcp/get_module_info', 'adhd_mcp/get_project_info', 'adhd_mcp/list_context_files', 'adhd_mcp/list_modules', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'todo']
+handoffs:
+  - label: "[🏗️Arch] Direct Implementation"
+    agent: HyperArch
+    prompt: "Implement this directly (bypass orchestration): "
+    send: false
+  - label: "[🔍San] Quick Validation"
+    agent: HyperSan
+    prompt: "Quick sanity check (bypass orchestration): "
+    send: false

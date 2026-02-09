@@ -8,7 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 
-from adhd_controller import AdhdController
+from adhd_mcp.adhd_controller import AdhdController
 from cli_manager import CLIManager, ModuleRegistration, Command, CommandArg
 
 
@@ -122,6 +122,12 @@ def git_push_cmd(args: argparse.Namespace) -> int:
     return _print_result(result)
 
 
+def compile_command(args: argparse.Namespace) -> int:
+    """Compile .flow files and generate manifest (no sync)."""
+    result = _get_controller().compile_only(force=args.force)
+    return _print_result(result)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # CLI Registration
 # ─────────────────────────────────────────────────────────────────────────────
@@ -200,6 +206,19 @@ def register_cli() -> None:
                         name="--core-only",
                         action="store_true",
                         help="Only show core files, exclude per-module files",
+                    ),
+                ],
+            ),
+            Command(
+                name="compile",
+                help="Compile .flow files and generate manifest (no sync)",
+                handler="adhd_mcp.adhd_cli:compile_command",
+                args=[
+                    CommandArg(
+                        name="--force",
+                        short="-f",
+                        action="store_true",
+                        help="Force recompile all files, ignoring cache",
                     ),
                 ],
             ),

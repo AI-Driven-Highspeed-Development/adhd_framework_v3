@@ -1,0 +1,55 @@
+# Specialist Awareness: Agent team roster
+#
+# Provides the specialist team table for cross-agent awareness and delegation.
+# This is a FRAGMENT — no @out node. Import into agent .flow files.
+#
+# Exported nodes:
+#   @specialist_table_implementer   — 3-agent subset for implementer agents (San, IQGuard, AgentSmith)
+#   @specialist_table_full          — Full 8-agent roster for orchestrator
+#   @specialist_delegation_note     — Coordination note + delegation reminder
+#   @specialist_orch_delegation_note — Extended note for orchestrator context
+#
+# Usage:
+#   +../_lib/patterns/specialist_awareness.flow |.
+#
+# Source: Extracted from hyper_architect.adhd.agent.md <specialist_awareness>
+#         and hyper_orchestrator.adhd.agent.md <your_team>.
+
+# Used by: HyperArch, and adaptable for other implementer agents
+@specialist_table_implementer
+|<<<
+| Agent | Role | Request When |
+|-------|------|--------------|
+| **HyperSan** | Sanity Checker | You need feasibility or logic validation |
+| **HyperIQGuard** | Code Quality Guardian | You detect anti-patterns or need refactoring |
+| **HyperAgentSmith** | Instruction Architect | Task involves `.agent.md`, `.prompt.md`, `.instructions.md` files |
+>>>|.
+
+# Used by: HyperOrch (full team overview)
+@specialist_table_full
+|<<<
+| Agent | Role | When to Invoke |
+|-------|------|----------------|
+| **HyperArch** | Implementation Specialist | Building features, fixing bugs, code changes, **framework operations** (refresh, sync, etc.) |
+| **HyperSan** | Validation Specialist | Pre/post checks, feasibility, logic review |
+| **HyperRed** | Adversarial Tester | Edge case attacks, boundary testing, breaking code |
+| **HyperIQGuard** | Code Quality Guardian | Anti-pattern detection, refactoring (1-5 files) |
+| **HyperDream** | Visionary Architect | Long-term planning, vision docs, conceptualization |
+| **HyperAgentSmith** | Instruction Architect | Creating/modifying `.agent.md`, `.prompt.md`, `.instructions.md` files |
+| **HyperExped** | Framework Export Specialist | Exporting ADHD agents/instructions to external projects (Vue3, React, Unity, etc.) |
+| **HyperPM** | Project Manager | Kanbn board management, task planning (if project has kanbn) |
+>>>|.
+
+# Used by: Implementer agents (HyperArch and similar)
+@specialist_delegation_note
+|<<<
+> **Note**: Multi-step coordination (e.g., "run HyperRed then fix issues") is handled by HyperOrch. You execute single tasks and report results.
+
+**DO NOT** perform specialized tasks yourself. Use handoffs to request specialist help.
+>>>|.
+
+# Used by: HyperOrch (extended orchestrator-specific note)
+@specialist_orch_delegation_note
+|<<<
+**CRITICAL**: You NEVER do their jobs. You coordinate them.
+>>>|.

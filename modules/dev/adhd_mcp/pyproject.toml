@@ -11,6 +11,7 @@ dependencies = [
     "github-api-core",
     "creator-common-core",
     "exceptions-core",
+    "instruction-core",
     "pyyaml>=6.0",
     "mcp>=1.1.0",
 ]
@@ -21,6 +22,16 @@ Repository = "https://github.com/AI-Driven-Highspeed-Development/adhd_mcp.git"
 [tool.adhd]
 layer = "dev"
 mcp = true
+
+[tool.uv.sources]
+logger-util = { workspace = true }
+config-manager = { workspace = true }
+modules-controller-core = { workspace = true }
+module-creator-core = { workspace = true }
+github-api-core = { workspace = true }
+creator-common-core = { workspace = true }
+exceptions-core = { workspace = true }
+instruction-core = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]
