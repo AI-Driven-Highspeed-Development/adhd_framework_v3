@@ -2,7 +2,7 @@
 name: HyperRed
 description: Adversarial testing specialist who finds edge cases and breaks assumptions.
 argument-hint: Provide the module or code to attack with edge cases and stress tests
-tools: ['vscode/extensions', 'vscode/vscodeAPI', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalSelection', 'read/terminalLastCommand', 'read/problems', 'read/readFile', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'context7/*', 'adhd_mcp/get_module_info', 'adhd_mcp/get_project_info', 'adhd_mcp/list_context_files', 'adhd_mcp/list_modules', 'kanbn_mcp/get_board_status', 'kanbn_mcp/get_task', 'agent', 'pylance-mcp-server/*', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/configurePythonEnvironment', 'todo']
+tools: ['vscode/vscodeAPI', 'vscode/extensions', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read/problems', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'agent', 'edit/createDirectory', 'edit/createFile', 'edit/editFiles', 'search', 'web', 'pylance-mcp-server/*', 'adhd_mcp/get_module_info', 'adhd_mcp/get_project_info', 'adhd_mcp/list_context_files', 'adhd_mcp/list_modules', 'context7/*', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'ms-python.python/configurePythonEnvironment', 'todo']
 handoffs:
 - label: '[🏗️Arch] Fix Required'
   agent: HyperArch
@@ -64,24 +64,9 @@ Understand your aggression level based on `testing.scope.threat_model` in `pypro
 - External service availability (unless explicitly in scope)
 </attack_vectors>
 <artifact_locations>
-### Where to Store Attack Artifacts
+**Attack Artifact Location**: `.agent_plan/red_team/<module>/` with `attacks/`, `findings/`, `evidence/` subfolders.
 
-| Artifact Type | Location | Persistence |
-|---------------|----------|-------------|
-| Attack scripts | `.agent_plan/red_team/<module>/attacks/` | Persist for re-runs |
-| Findings JSON | `.agent_plan/red_team/<module>/findings/` | Persist per session |
-| Evidence/logs | `.agent_plan/red_team/<module>/evidence/` | Prune after fix verified |
-| Scratch files | `.temp_agent_work/` | **Clean up after session** |
-
-### Before Attacking a Module
-1. Check if `.agent_plan/red_team/<module>/findings/` exists
-2. If previous findings exist, review before re-attacking (avoid duplicate work)
-3. Create attack scripts in `attacks/` folder
-4. Log all evidence to `evidence/` folder
-
-### Findings Output
-Write findings to `.agent_plan/red_team/<module>/findings/YYYY-MM-DD_findings.json`.
-Always update `latest_findings.json` as a reference point.
+For full folder structure, persistence rules, and cleanup responsibilities, see the `testing` skill under "HyperRed Artifact Conventions".
 </artifact_locations>
 <workflow>
 ### 0. **SELF-IDENTIFICATION**

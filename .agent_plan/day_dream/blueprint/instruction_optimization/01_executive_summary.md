@@ -11,33 +11,31 @@
 ```
 Current Reality:
 ┌────────────────────────────────────────────────────────────────┐
-│  Agent compiles  ──────►  💥 TOKEN EXPLOSION 💥                │
-│                                                                │
-│  Because: No budget visibility, no conflict detection,         │
-│           no line enforcement, VS Code assumptions everywhere  │
+│  Skills exist but hard to discover                          │
+│  No central index, must grep through files manually         │
+│  "When NOT to use" guidance buried in individual files      │
 └────────────────────────────────────────────────────────────────┘
 ```
 
 | Who Hurts | Pain Level | Frequency |
-|-----------|------------|-----------|
-| AI Agent (context window) | 🔥🔥🔥 High | Every request |
-| Developer (debugging) | 🔥🔥🔥 High | Daily |
-| Framework (portability) | 🔥🔥 Medium | On export |
+|-----------|------------|-----------||
+| AI Agent (skill selection) | 🔥🔥🔥 High | Every request |
+| Developer (finding skills) | 🔥🔥 Medium | When building agents |
 
 ### ✨ The Vision
 
 ```
 After This Feature:
 ┌────────────────────────────────────────────────────────────────┐
-│  Agent compiles  ──────►  ✅ LEAN, OBSERVABLE, PORTABLE        │
+│  Agent needs skill  ────►  ✅ SKILLS_INDEX.md lookup          │
 │                                                                │
-│  Flow: validate lines → sum budgets → detect conflicts → emit  │
+│  "When to use" + "When NOT to use" in single manifest          │
 └────────────────────────────────────────────────────────────────┘
 ```
 
 ### 🎯 One-Liner
 
-> Bring observability and discipline to instruction compilation through line limits, token budgets, conflict detection, and platform-agnostic architecture.
+> Generate a compiled SKILLS_INDEX.md manifest for easy skill discovery, with optional platform profile support for exports.
 
 ---
 
@@ -47,13 +45,13 @@ After This Feature:
 
 ## 🌟 TL;DR
 
-The instruction system lacks visibility into token costs and conflict detection. We add automated line enforcement (≤100 lines), token budget annotations, a skill discovery manifest, and an audit tool—while splitting VS Code-specific features into optional profiles.
+Skills are hard to discover without grepping through individual SKILL.md files. We add a compiled SKILLS_INDEX.md manifest that includes descriptions, "when to use", and "when NOT to use" guidance. Platform profiles are a nice-to-have for export scenarios.
 
 ---
 
 ## 🎯 Problem Statement
 
-Compiled agents can silently exceed context budgets. Instructions from multiple sources can conflict without detection. Platform-specific features (VS Code tool syntax, model declarations) are baked into the core schema, hurting portability. Developers have no visibility into what instructions co-activate or their cumulative token cost.
+Skills exist but lack centralized discoverability. Developers and agents must manually search through `.github/skills/*/SKILL.md` files to find relevant capabilities. "When NOT to use" guidance is buried in individual files, leading to suboptimal skill selection.
 
 ---
 
@@ -61,12 +59,11 @@ Compiled agents can silently exceed context budgets. Instructions from multiple 
 
 | Library/Tool | What It Does | Decision | License | Rationale |
 |--------------|--------------|----------|---------|-----------|
-| `tiktoken` | OpenAI token counting | WRAP | MIT | Accurate for OpenAI models |
-| `anthropic-tokenizer` | Claude token counting | EVALUATE | - | May use for Claude-specific counts |
-| ESLint-style validators | Static analysis | BUILD | - | Custom rules for ADHD schema |
-| JSON Schema | Validation | WRAP | - | Already in use, extend profiles |
+| YAML frontmatter | Structured metadata | WRAP | - | Already used in SKILL.md files |
+| markdown-it | Markdown parsing | EVALUATE | MIT | Could extract sections programmatically |
+| glob/pathlib | File discovery | WRAP (stdlib) | - | Python stdlib, no external deps |
 
-**Summary:** Wrap `tiktoken` for token counting, build custom validation for ADHD-specific rules.
+**Summary:** Parse SKILL.md frontmatter and extract key sections using stdlib where possible.
 
 ---
 
@@ -74,10 +71,11 @@ Compiled agents can silently exceed context budgets. Instructions from multiple 
 
 | Non-Goal | Rationale |
 |----------|-----------|
-| Runtime content deduplication | Deferred until orchestration layer matures |
-| Multi-model token budget optimization | One model at a time; Claude first |
-| Auto-fixing line limit violations | Validation only; editing is human/agent task |
-| Real-time streaming budget tracking | Phase 2+ concern |
+| Line limit enforcement | Cut: overkill for current needs |
+| Token budget tracking | Cut: overkill for current needs |
+| Instruction audit tool | Cut: good but not immediate priority |
+| Real-time skill recommendations | Future consideration after index exists |
+| Auto-generated skill documentation | Index aggregates, doesn't generate |
 
 ---
 
@@ -85,13 +83,19 @@ Compiled agents can silently exceed context budgets. Instructions from multiple 
 
 | Priority | Feature | Difficulty | Description |
 |----------|---------|------------|-------------|
-| P0 | Line Limit Enforcement | `[KNOWN]` | All compiled agents ≤100 lines, validated at compile time |
-| P0 | Token Budget Annotations | `[KNOWN]` | Flow fragments declare `<!-- tokens: ~N -->` |
-| P0 | VS Code Platform Profiles | `[KNOWN]` | Split schema: core + optional vscode profile |
-| P0 | Skill Discovery Index | `[KNOWN]` | Compiled SKILLS_INDEX.md with "when NOT to use" hints |
-| P0 | Instruction Audit Tool | `[KNOWN]` | MCP/CLI showing co-activating instructions + conflicts |
-| P1 | Flow Fragment Versioning | `[EXPERIMENTAL]` | Version tracking when flow count >20 |
-| P2 | Behavioral Compliance Testing | `[RESEARCH]` | After observability infrastructure |
+| P0 | Code Quality Fixes | `[KNOWN]` | Agent/prompt refactoring: move duplicates to skills, condense, add VS Code fields |
+| P0 | Skill Discovery Index | `[KNOWN]` | Compiled SKILLS_INDEX.md with "when to use" and "when NOT to use" |
+| P1 | VS Code Platform Profiles | `[KNOWN]` | Split schema: core + optional vscode profile (good to have for exports) |
+
+### Cut Features (2026-02-09)
+
+| Feature | Reason |
+|---------|--------|
+| Line Limit Enforcement | Overkill for current needs |
+| Token Budget Annotations | Overkill for current needs |
+| Instruction Audit Tool | Good but not immediate priority |
+| Flow Fragment Versioning | Premature optimization |
+| Behavioral Compliance Testing | Research-grade, no immediate need |
 
 → See individual Feature Docs for details.
 
@@ -101,28 +105,19 @@ Compiled agents can silently exceed context budgets. Instructions from multiple 
 
 | Metric | Current | Target |
 |--------|---------|--------|
-| Compiled agent line count | Unbounded | ≤100 lines |
-| Token cost visibility | 0% | 100% of fragments annotated |
-| Conflict detection | None | All co-activations visible |
-| Platform assumptions in core | ~12 references | 0 |
-| Skill discoverability | Manual search | Single index file |
+| Skill discoverability | Manual grep | Single SKILLS_INDEX.md file |
+| "When NOT to use" visibility | Buried in files | Extracted in index |
+| Platform assumptions in core | ~12 references | 0 (with profiles enabled) |
 
 ---
 
-## [Custom] 📊 Token Budget Philosophy
+## [Custom] 📊 Related User Focus Areas
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  BUDGET MODEL                                               │
-│                                                             │
-│  fragment_budget = declared_tokens + 10% buffer             │
-│  agent_budget = Σ(fragment_budgets) + base_agent_cost       │
-│  session_budget = active_agent + active_skills + context    │
-│                                                             │
-│  WARNING threshold: 70% of model context                    │
-│  ERROR threshold: 90% of model context                      │
-└─────────────────────────────────────────────────────────────┘
-```
+This blueprint complements the user's broader work:
+
+- **FLOW system utilization** — Better leverage existing flows
+- **VS Code v1.109 features** — Adopt new platform capabilities
+- **Agent/prompt quality** — Now included in P0 (Code Quality Fixes feature)
 
 ---
 

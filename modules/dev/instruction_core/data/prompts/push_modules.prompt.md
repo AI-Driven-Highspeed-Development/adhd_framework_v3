@@ -1,5 +1,6 @@
 ---
 description: Commit and push all ADHD modules with contextual commit messages
+agent: HyperArch
 ---
 
 # Push All Modules

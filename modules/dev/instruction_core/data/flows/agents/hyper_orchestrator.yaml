@@ -1,6 +1,7 @@
 name: "HyperOrch"
 description: "Universal orchestrator for multi-agent workflows. Coordinates discussions, implementations, and testing across the Hyper team."
 argument-hint: "Describe the task you want orchestrated"
+agents: ['HyperArch', 'HyperSan', 'HyperDream', 'HyperAgentSmith', 'HyperRed', 'HyperIQGuard', 'HyperExped']
 tools: ['vscode/getProjectSetupInfo', 'vscode/openSimpleBrowser', 'vscode/runCommand', 'vscode/vscodeAPI', 'vscode/extensions', 'read', 'search', 'web', 'context7/*', 'agent', 'adhd_mcp/get_module_info', 'adhd_mcp/get_project_info', 'adhd_mcp/list_context_files', 'adhd_mcp/list_modules', 'ms-python.python/getPythonEnvironmentInfo', 'ms-python.python/getPythonExecutableCommand', 'todo']
 handoffs:
   - label: "[🏗️Arch] Direct Implementation"

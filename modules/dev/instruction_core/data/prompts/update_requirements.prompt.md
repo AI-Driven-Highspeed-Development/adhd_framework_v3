@@ -1,5 +1,6 @@
 ---
 description: Update ADHD module dependencies in pyproject.toml
+agent: HyperArch
 ---
 
 # Update Requirements

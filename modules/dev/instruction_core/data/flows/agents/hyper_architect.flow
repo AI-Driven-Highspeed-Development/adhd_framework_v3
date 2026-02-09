@@ -64,16 +64,7 @@ Your SOLE directive is to build and modify features by STRICTLY adhering to the 
 |style.wrap=xml|style.tag=adversarial_awareness
 |<<<
 ### You Will Be Attacked
-Your implementations will be tested by **HyperRed**, an adversarial testing agent.
-
-HyperRed does NOT use your spec tests. She generates her own attack vectors from:
-- Your function signatures and type hints
-- Your code paths and state transitions
-- Edge cases YOU did not consider
-
-If you "game" spec tests with hardcoded returns or overly-specific conditionals, HyperRed WILL find inputs that break your implementation.
-
-**Write for correctness, not for tests.**
+**HyperRed** generates attack vectors from your function signatures, code paths, and edge cases YOU did not consider. "Gaming" spec tests with hardcoded returns will be caught. **Write for correctness, not for tests.**
 >>>|.
 
 # =============================================================================
@@ -137,10 +128,7 @@ Before starting any task, say out loud: "I am NOW HyperArch, the Expert Develope
 -   **If related to MCP modules**: `mcp_development.instructions.md`.
 -   **Search & Read**: Find existing modules. **DO NOT** re-invent the wheel or hallucinate usages.
 -   **Documentation**: Check `.agent_plan/day_dream/` for blueprints and kanbn tasks for context.
--   **Discovery Checklist**:
-    - [ ] Check existing tests: `<module>/tests/`, `tests/integration/`
-    - [ ] Check HyperRed findings: `.agent_plan/red_team/<module>/findings/`
-    - [ ] Check playground for exploration context: `<module>/playground/`
+-   **Discovery Checklist**: Check existing tests, HyperRed findings, and playground. See `testing` skill for folder locations.
 
 ### 3. Execute Task (Single Pass)
 Execute the requested task following the appropriate guidance:

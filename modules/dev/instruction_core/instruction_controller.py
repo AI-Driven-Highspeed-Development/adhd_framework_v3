@@ -17,6 +17,11 @@ from logger_util import Logger
 from flow_core import FlowController, FlowError
 
 
+# Regex patterns for skill file parsing
+_YAML_FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
+_SECTION_RE = re.compile(r"^##\s+(.+?)$", re.MULTILINE)
+_BULLET_RE = re.compile(r"^\s*[-*]\s+(.+)$", re.MULTILINE)
+
 # File type configurations: (pattern, subdirectory, label)
 # Used by multiple sync methods to avoid repetition
 FILE_TYPE_CONFIGS = (
@@ -620,6 +625,214 @@ class InstructionController:
 
         return manifest
 
+    def _extract_skill_section(self, content: str, section_name: str, max_bullets: int = 3) -> list[str]:
+        """Extract bullet points from a markdown section.
+
+        Args:
+            content: Full markdown content.
+            section_name: Section heading to search for (e.g., "When to Use").
+            max_bullets: Maximum number of bullet points to extract.
+
+        Returns:
+            List of bullet point texts (without the leading bullet marker).
+        """
+        # Find all sections and their positions
+        sections = list(_SECTION_RE.finditer(content))
+        target_idx = None
+        for i, match in enumerate(sections):
+            if match.group(1).strip().lower() == section_name.lower():
+                target_idx = i
+                break
+
+        if target_idx is None:
+            return []
+
+        # Get section content between this heading and the next
+        start = sections[target_idx].end()
+        end = sections[target_idx + 1].start() if target_idx + 1 < len(sections) else len(content)
+        section_content = content[start:end]
+
+        # Extract bullet points
+        bullets = _BULLET_RE.findall(section_content)
+        return bullets[:max_bullets]
+
+    def _generate_skills_index(self) -> None:
+        """Generate SKILLS_INDEX.md from all skill files in data/skills/.
+
+        Extracts from each SKILL.md:
+        - YAML frontmatter: name, description
+        - Body sections: "## When to Use", "## When NOT to Use"
+        - Approximate token count (chars / 4)
+
+        Output: data/compiled/SKILLS_INDEX.md
+        """
+        skills_dir = self.official_source_path / "skills"
+        if not skills_dir.exists():
+            self.logger.debug("No data/skills/ directory found, skipping skills index generation.")
+            return
+
+        skill_dirs = [d for d in skills_dir.iterdir() if d.is_dir()]
+        if not skill_dirs:
+            self._write_empty_skills_index()
+            return
+
+        self.logger.info(f"Generating skills index from {len(skill_dirs)} skill(s)...")
+
+        # Collect skill metadata
+        skills_data: list[dict] = []
+        categories: dict[str, list[str]] = {
+            "Planning": [],
+            "Implementation": [],
+            "Export": [],
+            "Testing": [],
+            "Discussion": [],
+            "Other": [],
+        }
+
+        for skill_dir in sorted(skill_dirs, key=lambda d: d.name):
+            skill_file = skill_dir / "SKILL.md"
+            if not skill_file.exists():
+                self.logger.warning(f"Skill directory '{skill_dir.name}' has no SKILL.md, skipping.")
+                continue
+
+            try:
+                content = skill_file.read_text(encoding="utf-8")
+            except OSError as e:
+                self.logger.error(f"Failed to read skill file {skill_file}: {e}")
+                continue
+
+            # Extract YAML frontmatter
+            fm_match = _YAML_FRONTMATTER_RE.match(content)
+            if not fm_match:
+                self.logger.error(f"Skill '{skill_dir.name}' has no YAML frontmatter, skipping.")
+                continue
+
+            try:
+                frontmatter = yaml.safe_load(fm_match.group(1))
+                if not isinstance(frontmatter, dict):
+                    self.logger.error(f"Skill '{skill_dir.name}' has invalid YAML frontmatter, skipping.")
+                    continue
+            except yaml.YAMLError as e:
+                self.logger.error(f"Failed to parse YAML in skill '{skill_dir.name}': {e}")
+                continue
+
+            name = frontmatter.get("name", skill_dir.name)
+            description = frontmatter.get("description", "No description")
+
+            # Truncate description for table display
+            desc_short = description[:60] + "..." if len(description) > 60 else description
+
+            # Extract body sections
+            body = content[fm_match.end():]
+            when_to_use = self._extract_skill_section(body, "When to Use", max_bullets=3)
+            when_not_to_use = self._extract_skill_section(body, "When NOT to Use", max_bullets=3)
+
+            if not when_not_to_use:
+                self.logger.warning(f"Skill '{name}' has no 'When NOT to Use' section.")
+                when_not_display = "⚠️ Not documented"
+            else:
+                when_not_display = "; ".join(when_not_to_use[:2])
+
+            when_to_display = "; ".join(when_to_use[:2]) if when_to_use else "See SKILL.md"
+
+            # Calculate approximate token count
+            token_count = len(content) // 4
+
+            skills_data.append({
+                "name": name,
+                "dir_name": skill_dir.name,
+                "description": desc_short,
+                "when_to_use": when_to_display,
+                "when_not_to_use": when_not_display,
+                "tokens": token_count,
+            })
+
+            # Categorize skill
+            name_lower = name.lower()
+            if "dream" in name_lower or "routing" in name_lower:
+                categories["Planning"].append(name)
+            elif "implementation" in name_lower or "smith" in name_lower or "writing" in name_lower:
+                categories["Implementation"].append(name)
+            elif "expedition" in name_lower or "exped" in name_lower:
+                categories["Export"].append(name)
+            elif "test" in name_lower:
+                categories["Testing"].append(name)
+            elif "discussion" in name_lower:
+                categories["Discussion"].append(name)
+            else:
+                categories["Other"].append(name)
+
+        if not skills_data:
+            self._write_empty_skills_index()
+            return
+
+        # Generate markdown output
+        timestamp = datetime.now(timezone.utc).isoformat()
+        lines = [
+            "# 📚 Skills Index",
+            "",
+            "> Auto-generated during instruction sync. DO NOT EDIT MANUALLY.",
+            f"> Last updated: {timestamp}",
+            "",
+            "## Available Skills",
+            "",
+            "| Skill | Description | When to Use | When NOT | ~Tokens |",
+            "|-------|-------------|-------------|----------|---------|",
+        ]
+
+        for skill in skills_data:
+            link = f"[{skill['name']}](../skills/{skill['dir_name']}/SKILL.md)"
+            lines.append(
+                f"| {link} | {skill['description']} | {skill['when_to_use']} | {skill['when_not_to_use']} | ~{skill['tokens']} |"
+            )
+
+        lines.extend([
+            "",
+            "## Quick Reference",
+            "",
+            "### By Category",
+            "",
+        ])
+
+        for category, skill_names in categories.items():
+            if skill_names:
+                lines.append(f"- **{category}**: {', '.join(skill_names)}")
+
+        lines.append("")
+
+        # Write output
+        compiled_dir = self.official_source_path / "compiled"
+        compiled_dir.mkdir(parents=True, exist_ok=True)
+        output_path = compiled_dir / "SKILLS_INDEX.md"
+
+        try:
+            output_path.write_text("\n".join(lines), encoding="utf-8")
+            self.logger.info(f"Generated skills index: {output_path.name} ({len(skills_data)} skills)")
+        except OSError as e:
+            self.logger.error(f"Failed to write skills index: {e}")
+
+    def _write_empty_skills_index(self) -> None:
+        """Write a skills index noting no skills were found."""
+        timestamp = datetime.now(timezone.utc).isoformat()
+        content = f"""# 📚 Skills Index
+
+> Auto-generated during instruction sync. DO NOT EDIT MANUALLY.
+> Last updated: {timestamp}
+
+## Available Skills
+
+*No skills found in data/skills/.*
+"""
+        compiled_dir = self.official_source_path / "compiled"
+        compiled_dir.mkdir(parents=True, exist_ok=True)
+        output_path = compiled_dir / "SKILLS_INDEX.md"
+
+        try:
+            output_path.write_text(content, encoding="utf-8")
+            self.logger.info("Generated empty skills index (no skills found).")
+        except OSError as e:
+            self.logger.error(f"Failed to write empty skills index: {e}")
+
     def _sync_skills(self) -> None:
         """
         Sync skill directories from data/skills/ to each official target's sibling skills/ directory.
@@ -848,6 +1061,9 @@ class InstructionController:
                 self._apply_mcp_injection_to_agents(target_path)
         else:
             self.logger.info("No custom targets configured, skipping custom sync.")
+        
+        # Generate skills index before syncing skills
+        self._generate_skills_index()
         
         # Sync skills to official targets
         self._sync_skills()

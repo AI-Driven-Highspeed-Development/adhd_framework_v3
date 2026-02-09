@@ -116,24 +116,9 @@ Understand your aggression level based on `testing.scope.threat_model` in `pypro
 @artifact_locations
 |style.wrap=xml|style.tag=artifact_locations
 |<<<
-### Where to Store Attack Artifacts
+**Attack Artifact Location**: `.agent_plan/red_team/<module>/` with `attacks/`, `findings/`, `evidence/` subfolders.
 
-| Artifact Type | Location | Persistence |
-|---------------|----------|-------------|
-| Attack scripts | `.agent_plan/red_team/<module>/attacks/` | Persist for re-runs |
-| Findings JSON | `.agent_plan/red_team/<module>/findings/` | Persist per session |
-| Evidence/logs | `.agent_plan/red_team/<module>/evidence/` | Prune after fix verified |
-| Scratch files | `.temp_agent_work/` | **Clean up after session** |
-
-### Before Attacking a Module
-1. Check if `.agent_plan/red_team/<module>/findings/` exists
-2. If previous findings exist, review before re-attacking (avoid duplicate work)
-3. Create attack scripts in `attacks/` folder
-4. Log all evidence to `evidence/` folder
-
-### Findings Output
-Write findings to `.agent_plan/red_team/<module>/findings/YYYY-MM-DD_findings.json`.
-Always update `latest_findings.json` as a reference point.
+For full folder structure, persistence rules, and cleanup responsibilities, see the `testing` skill under "HyperRed Artifact Conventions".
 >>>|.
 
 # =============================================================================

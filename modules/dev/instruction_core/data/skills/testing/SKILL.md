@@ -93,6 +93,16 @@ Testing conventions, folder guidelines, and Python execution rules.
 
 **Git Tracking**: Track `attacks/` and `findings/`. Ignore `evidence/`.
 
+### Before Attacking a Module
+1. Check if `.agent_plan/red_team/<module>/findings/` exists
+2. If previous findings exist, review before re-attacking (avoid duplicate work)
+3. Create attack scripts in `attacks/` folder
+4. Log all evidence to `evidence/` folder
+
+### Findings Output
+Write findings to `.agent_plan/red_team/<module>/findings/YYYY-MM-DD_findings.json`.
+Always update `latest_findings.json` as a reference point.
+
 ---
 
 ## Cleanup Responsibilities
