@@ -1,0 +1,25 @@
+[project]
+name = "flow-core"
+version = "0.0.2"
+description = "ADHD Framework core: flow_core"
+requires-python = ">=3.11"
+dependencies = [
+    "exceptions-core",
+    "logger-util",
+    "pygls>=1.0.0",
+    "lsprotocol>=2023.0.0",
+]
+
+[tool.adhd]
+layer = "dev"
+
+[tool.uv.sources]
+exceptions-core = { workspace = true }
+logger-util = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

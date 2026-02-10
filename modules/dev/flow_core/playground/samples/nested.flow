@@ -1,0 +1,12 @@
+# Nested slots demonstration
+# Shows how slots create layer hierarchy
+
+# Root node (layer 0) with nested slots
+@page |style.title=<<My Document>>|@header |style.title=<<Header>>|<<<Top of the page>>>|.|@body |@intro |<<<Welcome to this example>>>|.|@content |<<<Main content goes here>>>|.|.|@footer |<<<Copyright 2026>>>|.|.
+
+# Layers:
+#   @page = 0
+#   @header = 1, @body = 1, @footer = 1
+#   @intro = 2, @content = 2
+
+@out |$page|.

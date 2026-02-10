@@ -1,0 +1,6 @@
+# Simple greeting node
+# This is the most basic FLOW file example
+
+@greeting |style.title=<<Hello>>|<<<Welcome to FLOW!>>>|.
+
+@out |$greeting|.

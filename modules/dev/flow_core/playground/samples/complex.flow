@@ -1,0 +1,27 @@
+# Complex example combining all FLOW features
+# This demonstrates the full power of the FLOW language
+
+# Import external utilities
++./system_prompts.flow |$base_prompt|@ai_expert|. = $expert|.
++./templates.flow |.
+
+# Mutable node with LLM strategy
+@dynamic_content |mutable=true|remutate=true|llm_strategy.instruction=<<Generate creative content based on context>>|<<<[Placeholder for LLM-generated content]>>>|.
+
+# Document structure with nested slots
+@document |style.title=<<AI Assistant Response>>|@system |style.title=<<System Context>>|<<<You are a helpful assistant.>>>|$base_prompt|.|@user_section |style.title=<<User Query>>|<<<The user asked: >>>|^user_input|.|@response |style.title=<<Assistant Response>>|$dynamic_content|@references |<<<Sources: >>>|++./sources/main.md|.|.|.
+
+# User input (forward-referenced above)
+@user_input |<<<What is the meaning of life?>>>|.
+
+# Assignment: inject the expert persona into system section
+$document.system = $ai_expert
+
+# Another assignment example
+$document.response.references = $user_input
+
+# Library node (not part of @out chain)
+@helper_utils |<<<Internal utilities>>>|.
+
+# Entry point
+@out |$document|.

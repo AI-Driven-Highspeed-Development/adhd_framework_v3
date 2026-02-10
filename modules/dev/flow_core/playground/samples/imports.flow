@@ -1,0 +1,18 @@
+# Import syntax demonstration
+# Shows different import variations
+
+# Simple import - imports all nodes from file
++./utils.flow |.
+
+# Import with selector - imports only $helper
++./helpers.flow |$helper|.
+
+# Import with rename - imports @remote_greet as @local_greet
++./greetings.flow |@local_greet|. = $remote_greet|.
+
+# Import with multiple selectors and renames
++./library.flow |$util1|@new_name|. = $old_name|$util2|.
+
+@main |<<<This file demonstrates import syntax>>>|.
+
+@out |$main|.

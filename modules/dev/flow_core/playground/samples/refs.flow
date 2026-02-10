@@ -1,0 +1,24 @@
+# Reference types demonstration
+# Shows $ref, ^forward ref, and ++file ref
+
+# Node reference ($) - references an existing node
+@greeting |<<<Hello!>>>|.
+
+@welcome |<<<Welcome message: >>>|$greeting|.
+
+# Forward reference (^) - references a node defined later
+@preview |<<<Coming up: >>>|^conclusion|.
+
+# File reference (++) - embeds external file content
+@resources |<<<Documentation: >>>|++./docs/guide.md|.
+
+# Mixed references in one node
+@combined |<<<Start>>>|$greeting|<<<Middle>>>|^ending|<<<See: >>>|++./readme.txt|.
+
+# Forward-referenced node (defined after use)
+@conclusion |<<<The End>>>|.
+
+# Another forward-referenced node
+@ending |<<<Goodbye!>>>|.
+
+@out |$welcome|.

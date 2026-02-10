@@ -1,0 +1,6 @@
+{
+    "module_name": "flow_core",
+    "path": {
+        "data": "./project/data/flow_core"
+    }
+}
