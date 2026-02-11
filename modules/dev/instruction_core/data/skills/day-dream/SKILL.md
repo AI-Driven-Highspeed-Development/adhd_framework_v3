@@ -172,7 +172,7 @@ Every blueprint document follows this structure:
 
 ### Implementation (`80_implementation.md`)
 - YAML frontmatter required
-- P0 Hard Limits: 3-5 days, max 5 tasks, no `[RESEARCH]`
+- P0 Hard Limits: 2-8 hours (AI-agent time), max 5 tasks, no `[RESEARCH]`
 - **Natural Verification**: Every phase MUST have a "How to Verify (Manual)" section
   - Max 3 human-executable steps
   - Expected outcome for each step
@@ -196,6 +196,90 @@ Every blueprint document follows this structure:
 Optional for implementation-heavy features:
 - Algorithm Choices, API Contract Draft, Error Handling Strategy
 - **Delete if**: Straightforward features, obvious implementation
+
+---
+
+## Estimation Defaults
+
+All blueprint durations use AI-agent time unless marked `human_only: true`.
+
+| Magnitude | AI-Agent Time | Human Time (reference only) |
+|-----------|---------------|----------------------------|
+| Trivial | 5-15 minutes | 1-2 hours |
+| Light | 15-60 minutes | 2-8 hours |
+| Standard | 1-4 hours | 1-3 days |
+| Heavy | 4-8 hours | 3-7 days |
+| Epic | Must decompose | Must decompose |
+
+### `human_only` Flag
+
+When a task fundamentally requires human action (UX judgment, stakeholder approval, manual testing of physical devices), mark it with `human_only: true`. These tasks use human time estimates:
+
+| Scenario | Route |
+|----------|-------|
+| Code generation, refactoring, file creation | AI-agent time (default) |
+| Goal alignment decisions ("is this right?") | Human time |
+| Subjective quality (UX, aesthetics) | Human time |
+| Novel domain knowledge not in codebase | Human time |
+| Acceptance testing with real users | Human time |
+
+---
+
+## Walking Skeleton Policy
+
+Walking skeleton is **opt-in** — not every project needs one. (Distinct from "Mandatory Skeleton Pattern" which governs document section structure.)
+
+**When REQUIRED (opt-in triggers):**
+
+| Trigger | Example |
+|---------|---------|
+| Cross-boundary integration risk | Frontend + backend must connect in P0 |
+| External API dependency | Must validate API works before building around it |
+| Multi-module data flow | Data must flow through 3+ modules end-to-end |
+
+**When NOT needed (skip it):**
+
+| Scenario | Why Skip |
+|----------|----------|
+| Single-module changes | No integration boundary to test |
+| Skill/template/doc edits | Testable by reading output |
+| Self-contained features | Can be tested at any phase |
+| Tasks with magnitude ≤ Light | Too small for skeleton overhead |
+
+---
+
+## Clean-Code-First Directive
+
+Prioritize clean, correct code over minimizing edited lines or maintaining backward compatibility to broken patterns.
+
+1. **Delete wrong code** — do not wrap it in fallbacks
+2. **Refactor fully** — do not leave half-migrated paths
+3. **One correct path** — not `try (new) catch (old)`
+4. **Measure success by correctness** — not by lines changed
+
+> **Full practice:** See the `orch-implementation` skill's **Non-Vibe Code Practice** section for the complete 3-pillar discipline (Unify Before Duplicating, No Dead Fallbacks, Ask Don't Guess) and the "Unify or Justify" gate.
+
+### Folder-Separation for Backward Compatibility
+
+When backward compatibility IS genuinely needed (external users depend on an API):
+
+**DO — separate by folder:**
+```
+feature/
+├── v2/          ← new correct implementation
+│   └── handler.py
+└── v1/          ← old implementation (delete when migration done)
+    └── handler.py
+```
+
+**DON'T — fallback wrappers:**
+```python
+# ❌ NEVER do this
+try:
+    result = new_correct_handler(data)
+except:
+    result = old_broken_handler(data)
+```
 
 ---
 
@@ -317,3 +401,7 @@ Links to dependent features/assets.
 | Use Simple tier for complex projects | Upgrade to Blueprint when threshold met |
 | Embed code in assets | Assets are for visuals/planning |
 | Create orphan assets | Always link to parent feature |
+| Use human-time estimates for AI tasks | Default to AI-agent time scale |
+| Force walking skeleton on all projects | Check trigger criteria first — skip if not needed |
+| Wrap old code in try/catch fallbacks | Delete old code or separate into v1/v2 folders |
+| Minimize lines changed over correctness | Prioritize clean, correct code |

@@ -111,6 +111,26 @@ execution_guidance: |
   - [ ] No hardcoded paths (use ConfigManager)
   - [ ] No `print()` statements in MCPs
   - [ ] Temp/debug code removed
+  
+  ## Non-Vibe Code Practice
+  Engineering discipline: write CAREFUL code, not AFRAID code.
+  
+  ### Three Pillars
+  1. **Unify Before Duplicating** — Refactor existing code to serve both old and new cases. Silent duplication = defect.
+  2. **No Dead Fallbacks** — No `try(new)/except(old)` without annotation. Any required fallback carries: `# FALLBACK: [reason] expires when [condition]`
+  3. **Ask, Don't Guess** — When uncertain, emit `[UNSURE]` marker and batch all questions for end-of-phase escalation. NEVER write speculative code.
+  
+  ### "Unify or Justify" Gate
+  Before adding any overlapping function, you MUST:
+  - Refactor the original to serve both cases, OR
+  - Add `# JUSTIFY: [reason]` explaining why unification is unsafe
+  - No third option. Unexplained duplication is a defect.
+  
+  ### Batched Escalation
+  Collect ALL `[UNSURE]` items during the current phase. Present as a single numbered list at the end — NOT one question per round-trip.
+  
+  ### Careful vs Afraid Litmus Test
+  If you cannot explain WHY you did not modify the original, you were afraid, not careful.
   </implementation_standards>
 ```
 
@@ -123,9 +143,17 @@ Invoke HyperSan:
 ```yaml
 task: "Post-implementation validation"
 context: "Implementation complete. Changes: [HyperArch summary]"
-success_criteria: "Validate implementation quality and correctness"
+success_criteria: "Validate implementation quality, correctness, and Non-Vibe Code compliance"
 output_format: "summary"
 ```
+
+**Non-Vibe Code Validation Checklist (HyperSan):**
+- [ ] No unexplained duplication — every new function checked against existing codebase
+- [ ] No bare `except` or `try(new)/except(old)` without `# FALLBACK:` annotation
+- [ ] All `# JUSTIFY:` annotations have concrete reasons (not "just in case")
+- [ ] `[UNSURE]` markers surfaced for blocking questions — no speculative code
+- [ ] No unused parameters added defensively
+- [ ] Fallbacks with `expires when` have actionable conditions
 
 **Evaluate Response:**
 - If `passed: true` → Continue to Phase 4 (if applicable) or Finalize
@@ -224,3 +252,21 @@ agent: HyperRed
 - **No Direct Implementation**: HyperOrch NEVER writes code
 - **Preserve HyperArch Autonomy**: HyperArch handles internal delegation (can invoke HyperSan/HyperRed itself)
 - **DOC-UPDATE is Conditional**: Only trigger when source references `**/day_dream/**/80_implementation.md`
+- **Non-Vibe Code Enforced**: POST-CHECK MUST validate Non-Vibe Code compliance (see checklist in Phase 3)
+
+## ⚡ Git Checkpoint Convention
+
+When an implementation plan includes phases that touch many files (large refactors, cross-module renames, destructive changes), the planning agent MUST insert a `⚡ GIT CHECKPOINT` marker before that phase.
+
+**When to checkpoint:**
+- Before phases with new file creation across multiple modules
+- Before destructive changes (renames, deletions, large refactors)
+- Before any phase touching ≥5 files
+
+**Format in implementation plans:**
+```
+## Phase N: [Description]
+⚡ GIT CHECKPOINT — commit before this phase ([reason])
+```
+
+**Rule:** Human approval of the plan is implicit consent to checkpoint. No runtime asking needed. Commit for safety, then proceed boldly — do NOT skip the refactor out of fear.

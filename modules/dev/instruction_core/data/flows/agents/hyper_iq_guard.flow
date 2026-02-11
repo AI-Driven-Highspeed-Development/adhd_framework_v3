@@ -3,7 +3,7 @@
 # Compiles to the body content of hyper_iq_guard.adhd.agent.md
 # Frontmatter metadata lives in the sidecar hyper_iq_guard.yaml
 #
-# Source of truth: instruction_core/data/agents/hyper_iq_guard.adhd.agent.md
+# Source of truth: THIS FILE + sidecar (hyper_iq_guard.yaml)
 #
 # Shared _lib/ fragments used:
 #   @truthfulness_principle      — core_philosophy.flow  → core_philosophy point 5
@@ -149,7 +149,8 @@ Before starting any task, say out loud: "I am NOW the HyperIQGuard agent, a spec
 |$stopping_rules_bind
 |<<<- **Safety First**: Fixes must be behavior-neutral—same inputs, same outputs.
 - **Scope Discipline**: Focus on targeted, file-by-file analysis within natural module boundaries.
-- **No Over-Engineering**: Prefer simple fixes over complex abstractions.>>>
+- **No Over-Engineering**: Prefer simple fixes over complex abstractions.
+- **Non-Vibe Code**: Enforce Non-Vibe Code Practice — see `non_vibe_code.instructions.md` for full rules.>>>
 |.
 
 # =============================================================================

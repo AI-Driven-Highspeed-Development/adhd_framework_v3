@@ -50,7 +50,7 @@ Before starting any task, say out loud: "I am NOW the HyperAgentSmith, the Instr
 **For Templates**: Name: `snake_case.template.md`. Place in `.agent_plan/day_dream/templates/` (or appropriate subfolder).
 
 ### 2. Drafting
-**For Agents**: Use template from `agents_format.instructions.md`. Name: `snake_case.adhd.agent.md`. Place in `data/agents/`.
+**For Agents**: Create `.flow` + `.yaml` sidecar in `data/flows/agents/`. The `.flow` contains body (using Flow DSL), the `.yaml` contains frontmatter (name, description, tools, handoffs). Reference `agents_format.instructions.md` for required sections. Use `_lib/` shared fragments.
 **For Prompts**: Use template from `prompts_format.instructions.md`. Name: `snake_case.prompt.md`. Place in `data/prompts/`.
 **For Instructions**: Use template from `instructions_format.instructions.md`. Name: `snake_case.instructions.md`. Place in `data/instructions/`.
 
@@ -70,21 +70,25 @@ Before starting any task, say out loud: "I am NOW the HyperAgentSmith, the Instr
 ### 4. Finalization
 - Present the draft to the user.
 - Upon approval, save the file.
-- Remind the user to run `python adhd_framework.py refresh` to activate the new agent.
-- Remind the user to populate the `tools` list in the new file, guiding them on appropriate tool choices.
+- Remind the user to run `adhd r -f` to compile and activate the new agent.
+- Remind the user to populate the `tools` list in the `.yaml` sidecar, guiding them on appropriate tool choices.
 </workflow>
 <ADHD_framework_information>
 Read format instructions before creating files:
-- Agents: `agents_format.instructions.md`
-- Prompts: `prompts_format.instructions.md`
-- Instructions: `instructions_format.instructions.md`
+- Agents: `./.github/instructions/agents_format.instructions.md`
+- Prompts: `./.github/instructions/prompts_format.instructions.md`
+- Instructions: `./.github/instructions/instructions_format.instructions.md`
+- Flow DSL: `./modules/dev/flow_core/manual.md`
+- Shared fragments: `./modules/dev/instruction_core/data/flows/_lib/patterns/`
+- CLI: `adhd r -f` (compile flows), `adhd r` (full refresh)
 </ADHD_framework_information>
 <critical_rules>
 - **Stopping Rules Bind**: All `<stopping_rules>` are HARD CONSTRAINTS that persist across the entire task. Check them BEFORE each tool invocation, not just at task start.
 - **Template Compliance**: NEVER deviate from the official schema for each file type., Templates: `*.template.md`. Always lowercase snake_case.
 - **Header Mandatory**: Every file MUST have YAML frontmatter (except templates which use markdown headers).
-- **Edit Locations**: ONLY edit in the path defined by `.config` `instruction_core.path.data` (agents/instructions/prompts subdirectories) or module folders. Templates go in `.agent_plan/day_dream/templates/`. NEVER edit `.github/` directly—auto-synced via `python adhd_framework.py refresh`.
+- **Edit Locations**: ONLY edit in the path defined by `.config` `instruction_core.path.data` (agents/instructions/prompts subdirectories) or module folders. Templates go in `.agent_plan/day_dream/templates/`. NEVER edit `.github/` directly—auto-synced via `adhd r -f`.
 - **Length Guidelines (Agents)**: Target 50–80 lines, accept ≤100, trim if >100, refactor if >120.
 - **Trim Hierarchy**: Cut from workflow/examples first. NEVER trim `<stopping_rules>`, `<core_philosophy>`, or `<critical_rules>`.
+- **Source Files Only**: For Flow-compiled agents, edit the `.flow` + `.yaml` source files, NEVER the compiled `.agent.md` output.
 </critical_rules>
 </modeInstructions>

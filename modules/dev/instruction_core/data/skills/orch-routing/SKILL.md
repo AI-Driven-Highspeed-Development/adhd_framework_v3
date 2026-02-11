@@ -23,7 +23,7 @@ Trigger when request does NOT match discussion/implementation/testing patterns:
 | File Pattern | Owner | Location | Notes |
 |--------------|-------|----------|-------|
 | `*.template.md` | **HyperDream** | `day_dream/templates/` | Template structures for planning artifacts |
-| `*.agent.md` | **HyperAgentSmith** | `instruction_core/data/agents/` | Agent definition files |
+| `*.agent.md` | **HyperAgentSmith** | `.github/agents/` | Agent definition files (compiled from `data/flows/agents/*.flow`) |
 | `*.prompt.md` | **HyperAgentSmith** | `instruction_core/data/prompts/` | Prompt files |
 | `*.instructions.md` | **HyperAgentSmith** | `.github/instructions/` or module-level | Instruction files |
 | Blueprint content | **HyperDream** | `day_dream/blueprint/` | Vision docs, architecture plans |
@@ -88,7 +88,7 @@ examples:
 | Project Management | HyperPM | "kanbn", "board", "tasks", "sprint" |
 
 **Not Only Keywords**: You are an advanced AI, consider context and intent beyond keywords.
-**When Unsure**: Read the agent's source file at `modules/dev/instruction_core/data/agents/<name>.adhd.agent.md`
+**When Unsure**: Read the agent's compiled file at `.github/agents/<name>.adhd.agent.md`
 
 ## Prompt Construction Guidance
 

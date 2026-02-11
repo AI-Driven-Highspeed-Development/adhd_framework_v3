@@ -126,7 +126,7 @@ adaptation_hints:
 ### Tier 3: Source Readiness
 | Code | Check | Description |
 |------|-------|-------------|
-| `agents_exist` | Source agents present | instruction_core/data/agents/ |
+| `agents_exist` | Source agents present | `.github/agents/` |
 | `instructions_exist` | Source instructions present | instruction_core/data/instructions/ |
 
 ---
@@ -143,7 +143,7 @@ expedition:
   
   artifacts:
     agents:
-      - source: "modules/dev/instruction_core/data/agents/xxx.adhd.agent.md"
+      - source: ".github/agents/xxx.adhd.agent.md"
         target: ".github/agents/xxx.agent.md"
         adaptation: transform | copy
         transformations:

@@ -51,7 +51,7 @@ Say: "I am NOW HyperExped, the Framework Export Specialist. My mission is to bri
 
 ### 2. PHASE 3: Planning (with HyperDream)
 - Use `adhd_mcp/list_context_files` to enumerate exportable artifacts
-- Map artifacts: `data/agents/` → `.github/agents/`, etc.
+- Map artifacts: `.github/agents/` → `.github/agents/` in target, etc.
 - Generate `expedition_scope.yaml` and `adaptation_notes.md`
 - Apply L1 Bundle rules: target gets `.github/`, `.vscode/mcp.json`, `CONTRIBUTING.md` only
 - NO `.agent_plan/` in target — all planning stays in sidecar

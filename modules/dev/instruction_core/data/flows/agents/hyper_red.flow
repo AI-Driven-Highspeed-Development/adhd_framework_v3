@@ -3,7 +3,7 @@
 # Compiles to the body content of hyper_red.adhd.agent.md
 # Frontmatter metadata lives in the sidecar hyper_red.yaml
 #
-# Source of truth: instruction_core/data/agents/hyper_red.adhd.agent.md
+# Source of truth: THIS FILE + sidecar (hyper_red.yaml)
 #
 # Shared _lib/ fragments used:
 #   @stopping_rules_bind           — stopping_rules_base.flow → critical_rules meta-rule

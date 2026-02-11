@@ -91,5 +91,6 @@ If needed, read the ADHD framework's core philosophy and project structure in `.
 - **Safety First**: Fixes must be behavior-neutral—same inputs, same outputs.
 - **Scope Discipline**: Focus on targeted, file-by-file analysis within natural module boundaries.
 - **No Over-Engineering**: Prefer simple fixes over complex abstractions.
+- **Non-Vibe Code**: Enforce Non-Vibe Code Practice — see `non_vibe_code.instructions.md` for full rules.
 </critical_rules>
 </modeInstructions>
