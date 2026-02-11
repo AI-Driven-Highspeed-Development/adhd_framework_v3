@@ -126,7 +126,12 @@ class ProjectCreator:
         self._write_pyproject_toml(dest_path, installed_modules)
         
         # Sync to ensure all dependencies are resolved
+        # JUSTIFY: Cannot use ModulesController.sync() here because it lacks
+        # cwd parameter and VIRTUAL_ENV env cleaning needed for cross-project sync.
         self._run_uv_sync(dest_path)
+
+        # Post-creation setup: refresh modules and generate workspace file
+        self._run_post_creation_setup(dest_path)
 
         # Create remote repo if requested
         if self.params.repo_options:
@@ -251,6 +256,41 @@ class ProjectCreator:
         if result.returncode != 0:
             raise ADHDError(f"uv sync failed: {result.stderr}") from None
         self.logger.info("uv sync completed successfully")
+
+    def _run_post_creation_setup(self, dest_path: Path) -> None:
+        """Run post-creation setup: full refresh and workspace file generation.
+
+        Executes the equivalent of:
+          adhd r -f        (full refresh, skip_sync since _run_uv_sync already ran)
+          adhd ws -r runtime  (workspace file filtered to runtime-layer modules)
+
+        Failures are logged as warnings and do not abort project creation.
+
+        Args:
+            dest_path: Path to the newly created project directory.
+        """
+        from modules_controller_core import ModulesController, ModuleFilter, FilterMode
+
+        try:
+            controller = ModulesController(root_path=dest_path)
+
+            # Full refresh — skip sync since _run_uv_sync() already ran
+            self.logger.info("Running full refresh on new project...")
+            controller.refresh(skip_sync=True, full=True)
+
+            # Generate workspace file filtered to runtime layer
+            self.logger.info("Generating VS Code workspace file...")
+            module_filter = ModuleFilter.from_args(FilterMode.REQUIRE, ["runtime"])
+            ws_path = controller.generate_workspace_file(module_filter=module_filter)
+            self.logger.info(f"Workspace file generated at: {ws_path}")
+
+        # Graceful degradation: project is usable without auto-setup
+        except Exception as e:
+            self.logger.warning(
+                f"Post-creation setup encountered an issue: {e}. "
+                "The project was created successfully. You can run these "
+                "commands manually: uv run adhd r -f && uv run adhd ws -r runtime"
+            )
 
     def _install_modules_to_workspace(self, project_path: Path) -> List[ModuleInfo]:
         """Install modules by cloning to correct workspace folders based on type.
