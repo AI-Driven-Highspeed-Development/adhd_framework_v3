@@ -1,14 +1,21 @@
-"""module_adder_core - Add external modules to the ADHD Framework workspace.
+"""module_lifecycle_core - Module lifecycle management for the ADHD Framework workspace.
 
-Supports three acquisition modes:
-1. Standalone repository (git clone)
-2. Monorepo subfolder (git clone + extract subfolder)
-3. PyPI package (future, not yet available)
+Supports:
+- Adding modules (git clone, monorepo subfolder, future PyPI)
+- Removing modules (with reverse-dep checks and dry-run)
+- Updating modules (atomic swap with rollback)
 """
 
 from .module_adder import ModuleAdder, AddModuleResult
+from .module_remover import ModuleRemover, RemoveResult
+from .module_updater import ModuleUpdater, UpdateResult, BatchUpdateResult
 
 __all__ = [
     "ModuleAdder",
     "AddModuleResult",
+    "ModuleRemover",
+    "RemoveResult",
+    "ModuleUpdater",
+    "UpdateResult",
+    "BatchUpdateResult",
 ]

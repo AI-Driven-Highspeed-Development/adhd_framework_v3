@@ -1,4 +1,4 @@
-"""Unit tests for module_adder_core.
+"""Unit tests for module_lifecycle_core.
 
 MOCKS USED IN THIS FILE:
 - subprocess.run: Mocked to simulate git clone behavior. Creates files in tmp_path
@@ -106,7 +106,7 @@ class TestAddFromRepoSuccess:
 
         MOCKS: subprocess.run (git clone), shutil.which, ModulesController.sync
         """
-        from module_adder_core import ModuleAdder
+        from module_lifecycle_core import ModuleAdder
 
         mock_run = _mock_subprocess_run_success(project_root, layer="runtime")
 
@@ -135,7 +135,7 @@ class TestAddFromRepoSuccess:
 
         MOCKS: subprocess.run, shutil.which, ModulesController.sync
         """
-        from module_adder_core import ModuleAdder
+        from module_lifecycle_core import ModuleAdder
 
         mock_run = _mock_subprocess_run_success(project_root, layer="runtime")
 
@@ -165,7 +165,7 @@ class TestAddFromRepoNoProject:
 
         MOCKS: subprocess.run (creates dir without pyproject.toml), shutil.which, ModulesController.sync
         """
-        from module_adder_core import ModuleAdder
+        from module_lifecycle_core import ModuleAdder
 
         mock_run = _mock_subprocess_run_success(project_root, has_pyproject=False)
 
@@ -200,7 +200,7 @@ class TestAddFromRepoFailures:
 
         MOCKS: None
         """
-        from module_adder_core import ModuleAdder
+        from module_lifecycle_core import ModuleAdder
         adder = ModuleAdder(project_root=project_root)
         result = adder.add_from_repo("not-a-url")
         assert result.success is False
@@ -211,7 +211,7 @@ class TestAddFromRepoFailures:
 
         MOCKS: subprocess.run, shutil.which, ModulesController.sync
         """
-        from module_adder_core import ModuleAdder
+        from module_lifecycle_core import ModuleAdder
 
         # Pre-create the target directory
         existing = project_root / "modules" / "runtime" / "testing_standalone_module"
@@ -236,7 +236,7 @@ class TestAddFromRepoFailures:
 
         MOCKS: subprocess.run (returns non-zero exit code)
         """
-        from module_adder_core import ModuleAdder
+        from module_lifecycle_core import ModuleAdder
 
         def mock_run(args, **kwargs):
             if args[0] == "git":
@@ -259,7 +259,7 @@ class TestAddFromRepoFailures:
 
         MOCKS: subprocess.run (raises TimeoutExpired)
         """
-        from module_adder_core import ModuleAdder
+        from module_lifecycle_core import ModuleAdder
 
         def mock_run(args, **kwargs):
             if args[0] == "git":
@@ -281,7 +281,7 @@ class TestAddFromRepoFailures:
 
         MOCKS: subprocess.run (creates dir with invalid layer)
         """
-        from module_adder_core import ModuleAdder
+        from module_lifecycle_core import ModuleAdder
 
         mock_run = _mock_subprocess_run_success(project_root, layer="invalid")
 
@@ -304,7 +304,7 @@ class TestAddFromMonorepo:
 
         MOCKS: subprocess.run (creates monorepo with packages/alpha/)
         """
-        from module_adder_core import ModuleAdder
+        from module_lifecycle_core import ModuleAdder
 
         def mock_run(args, **kwargs):
             if args[0] == "git" and args[1] == "clone":
@@ -358,7 +358,7 @@ packages = ["."]
 
         MOCKS: subprocess.run (creates repo without the requested subfolder)
         """
-        from module_adder_core import ModuleAdder
+        from module_lifecycle_core import ModuleAdder
 
         def mock_run(args, **kwargs):
             if args[0] == "git" and args[1] == "clone":
@@ -385,7 +385,7 @@ class TestAddFromPyPI:
 
     def test_add_from_pypi_raises_not_implemented(self):
         """PyPI mode should raise NotImplementedError."""
-        from module_adder_core import ModuleAdder
+        from module_lifecycle_core import ModuleAdder
         adder = ModuleAdder()
         with pytest.raises(NotImplementedError, match="not yet available"):
             adder.add_from_pypi("some-package")
@@ -399,7 +399,7 @@ class TestGitStripping:
 
         MOCKS: subprocess.run
         """
-        from module_adder_core import ModuleAdder
+        from module_lifecycle_core import ModuleAdder
 
         mock_run = _mock_subprocess_run_success(
             project_root, has_git=True, has_github=True, has_gitignore=True

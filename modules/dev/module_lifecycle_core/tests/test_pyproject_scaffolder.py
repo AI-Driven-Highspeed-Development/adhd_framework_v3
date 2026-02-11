@@ -20,7 +20,7 @@ class TestScaffoldWithDefaults:
 
         MOCKS: None (skip_prompt=True bypasses prompts)
         """
-        from module_adder_core.pyproject_scaffolder import scaffold_pyproject
+        from module_lifecycle_core.pyproject_scaffolder import scaffold_pyproject
 
         module_dir = tmp_path / "my_cool_module"
         module_dir.mkdir()
@@ -41,7 +41,7 @@ class TestScaffoldWithDefaults:
 
         MOCKS: None
         """
-        from module_adder_core.pyproject_scaffolder import scaffold_pyproject
+        from module_lifecycle_core.pyproject_scaffolder import scaffold_pyproject
 
         module_dir = tmp_path / "test_module"
         module_dir.mkdir()
@@ -65,7 +65,7 @@ class TestScaffoldNameInference:
 
         MOCKS: None
         """
-        from module_adder_core.pyproject_scaffolder import _infer_name_from_folder
+        from module_lifecycle_core.pyproject_scaffolder import _infer_name_from_folder
 
         assert _infer_name_from_folder(tmp_path / "my-cool-module") == "my_cool_module"
 
@@ -74,7 +74,7 @@ class TestScaffoldNameInference:
 
         MOCKS: None
         """
-        from module_adder_core.pyproject_scaffolder import _infer_name_from_folder
+        from module_lifecycle_core.pyproject_scaffolder import _infer_name_from_folder
 
         assert _infer_name_from_folder(tmp_path / "MyModule") == "my_module"
 
@@ -83,7 +83,7 @@ class TestScaffoldNameInference:
 
         MOCKS: None
         """
-        from module_adder_core.pyproject_scaffolder import _infer_name_from_folder
+        from module_lifecycle_core.pyproject_scaffolder import _infer_name_from_folder
 
         assert _infer_name_from_folder(tmp_path / "already_snake") == "already_snake"
 
@@ -92,6 +92,6 @@ class TestScaffoldNameInference:
 
         MOCKS: None
         """
-        from module_adder_core.pyproject_scaffolder import _infer_name_from_folder
+        from module_lifecycle_core.pyproject_scaffolder import _infer_name_from_folder
 
         assert _infer_name_from_folder(tmp_path / "My-Cool_Module") == "my_cool_module"

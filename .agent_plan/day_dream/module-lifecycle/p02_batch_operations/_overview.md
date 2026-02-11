@@ -12,7 +12,7 @@ After single-module remove and update commands are working (P1), add batch updat
 
 | Name | Type | Status | Description |
 |------|------|--------|-------------|
-| [batch-update-command.md](./batch-update-command.md) | Task | ⏳ [TODO] | `adhd update --layer dev\|foundation` with safety guards |
+| [01_batch_update_command.md](./01_batch_update_command.md) | Task | ⏳ [TODO] | `adhd update --layer dev\|foundation` with safety guards |
 
 ## Integration Map
 
@@ -20,4 +20,4 @@ Single child — no internal dependencies. Depends on P1's `ModuleUpdater.update
 
 ## Reading Order
 
-1. [batch-update-command.md](./batch-update-command.md) — Batch update with `--layer` flag
+1. [01_batch_update_command.md](./01_batch_update_command.md) — Batch update with `--layer` flag

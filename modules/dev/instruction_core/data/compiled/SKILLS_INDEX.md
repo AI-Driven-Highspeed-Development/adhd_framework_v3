@@ -1,13 +1,14 @@
 # 📚 Skills Index
 
 > Auto-generated during instruction sync. DO NOT EDIT MANUALLY.
-> Last updated: 2026-02-11T05:05:31.419367+00:00
+> Last updated: 2026-02-11T09:21:34.306463+00:00
 
 ## Available Skills
 
 | Skill | Description | When to Use | When NOT | ~Tokens |
 |-------|-------------|-------------|----------|---------|
-| [day-dream](../skills/day-dream/SKILL.md) | Vision and planning workflows — creating blueprint plans, ar... | Creating a new blueprint (day-dream) plan; Authoring feature specs, architecture docs, or implementation plans | ⚠️ Not documented | ~3286 |
+| [day-dream](../skills/day-dream/SKILL.md) | Vision and planning workflows — creating blueprint plans, ar... | Creating a new blueprint (day-dream) plan; Authoring feature specs, architecture docs, or implementation plans | ⚠️ Not documented | ~4055 |
+| [dream-planning](../skills/dream-planning/SKILL.md) | DREAM decomposition protocol — magnitude-gated routing, plan... | Assessing whether a task needs decomposition; Breaking complex work into a plan/task tree | ⚠️ Not documented | ~2405 |
 | [expedition](../skills/expedition/SKILL.md) | Framework export workflows — exporting ADHD agents and instr... | Exporting agents/instructions to a Vue3, React, Unity, Rust, Go, or other external project; Running the 8-phase expedition pipeline | ⚠️ Not documented | ~2508 |
 | [orch-discussion](../skills/orch-discussion/SKILL.md) | Orchestrator discussion preset — structured multi-agent disc... | See SKILL.md | ⚠️ Not documented | ~1500 |
 | [orch-expedition](../skills/orch-expedition/SKILL.md) | Orchestrator expedition preset — coordinating the 8-phase ex... | See SKILL.md | ⚠️ Not documented | ~1782 |
@@ -23,7 +24,7 @@
 
 ### By Category
 
-- **Planning**: day-dream, orch-routing
+- **Planning**: day-dream, dream-planning, orch-routing
 - **Implementation**: orch-implementation, writing-flows, writing-skills, writing-templates
 - **Export**: expedition, orch-expedition
 - **Testing**: orch-testing, testing

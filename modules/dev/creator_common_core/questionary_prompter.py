@@ -1,7 +1,7 @@
 """Questionary Prompter - Interactive prompt wrapper using questionary.
 
 Extracted from creator_common_core.py so that other dev-layer modules
-(e.g., module_adder_core) can import it without pulling in git/template helpers.
+(e.g., module_lifecycle_core) can import it without pulling in git/template helpers.
 """
 
 from __future__ import annotations

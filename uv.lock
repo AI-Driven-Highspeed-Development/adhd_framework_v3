@@ -14,8 +14,8 @@ members = [
     "github-api-core",
     "instruction-core",
     "logger-util",
-    "module-adder-core",
     "module-creator-core",
+    "module-lifecycle-core",
     "modules-controller-core",
     "project-creator-core",
     "temp-files-manager",
@@ -36,8 +36,8 @@ dependencies = [
     { name = "github-api-core" },
     { name = "logger-util" },
     { name = "mcp" },
-    { name = "module-adder-core" },
     { name = "module-creator-core" },
+    { name = "module-lifecycle-core" },
     { name = "modules-controller-core" },
     { name = "project-creator-core" },
 ]
@@ -63,8 +63,8 @@ requires-dist = [
     { name = "github-api-core", editable = "modules/dev/github_api_core" },
     { name = "logger-util", editable = "modules/foundation/logger_util" },
     { name = "mcp", specifier = ">=1.0" },
-    { name = "module-adder-core", editable = "modules/dev/module_adder_core" },
     { name = "module-creator-core", editable = "modules/dev/module_creator_core" },
+    { name = "module-lifecycle-core", editable = "modules/dev/module_lifecycle_core" },
     { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
     { name = "project-creator-core", editable = "modules/dev/project_creator_core" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
@@ -593,25 +593,6 @@ wheels = [
 ]
 
 [[package]]
-name = "module-adder-core"
-version = "0.1.0"
-source = { editable = "modules/dev/module_adder_core" }
-dependencies = [
-    { name = "creator-common-core" },
-    { name = "exceptions-core" },
-    { name = "logger-util" },
-    { name = "modules-controller-core" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "creator-common-core", editable = "modules/dev/creator_common_core" },
-    { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
-    { name = "logger-util", editable = "modules/foundation/logger_util" },
-    { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
-]
-
-[[package]]
 name = "module-creator-core"
 version = "0.0.1"
 source = { editable = "modules/dev/module_creator_core" }
@@ -630,6 +611,25 @@ requires-dist = [
     { name = "creator-common-core", editable = "modules/dev/creator_common_core" },
     { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
     { name = "github-api-core", editable = "modules/dev/github_api_core" },
+    { name = "logger-util", editable = "modules/foundation/logger_util" },
+    { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
+]
+
+[[package]]
+name = "module-lifecycle-core"
+version = "0.1.0"
+source = { editable = "modules/dev/module_lifecycle_core" }
+dependencies = [
+    { name = "creator-common-core" },
+    { name = "exceptions-core" },
+    { name = "logger-util" },
+    { name = "modules-controller-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "creator-common-core", editable = "modules/dev/creator_common_core" },
+    { name = "exceptions-core", editable = "modules/foundation/exceptions_core" },
     { name = "logger-util", editable = "modules/foundation/logger_util" },
     { name = "modules-controller-core", editable = "modules/foundation/modules_controller_core" },
 ]

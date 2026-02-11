@@ -53,6 +53,10 @@ class ADHDFramework:
             'dp': self.deps_check,
             'add': self.add_module,
             'a': self.add_module,
+            'remove': self.remove_module,
+            'rm': self.remove_module,
+            'update': self.update_module,
+            'up': self.update_module,
         }
 
         handler = command_map.get(args.command)
@@ -301,7 +305,7 @@ class ADHDFramework:
     # ------------------------------------------------------------------
 
     def add_module(self, args) -> None:
-        from module_adder_core import ModuleAdder
+        from module_lifecycle_core import ModuleAdder
 
         if getattr(args, 'pypi', False):
             try:
@@ -323,6 +327,74 @@ class ADHDFramework:
             self.logger.error(f"\u274c {result.message}")
             sys.exit(1)
         self.logger.info(f"\u2705 {result.message}")
+
+    # ------------------------------------------------------------------
+    # Remove Module
+    # ------------------------------------------------------------------
+
+    def remove_module(self, args) -> None:
+        from module_lifecycle_core import ModuleRemover
+
+        remover = ModuleRemover()
+        result = remover.remove(
+            args.name,
+            dry_run=getattr(args, 'dry_run', False),
+            force=getattr(args, 'force', False),
+            keep_dir=getattr(args, 'keep_dir', False),
+            no_confirm=getattr(args, 'no_confirm', False),
+        )
+        if not result.success:
+            self.logger.error(f"\u274c {result.message}")
+            sys.exit(1)
+        self.logger.info(f"\u2705 {result.message}")
+
+    # ------------------------------------------------------------------
+    # Update Module
+    # ------------------------------------------------------------------
+
+    def update_module(self, args) -> None:
+        from module_lifecycle_core import ModuleUpdater
+
+        # Validate: must provide either name or --layer, not both
+        if args.name and args.layer:
+            self.logger.error("❌ Provide either a module name or --layer, not both.")
+            sys.exit(2)
+        if not args.name and not args.layer:
+            self.logger.error("❌ Provide a module name or --layer flag.")
+            sys.exit(2)
+
+        updater = ModuleUpdater()
+
+        if args.layer:
+            # Batch update path
+            from exceptions_core import ADHDError
+            try:
+                result = updater.batch_update(
+                    args.layer,
+                    dry_run=getattr(args, 'dry_run', False),
+                    branch=getattr(args, 'branch', None),
+                    keep_backup=getattr(args, 'keep_backup', False),
+                    force=getattr(args, 'force', False),
+                    continue_on_error=getattr(args, 'continue_on_error', False),
+                )
+            except ADHDError as e:
+                self.logger.error(f"❌ {e}")
+                sys.exit(1)
+            if result.failed:
+                sys.exit(1)
+        else:
+            # Single module update path
+            result = updater.update(
+                args.name,
+                dry_run=getattr(args, 'dry_run', False),
+                branch=getattr(args, 'branch', None),
+                keep_backup=getattr(args, 'keep_backup', False),
+                force=getattr(args, 'force', False),
+            )
+            if not result.success:
+                self.logger.error(f"❌ {result.message}")
+                sys.exit(1)
+            self.logger.info(f"✅ {result.message}")
 
     # ------------------------------------------------------------------
     # Helper: build filter from args
@@ -438,6 +510,39 @@ def setup_parser() -> argparse.ArgumentParser:
                            help='Skip all interactive prompts, use defaults')
     add_parser.add_argument('--pypi', action='store_true',
                            help='Treat source as a PyPI package name (not yet available)')
+
+    # Remove command
+    remove_parser = subparsers.add_parser('remove', aliases=['rm'], help='Remove a module from the workspace')
+    remove_name_arg = remove_parser.add_argument('name', help='Module name to remove')
+    remove_parser.add_argument('--force', '-f', action='store_true',
+                               help='Remove even if other modules depend on it')
+    remove_parser.add_argument('--dry-run', '-n', action='store_true',
+                               help='Preview changes without modifying anything')
+    remove_parser.add_argument('--no-confirm', '-y', action='store_true',
+                               help='Skip confirmation prompt')
+    remove_parser.add_argument('--keep-dir', action='store_true',
+                               help='Unregister from pyproject.toml but keep the directory')
+    if argcomplete:
+        remove_name_arg.completer = module_completer
+
+    # Update command
+    update_parser = subparsers.add_parser('update', aliases=['up'], help='Update a module to the latest version')
+    update_name_arg = update_parser.add_argument('name', nargs='?', default=None,
+                                                  help='Module name to update')
+    update_parser.add_argument('--layer', '-l', choices=['foundation', 'runtime', 'dev'],
+                               help='Update all modules in a layer')
+    update_parser.add_argument('--continue-on-error', action='store_true',
+                               help='Continue batch update even if a module fails')
+    update_parser.add_argument('--dry-run', '-n', action='store_true',
+                               help='Preview changes without modifying anything')
+    update_parser.add_argument('--branch', '-b', metavar='NAME',
+                               help='Clone from a specific branch')
+    update_parser.add_argument('--keep-backup', action='store_true',
+                               help='Keep the .bak directory after successful update')
+    update_parser.add_argument('--force', '-f', action='store_true',
+                               help='Update even if module has uncommitted local changes')
+    if argcomplete:
+        update_name_arg.completer = module_completer
 
     if argcomplete:
         argcomplete.autocomplete(parser)

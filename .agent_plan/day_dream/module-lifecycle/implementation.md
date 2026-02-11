@@ -37,8 +37,8 @@ based on current codebase state.
 
 | Status | Task | Target File | Difficulty | Feature |
 |--------|------|-------------|------------|---------|
-| ⏳ | Add `get_reverse_deps()` to DependencyWalker | `modules_controller_core/dependency_walker.py` | `[KNOWN]` | [reverse-dep-lookup](./p0-prerequisites/reverse-dep-lookup.md) |
-| ⏳ | Add `remove_from_root_pyproject()` to pyproject_patcher | `module_adder_core/pyproject_patcher.py` | `[KNOWN]` | [pyproject-patcher-remove](./p0-prerequisites/pyproject-patcher-remove.md) |
+| ⏳ | Add `get_reverse_deps()` to DependencyWalker | `modules_controller_core/dependency_walker.py` | `[KNOWN]` | [reverse_dep_lookup](./p00_prerequisites/02_reverse_dep_lookup.md) |
+| ⏳ | Add `remove_from_root_pyproject()` to pyproject_patcher | `module_lifecycle_core/pyproject_patcher.py` | `[KNOWN]` | [pyproject_patcher_remove](./p00_prerequisites/01_pyproject_patcher_remove.md) |
 | ⏳ | Unit tests for both functions | `tests/` in respective modules | `[KNOWN]` | P0 |
 
 ### P0 Hard Limits
@@ -78,12 +78,12 @@ based on current codebase state.
 
 | Status | Task | Target File | Difficulty | Feature |
 |--------|------|-------------|------------|---------|
-| ⏳ | Create `ModuleRemover` class | `module_adder_core/module_remover.py` | `[KNOWN]` | [remove-command](./p1-core-commands/remove-command.md) |
-| ⏳ | Create `ModuleUpdater` class with atomic swap | `module_adder_core/module_updater.py` | `[KNOWN]` | [update-command](./p1-core-commands/update-command.md) |
-| ⏳ | Implement dry-run mode for remove + update | Both classes | `[KNOWN]` | [safety-features](./p1-core-commands/safety-features.md) |
-| ⏳ | Implement backup + rollback for update | `ModuleUpdater` | `[KNOWN]` | [safety-features](./p1-core-commands/safety-features.md) |
-| ⏳ | Wire `remove` command in `adhd_framework.py` | `adhd_framework.py` | `[KNOWN]` | [remove-command](./p1-core-commands/remove-command.md) |
-| ⏳ | Wire `update` command in `adhd_framework.py` | `adhd_framework.py` | `[KNOWN]` | [update-command](./p1-core-commands/update-command.md) |
+| ⏳ | Create `ModuleRemover` class | `module_lifecycle_core/module_remover.py` | `[KNOWN]` | [remove_command](./p01_core_commands/01_remove_command.md) |
+| ⏳ | Create `ModuleUpdater` class with atomic swap | `module_lifecycle_core/module_updater.py` | `[KNOWN]` | [update_command](./p01_core_commands/03_update_command.md) |
+| ⏳ | Implement dry-run mode for remove + update | Both classes | `[KNOWN]` | [safety_features](./p01_core_commands/02_safety_features.md) |
+| ⏳ | Implement backup + rollback for update | `ModuleUpdater` | `[KNOWN]` | [safety_features](./p01_core_commands/02_safety_features.md) |
+| ⏳ | Wire `remove` command in `adhd_framework.py` | `adhd_framework.py` | `[KNOWN]` | [remove_command](./p01_core_commands/01_remove_command.md) |
+| ⏳ | Wire `update` command in `adhd_framework.py` | `adhd_framework.py` | `[KNOWN]` | [update_command](./p01_core_commands/03_update_command.md) |
 | ⏳ | Integration tests for remove + update | `tests/` | `[KNOWN]` | P1 |
 
 ### Verification (Manual)
@@ -113,9 +113,9 @@ based on current codebase state.
 
 | Status | Task | Target File | Difficulty | Feature |
 |--------|------|-------------|------------|---------|
-| ⏳ | Add `--layer` flag parsing to update command | `adhd_framework.py` | `[KNOWN]` | [batch-operations](./p2-batch-operations/batch-update-command.md) |
-| ⏳ | Implement batch update logic in `ModuleUpdater` | `module_adder_core/module_updater.py` | `[KNOWN]` | [batch-operations](./p2-batch-operations/batch-update-command.md) |
-| ⏳ | Add controller-level runtime layer guard | `ModuleUpdater` | `[KNOWN]` | [batch-operations](./p2-batch-operations/batch-update-command.md) |
+| ⏳ | Add `--layer` flag parsing to update command | `adhd_framework.py` | `[KNOWN]` | [batch-operations](./p02_batch_operations/01_batch_update_command.md) |
+| ⏳ | Implement batch update logic in `ModuleUpdater` | `module_lifecycle_core/module_updater.py` | `[KNOWN]` | [batch-operations](./p02_batch_operations/01_batch_update_command.md) |
+| ⏳ | Add controller-level runtime layer guard | `ModuleUpdater` | `[KNOWN]` | [batch-operations](./p02_batch_operations/01_batch_update_command.md) |
 
 ### Verification (Manual)
 
@@ -131,7 +131,7 @@ based on current codebase state.
 | Date | Decision | Rationale |
 |------|----------|-----------|
 | 2026-02-11 | Swap pattern for update (not remove+re-add) | Avoids failure window |
-| 2026-02-11 | Extend `module_adder_core`, defer rename | Functional value now > cosmetic rename risk |
+| 2026-02-11 | Extend `module_lifecycle_core`, defer rename | Functional value now > cosmetic rename risk |
 | 2026-02-11 | `init.yaml` excluded from all operations | Legacy mechanism |
 | 2026-02-11 | Controller-level `--layer runtime` guard | Defense in depth, not just CLI validation |
 | 2026-02-11 | Walking skeleton for P1 | Cross-module integration (CLI → controller → patcher → walker → uv → workspace) |

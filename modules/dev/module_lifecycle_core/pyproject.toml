@@ -1,7 +1,7 @@
 [project]
-name = "module-adder-core"
+name = "module-lifecycle-core"
 version = "0.1.0"
-description = "Module adder for ADHD Framework - adds external modules from git repos or monorepo subfolders"
+description = "Module lifecycle management for ADHD Framework - add, remove, and update modules"
 requires-python = ">=3.11"
 dependencies = [
     "exceptions-core",

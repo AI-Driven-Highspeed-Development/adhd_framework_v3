@@ -1,6 +1,13 @@
 ````markdown
 <!--
 ╔═══════════════════════════════════════════════════════════════════════════════╗
+║  ⚠️  SCAFFOLD — This template provides STRUCTURE, not protocol.              ║
+║  Protocol rules live in skills: day-dream (authoring) and dream-planning     ║
+║  (decomposition). Templates are passive — copy, fill, customize.             ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+-->
+<!--
+╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                    SIMPLE FEATURE TEMPLATE                                    ║
 ║                                                                               ║
 ║  Use this template for SIMPLE features:                                       ║
@@ -96,10 +103,12 @@ Simple template = simpler diagrams, but STILL visual.
 
 ## 🚀 Phase 0 Tasks
 
-| Task | Difficulty | Owner | Status |
-|------|------------|-------|--------|
-| {Task 1} | `[KNOWN]` | TBD | ⏳ [TODO] |
-| {Task 2} | `[KNOWN]` | TBD | ⏳ [TODO] |
+<!-- Magnitude per task: Trivial | Light | Standard. See dream-planning skill for slot-based estimation. -->
+
+| Task | Magnitude | Difficulty | Owner | Status |
+|------|-----------|------------|-------|--------|
+| {Task 1} | Light | `[KNOWN]` | TBD | ⏳ [TODO] |
+| {Task 2} | Light | `[KNOWN]` | TBD | ⏳ [TODO] |
 
 ---
 

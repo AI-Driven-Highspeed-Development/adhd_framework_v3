@@ -14,7 +14,7 @@
 ├────────────────────────────────┼────────────────────────────────┤
 │  pyproject_patcher can:        │  pyproject_patcher can:        │
 │  ✅ add_to_root_pyproject()    │  ✅ add_to_root_pyproject()    │
-│  ❌ (no remove)                │  ✅ remove_from_root_pyproject()│
+│  ❌ (no remove)                │  ✅ remove_from_root_pyproject()
 │       ↓                        │       ↓                        │
 │  💥 Manual editing of          │  ✅ Clean removal of both      │
 │     pyproject.toml required    │     deps and uv.sources        │

@@ -36,7 +36,7 @@
 **Priority:** P1 · **Difficulty:** `[KNOWN]`
 
 **In Scope:**
-- `ModuleUpdater` class in `module_adder_core/module_updater.py`
+- `ModuleUpdater` class in `module_lifecycle_core/module_updater.py`
 - Atomic swap sequence: clone → validate → backup → swap → patch pyproject → uv sync → cleanup
 - Rollback on failure (restore from backup)
 - `--dry-run` flag

@@ -13,7 +13,7 @@
 
 | Phase | Status | Notes |
 |-------|--------|-------|
-| P0: Walking Skeleton | ⏳ | {Brief status note} |
+| P0: {Foundation / Walking Skeleton} | ⏳ | {Brief status note} |
 | P1: {Phase Name} | ⏳ | {Brief status note} |
 | P2: {Phase Name} | ⏳ | {Brief status note} |
 
@@ -34,10 +34,13 @@ This blueprint follows **HyperDream phasing rules**:
 
 | Principle | Meaning |
 |-----------|---------|
-| **Walking Skeleton First** | Phase 0 proves plumbing works with hardcoded stubs |
+| **Slot-Based Estimation** | 4 slots/day budget. Magnitude maps to slots: Trivial=≪1, Light=1, Standard=2, Heavy=3, Epic=4+ (must decompose) |
+| **Conditional Walking Skeleton** | Walking skeleton P0 only when cross-boundary integration risk exists. Otherwise P0 is foundation tasks |
 | **Difficulty Honesty** | Each item labeled `[KNOWN]`, `[EXPERIMENTAL]`, or `[RESEARCH]` |
 | **Research ≠ Foundation** | `[RESEARCH]` items never in Phase 0 |
 | **Incremental Value** | Each phase delivers usable functionality |
+| **Clean-Code-First** | All code follows Non-Vibe Code standards — no scaffolding shortcuts that skip error handling, logging, or typing |
+| **Hierarchical Context** | Each plan directory contains an `_overview.md` file providing purpose, children summary, and reading order |
 
 ---
 

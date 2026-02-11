@@ -1,5 +1,12 @@
 <!--
 ╔═══════════════════════════════════════════════════════════════════════════════╗
+║  ⚠️  SCAFFOLD — This template provides STRUCTURE, not protocol.              ║
+║  Protocol rules live in skills: day-dream (authoring) and dream-planning     ║
+║  (decomposition). Templates are passive — copy, fill, customize.             ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+-->
+<!--
+╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         FIXED SECTION NAMES                                   ║
 ║  Do NOT rename these sections - they are used for cross-referencing:          ║
 ║                                                                               ║

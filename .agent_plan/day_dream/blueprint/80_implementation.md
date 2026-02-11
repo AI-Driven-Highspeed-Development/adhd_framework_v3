@@ -2,7 +2,7 @@
 project: "DREAM Upgrade"
 current_phase: 2
 phase_name: "DREAM Integration"
-status: IN_PROGRESS
+status: DONE
 last_updated: "2026-02-11"
 ---
 
@@ -140,22 +140,22 @@ and implementation details based on current codebase state.
 
 ### Exit Gate
 
-- [ ] `dream-planning` SKILL.md exists and passes Agent Skills format validation
-- [ ] `day-dream` SKILL.md cross-references `dream-planning` for magnitude routing
-- [ ] Templates align with updated skill rules
+- [x] `dream-planning` SKILL.md exists and passes Agent Skills format validation
+- [x] `day-dream` SKILL.md cross-references `dream-planning` for magnitude routing
+- [x] Templates align with updated skill rules
 
 ### Tasks
 
 | Status | Task | Target File | Difficulty | Feature |
 |--------|------|-------------|------------|---------|
-| ⏳ | Create `dream-planning` SKILL.md with full decomposition protocol | `.github/skills/dream-planning/SKILL.md` | `[EXPERIMENTAL]` | [06](./06_feature_dream_planning_skill.md) |
-| ⏳ | Add magnitude routing cross-reference to day-dream skill | `day-dream/SKILL.md` | `[KNOWN]` | [07](./07_feature_update_day_dream_skill.md) |
-| ⏳ | Update tier selection in day-dream to include magnitude | `day-dream/SKILL.md` | `[KNOWN]` | [07](./07_feature_update_day_dream_skill.md) |
-| ⏳ | Update `00_index.template.md` planning standards | `templates/blueprint/00_index.template.md` | `[KNOWN]` | [08](./08_feature_template_refresh.md) |
-| ⏳ | Update `80_implementation.template.md` durations + skeleton | `templates/blueprint/80_implementation.template.md` | `[KNOWN]` | [08](./08_feature_template_refresh.md) |
-| ⏳ | Create `overview.template.md` for `_overview.md` convention | `templates/blueprint/overview.template.md` | `[KNOWN]` | [08](./08_feature_template_refresh.md) |
-| ⏳ | Create `task.template.md` for leaf task files | `templates/blueprint/task.template.md` | `[KNOWN]` | [08](./08_feature_template_refresh.md) |
-| ⏳ | Add scaffold headers + plan/task terminology to feature templates | `templates/blueprint/NN_feature*.template.md` | `[KNOWN]` | [08](./08_feature_template_refresh.md) |
+| ✅ | Create `dream-planning` SKILL.md with full decomposition protocol | `.github/skills/dream-planning/SKILL.md` | `[EXPERIMENTAL]` | [06](./06_feature_dream_planning_skill.md) |
+| ✅ | Add magnitude routing cross-reference to day-dream skill | `day-dream/SKILL.md` | `[KNOWN]` | [07](./07_feature_update_day_dream_skill.md) |
+| ✅ | Update tier selection in day-dream to include magnitude | `day-dream/SKILL.md` | `[KNOWN]` | [07](./07_feature_update_day_dream_skill.md) |
+| ✅ | Update `00_index.template.md` planning standards | `templates/blueprint/00_index.template.md` | `[KNOWN]` | [08](./08_feature_template_refresh.md) |
+| ✅ | Update `80_implementation.template.md` durations + skeleton | `templates/blueprint/80_implementation.template.md` | `[KNOWN]` | [08](./08_feature_template_refresh.md) |
+| ✅ | Create `overview.template.md` for `_overview.md` convention | `templates/blueprint/overview.template.md` | `[KNOWN]` | [08](./08_feature_template_refresh.md) |
+| ✅ | Create `task.template.md` for leaf task files | `templates/blueprint/task.template.md` | `[KNOWN]` | [08](./08_feature_template_refresh.md) |
+| ✅ | Add scaffold headers + plan/task terminology to feature templates | `templates/blueprint/NN_feature*.template.md` | `[KNOWN]` | [08](./08_feature_template_refresh.md) |
 
 ### Verification (Manual)
 
@@ -167,10 +167,10 @@ and implementation details based on current codebase state.
 
 ### P2 Completion Checklist
 
-- [ ] Exit gate checks pass
-- [ ] All `[EXPERIMENTAL]` items validated or cut
-- [ ] Manual verification steps pass
-- [ ] `dream-planning` and `day-dream` skills don't duplicate rules
+- [x] Exit gate checks pass
+- [x] All `[EXPERIMENTAL]` items validated or cut
+- [x] Manual verification steps pass
+- [x] `dream-planning` and `day-dream` skills don't duplicate rules
 
 ---
 
@@ -188,6 +188,7 @@ and implementation details based on current codebase state.
 | 2026-02-11 | Slot-based estimation replaces time-based | 4 actions/day baseline; Trivial=<<1, Light=1, Standard=2, Heavy=3, Epic=4+ must decompose. Complexity flag deferred to post-P0. | Discussion consensus |
 | 2026-02-11 | P1 completed — all 5 tasks done | Non-Vibe Code embedded in orch-implementation, agent_common_rules, and day-dream | HyperAgentSmith |
 | 2026-02-11 | Non-Vibe Code expanded: dedicated instructions.md + agent flow references + path fixes | 3 ad-hoc follow-up tasks: fixed stale `data/agents/` paths across 8 flows + 2 skills, created `non_vibe_code.instructions.md` with full practice spec, added `@critical_rules` references in HyperArch/HyperSan/HyperIQGuard flows | HyperAgentSmith |
+| 2026-02-11 | P2 completed — all 8 tasks done including [EXPERIMENTAL] dream-planning skill | dream-planning validated, no duplication with day-dream | HyperAgentSmith |
 
 ---
 

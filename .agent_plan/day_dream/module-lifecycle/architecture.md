@@ -11,7 +11,7 @@
 ```
 Current Reality:
 ┌──────────────────────────────────────────────────────────────────┐
-│  module_adder_core  ──►  One-way street: ADD only                │
+│  module_lifecycle_core  ──►  One-way street: ADD only                │
 │                                                                  │
 │  pyproject_patcher  ──►  Can add to pyproject.toml, can't remove │
 │  DependencyWalker   ──►  Forward deps only, no reverse lookup    │
@@ -29,7 +29,7 @@ After Module Lifecycle:
 │    adhd update <name>  ──►  UpdateCommand                        │
 │    adhd update --layer ──►  BatchUpdateCommand                   │
 │                                                                  │
-│  Controller Layer (module_adder_core — extended)                 │
+│  Controller Layer (module_lifecycle_core — extended)                 │
 │    ModuleRemover  ──►  reverse-dep check → unregister → delete   │
 │    ModuleUpdater  ──►  clone temp → validate → atomic swap       │
 │                                                                  │
@@ -59,7 +59,7 @@ flowchart TB
         BU["adhd update --layer &lt;layer&gt;"]
     end
 
-    subgraph "Controller Layer (module_adder_core)"
+    subgraph "Controller Layer (module_lifecycle_core)"
         MR["ModuleRemover"]
         MU["ModuleUpdater"]
     end
@@ -143,7 +143,7 @@ flowchart LR
 
 ## 🧩 Logical Components
 
-### `ModuleRemover` (NEW — in `module_adder_core`)
+### `ModuleRemover` (NEW — in `module_lifecycle_core`)
 
 | Attribute | Value |
 |-----------|-------|
@@ -151,7 +151,7 @@ flowchart LR
 | **Boundary** | Owns: removal orchestration. Does NOT own: dep analysis (DependencyWalker), pyproject patching (pyproject_patcher) |
 | **Depends On** | `pyproject_patcher`, `DependencyWalker`, `ModulesController` |
 
-### `ModuleUpdater` (NEW — in `module_adder_core`)
+### `ModuleUpdater` (NEW — in `module_lifecycle_core`)
 
 | Attribute | Value |
 |-----------|-------|

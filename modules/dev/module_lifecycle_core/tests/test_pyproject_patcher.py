@@ -41,7 +41,7 @@ class TestAddToRootPyproject:
 
         MOCKS: None (real file I/O)
         """
-        from module_adder_core.pyproject_patcher import add_to_root_pyproject
+        from module_lifecycle_core.pyproject_patcher import add_to_root_pyproject
 
         add_to_root_pyproject("new-package", root_pyproject)
 
@@ -59,7 +59,7 @@ class TestAddToRootPyproject:
 
         MOCKS: None
         """
-        from module_adder_core.pyproject_patcher import add_to_root_pyproject
+        from module_lifecycle_core.pyproject_patcher import add_to_root_pyproject
 
         original = (root_pyproject / "pyproject.toml").read_text()
         add_to_root_pyproject("existing-dep", root_pyproject)
@@ -72,7 +72,7 @@ class TestAddToRootPyproject:
 
         MOCKS: None
         """
-        from module_adder_core.pyproject_patcher import add_to_root_pyproject
+        from module_lifecycle_core.pyproject_patcher import add_to_root_pyproject
 
         add_to_root_pyproject("new-package", root_pyproject)
 
@@ -85,7 +85,7 @@ class TestAddToRootPyproject:
 
         MOCKS: None
         """
-        from module_adder_core.pyproject_patcher import add_to_root_pyproject
+        from module_lifecycle_core.pyproject_patcher import add_to_root_pyproject
         from exceptions_core import ADHDError
 
         with pytest.raises(ADHDError, match="not found"):
@@ -96,7 +96,7 @@ class TestAddToRootPyproject:
 
         MOCKS: None
         """
-        from module_adder_core.pyproject_patcher import add_to_root_pyproject
+        from module_lifecycle_core.pyproject_patcher import add_to_root_pyproject
         from exceptions_core import ADHDError
 
         root = tmp_path / "project"
@@ -116,7 +116,7 @@ dep = { workspace = true }
 
         MOCKS: None
         """
-        from module_adder_core.pyproject_patcher import add_to_root_pyproject
+        from module_lifecycle_core.pyproject_patcher import add_to_root_pyproject
         from exceptions_core import ADHDError
 
         root = tmp_path / "project"

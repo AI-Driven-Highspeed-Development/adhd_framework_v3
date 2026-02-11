@@ -92,13 +92,13 @@ The ADHD Framework's `adhd add` command brings external modules into a workspace
 
 | Tool | What It Does | Decision | Rationale |
 |------|--------------|----------|-----------|
-| `adhd add` (internal) | Adds modules from git repos | WRAP | Extend `module_adder_core` with reverse operations |
+| `adhd add` (internal) | Adds modules from git repos | WRAP | Extend `module_lifecycle_core` with reverse operations |
 | `pyproject_patcher` (internal) | String-manipulation pyproject.toml patching | BUILD | Add `remove_from_root_pyproject()` — reverse of existing `add_to_root_pyproject()` |
 | `DependencyWalker` (internal) | Forward dependency traversal | BUILD | Add `get_reverse_deps()` for safety checks |
 | `uv remove` (uv CLI) | Removes packages from uv workspace | REJECT | Doesn't understand ADHD module structure |
 | `pip uninstall` | Package uninstall | REJECT | Wrong abstraction level |
 
-**Summary:** Build on existing internals (`module_adder_core`, `pyproject_patcher`, `DependencyWalker`) by adding reverse operations. No external dependencies needed.
+**Summary:** Build on existing internals (`module_lifecycle_core`, `pyproject_patcher`, `DependencyWalker`) by adding reverse operations. No external dependencies needed.
 
 ---
 
@@ -106,7 +106,7 @@ The ADHD Framework's `adhd add` command brings external modules into a workspace
 
 | Non-Goal | Rationale |
 |----------|-----------|
-| Rename `module_adder_core` → `module_lifecycle_core` | Deferred — rename adds risk with no functional value now |
+| Rename `module_adder_core` → `module_lifecycle_core` | Completed — rename applied across entire project |
 | `adhd update --all` (update everything at once) | Too dangerous without per-module validation |
 | `--layer runtime` for batch update | Runtime modules are project-specific, batch update of generic infra only |
 | Git submodule management | Modules are copied, not submoduled |
@@ -120,12 +120,12 @@ The ADHD Framework's `adhd add` command brings external modules into a workspace
 
 | Priority | Feature | Difficulty | Status | Description |
 |----------|---------|------------|--------|-------------|
-| P0 | [Reverse Dep Lookup](./p0-prerequisites/reverse-dep-lookup.md) | `[KNOWN]` | ⏳ [TODO] | Add `get_reverse_deps()` to `DependencyWalker` |
-| P0 | [Pyproject Patcher Remove](./p0-prerequisites/pyproject-patcher-remove.md) | `[KNOWN]` | ⏳ [TODO] | Add `remove_from_root_pyproject()` to `pyproject_patcher` |
-| P1 | [Remove Command](./p1-core-commands/remove-command.md) | `[KNOWN]` | ⏳ [TODO] | `adhd remove <name>` with full cleanup |
-| P1 | [Update Command](./p1-core-commands/update-command.md) | `[KNOWN]` | ⏳ [TODO] | `adhd update <name>` with atomic swap pattern |
-| P1 | [Safety Features](./p1-core-commands/safety-features.md) | `[KNOWN]` | ⏳ [TODO] | Dry-run preview, lightweight backup, confirmation |
-| P2 | [Batch Update](./p2-batch-operations/batch-update-command.md) | `[KNOWN]` | ⏳ [TODO] | `adhd update --layer dev\|foundation` |
+| P0 | [Reverse Dep Lookup](./p00_prerequisites/02_reverse_dep_lookup.md) | `[KNOWN]` | ⏳ [TODO] | Add `get_reverse_deps()` to `DependencyWalker` |
+| P0 | [Pyproject Patcher Remove](./p00_prerequisites/01_pyproject_patcher_remove.md) | `[KNOWN]` | ⏳ [TODO] | Add `remove_from_root_pyproject()` to `pyproject_patcher` |
+| P1 | [Remove Command](./p01_core_commands/01_remove_command.md) | `[KNOWN]` | ⏳ [TODO] | `adhd remove <name>` with full cleanup |
+| P1 | [Update Command](./p01_core_commands/03_update_command.md) | `[KNOWN]` | ⏳ [TODO] | `adhd update <name>` with atomic swap pattern |
+| P1 | [Safety Features](./p01_core_commands/02_safety_features.md) | `[KNOWN]` | ⏳ [TODO] | Dry-run preview, lightweight backup, confirmation |
+| P2 | [Batch Update](./p02_batch_operations/01_batch_update_command.md) | `[KNOWN]` | ⏳ [TODO] | `adhd update --layer dev\|foundation` |
 
 ---
 
@@ -137,7 +137,7 @@ The ADHD Framework's `adhd add` command brings external modules into a workspace
 | **Reverse-dep check as P0 prerequisite** | Must exist before remove can be safe — foundational capability |
 | **Flat CLI naming** (`adhd remove`, not `adhd module remove`) | Consistent with `adhd add`, minimal typing |
 | **`--layer` for batch, not `--all`** | Explicit is safer; runtime modules are project-specific |
-| **Extend `module_adder_core`, don't rename** | Functional value now > cosmetic rename risk |
+| **Extend `module_lifecycle_core`, don't rename** | Functional value now > cosmetic rename risk |
 | **`init.yaml` excluded** | Legacy mechanism — not part of any new operations |
 | **Controller-level `--layer runtime` guard** | Reject at controller, not just CLI — defense in depth |
 

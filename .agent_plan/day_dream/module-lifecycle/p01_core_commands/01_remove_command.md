@@ -35,7 +35,7 @@
 **Priority:** P1 · **Difficulty:** `[KNOWN]`
 
 **In Scope:**
-- `ModuleRemover` class in `module_adder_core/module_remover.py`
+- `ModuleRemover` class in `module_lifecycle_core/module_remover.py`
 - Full cleanup sequence: reverse-dep check → dry-run → confirm → unregister pyproject → remove uv.sources → delete dir → uv sync → workspace regen
 - `--force` flag to override reverse-dep warnings
 - `--dry-run` flag to preview changes

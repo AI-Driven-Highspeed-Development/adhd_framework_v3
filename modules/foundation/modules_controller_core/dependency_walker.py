@@ -133,7 +133,32 @@ class DependencyWalker:
         self.controller = controller
         self._module_cache: Dict[str, Optional["ModuleInfo"]] = {}
         self._visited: Set[str] = set()
-    
+
+    def get_reverse_deps(self, module_name: str) -> Set[str]:
+        """Find all modules that depend on the given module.
+
+        Iterates every discovered module and checks whether *module_name*
+        appears in its dependency list (after kebab→snake normalisation).
+
+        Args:
+            module_name: Module name in snake_case **or** kebab-case.
+                         Normalised internally so either form works.
+
+        Returns:
+            Set of module names (snake_case) that list *module_name* as a
+            dependency.  Returns an empty set when nothing depends on it.
+        """
+        target = _package_name_to_module_name(module_name)
+        report = self.controller.list_all_modules()
+        dependants: Set[str] = set()
+        for module in report.modules:
+            if module.name == target:
+                continue  # skip self
+            deps = self._get_module_dependencies(module)
+            if target in deps:
+                dependants.add(module.name)
+        return dependants
+
     def _get_module(self, module_name: str) -> Optional["ModuleInfo"]:
         """Get module info by name, with caching."""
         if module_name not in self._module_cache:

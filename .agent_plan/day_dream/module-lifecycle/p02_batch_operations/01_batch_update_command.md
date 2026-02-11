@@ -102,7 +102,7 @@ $ adhd update --layer dev
 
   ✅ adhd-mcp           updated (abc123 → def456)
   ✅ flow-core           updated (abc123 → def456)
-  ❌ module-adder-core   FAILED: git clone timeout
+  ❌ module-lifecycle-core   FAILED: git clone timeout
   ✅ workspace-core      updated (abc123 → def456)
   ⏭️ instruction-core    SKIPPED: no source_url
   ...

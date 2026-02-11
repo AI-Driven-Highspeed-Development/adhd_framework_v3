@@ -33,6 +33,20 @@ use_blueprint_tier:
   - has_external_api: true
 ```
 
+### Magnitude Routing
+
+After selecting a tier, assess **magnitude** (Trivial → Epic) to determine planning depth:
+
+| Tier + Magnitude | Route |
+|------------------|-------|
+| Simple + Trivial/Light | Execute directly — no planning document needed |
+| Simple + Standard | Single plan file, execute in-session |
+| Blueprint + Light/Standard | Blueprint docs, execute sequentially |
+| Blueprint + Heavy | Blueprint docs, decompose into plan/task tree |
+| Blueprint + Epic | Blueprint docs, mandatory decomposition, parallel agents |
+
+> **Full magnitude table and decomposition protocol:** See the `dream-planning` skill.
+
 ---
 
 ## Templates Location
@@ -57,6 +71,8 @@ All templates at: `.agent_plan/day_dream/templates/`
 | `blueprint/82_cli_commands.template.md` | CLI interface and command reference | ≤150 lines |
 | `blueprint/modules/module_spec.template.md` | Detailed module implementation spec | ≤200 lines |
 | `blueprint/99_references.template.md` | External links | No limit |
+| `blueprint/overview.template.md` | Plan directory navigator (`_overview.md` scaffold) | ≤100 lines |
+| `blueprint/task.template.md` | Leaf task scaffold | ≤100 lines |
 
 ### Assets
 | Template | Purpose | Line Limit |
@@ -152,10 +168,11 @@ Every blueprint document follows this structure:
 | `NN_feature_simple.template.md` | ≤2 modules, no external APIs, not P0 | 80-100 lines |
 | `NN_feature.template.md` | ≥3 modules, external APIs, P0 priority | 150-300 lines |
 
-### Index (`00_index.md`)
-- Progress Overview with emoji status
+### Plan Navigator (`_overview.md`)
+- Progress overview with emoji status
 - Document navigation table
 - "Where to Start" Mermaid flowchart
+- Every plan directory MUST have an `_overview.md` (see `dream-planning` skill)
 
 ### Executive Summary (`01_executive_summary.md`)
 - TL;DR: Maximum 3 sentences
@@ -307,7 +324,7 @@ except:
 # {Asset Title}
 
 **Type:** {type}
-**Related Feature:** [Feature Title](../blueprint/NN_feature.md)
+**Related Feature:** [Feature Title](../NN_feature.md)
 **Status:** `⏳ [TODO]` | `🔄 [WIP]` | `✅ [DONE]`
 
 ## Context
@@ -373,19 +390,41 @@ Links to dependent features/assets.
 ### Blueprint Tier
 ```
 .agent_plan/day_dream/
-├── blueprint/
-│   ├── 00_index.md
-│   ├── 01_executive_summary.md
-│   ├── 02_architecture.md
-│   ├── 03_feature_*.md
-│   ├── 80_implementation.md
-│   ├── 81_module_structure.md
-│   └── modules/
-├── assets/
-├── exploration/
+├── _overview.md                    ← Root navigator
+├── {plan_name}/                    ← Named plan directory
+│   ├── _overview.md                ← Mandatory navigator
+│   ├── plan.yaml                   ← Metadata (name, magnitude, status)
+│   ├── executive_summary.md        ← Blueprint docs in plan root
+│   ├── architecture.md
+│   ├── cli_commands.md             ← If plan has CLI commands
+│   ├── implementation.md           ← Phase tracking
+│   ├── module_structure.md         ← Module organization
+│   ├── p00_{name}/                 ← Phase directory
+│   │   ├── _overview.md
+│   │   ├── 01_{task}.md            ← Numbered task files
+│   │   └── 02_{task}.md
+│   ├── p01_{name}/                 ← Phase directory
+│   │   ├── _overview.md
+│   │   ├── 01_{task}.md
+│   │   └── 02_{task}.md
+│   └── p02_{name}/                 ← Phase directory
+│       ├── _overview.md
+│       ├── 01_{task}.md
+│       └── 02_{task}.md
+├── assets/                         ← Supporting artifacts
+├── exploration/                    ← Research/exploration docs
 │   └── _archive/
-└── templates/
+└── templates/                      ← Template scaffolds
 ```
+
+### Phase Naming Convention
+
+- Phase children use `pNN_{name}/` prefix with zero-padded two-digit numbers and underscore separator (e.g., `p00_prerequisites/`, `p01_core_commands/`)
+- Task files within phases use `NN_{task_name}.md` numbering (e.g., `01_remove_command.md`, `02_safety_features.md`) — the `00_` position is implicitly held by `_overview.md` (sorts first), so task numbering starts at `01_`
+- Phases MUST always be **directories** (never files), even if they contain only one task
+- This overrides the general DREAM "flatten single-child" guidance — sequential ordering must be preserved in file explorers (VS Code sorts folders before files, breaking visual order if phases mix files and directories)
+- Single-task phases contain: `_overview.md` + one task `.md` file
+- Zero-padding supports up to 99 phases (`p00_` through `p99_`) — more than sufficient for any plan
 
 ---
 
@@ -405,3 +444,16 @@ Links to dependent features/assets.
 | Force walking skeleton on all projects | Check trigger criteria first — skip if not needed |
 | Wrap old code in try/catch fallbacks | Delete old code or separate into v1/v2 folders |
 | Minimize lines changed over correctness | Prioritize clean, correct code |
+
+---
+
+## Cross-References
+
+| Topic | Where |
+|-------|-------|
+| Magnitude routing & decomposition protocol | `dream-planning` skill |
+| Plan/task hierarchy & `_overview.md` convention | `dream-planning` skill |
+| MANAGER/WORKER lifecycle | `dream-planning` skill |
+| Sibling firewall & context isolation | `dream-planning` skill |
+| Orchestrator dispatch mechanics | `orch-routing` skill |
+| Implementation quality gates | `orch-implementation` skill |

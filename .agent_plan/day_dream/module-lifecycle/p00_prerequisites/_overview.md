@@ -12,8 +12,8 @@ Before implementing the remove and update commands, two foundational capabilitie
 
 | Name | Type | Status | Description |
 |------|------|--------|-------------|
-| [reverse-dep-lookup.md](./reverse-dep-lookup.md) | Task | ⏳ [TODO] | Add `get_reverse_deps()` to `DependencyWalker` |
-| [pyproject-patcher-remove.md](./pyproject-patcher-remove.md) | Task | ⏳ [TODO] | Add `remove_from_root_pyproject()` to `pyproject_patcher` |
+| [02_reverse_dep_lookup.md](./02_reverse_dep_lookup.md) | Task | ⏳ [TODO] | Add `get_reverse_deps()` to `DependencyWalker` |
+| [01_pyproject_patcher_remove.md](./01_pyproject_patcher_remove.md) | Task | ⏳ [TODO] | Add `remove_from_root_pyproject()` to `pyproject_patcher` |
 
 ## Integration Map
 
@@ -21,5 +21,5 @@ Both tasks are independent — no cross-dependency. They are consumed by P1's `M
 
 ## Reading Order
 
-1. [reverse-dep-lookup.md](./reverse-dep-lookup.md) — Foundation for safety checks
-2. [pyproject-patcher-remove.md](./pyproject-patcher-remove.md) — Foundation for cleanup
+1. [02_reverse_dep_lookup.md](./02_reverse_dep_lookup.md) — Foundation for safety checks
+2. [01_pyproject_patcher_remove.md](./01_pyproject_patcher_remove.md) — Foundation for cleanup

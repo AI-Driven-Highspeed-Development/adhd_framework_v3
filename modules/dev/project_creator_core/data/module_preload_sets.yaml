@@ -42,7 +42,7 @@ always:
   - repo: adhd
     subdirectory: modules/dev/uv_migrator_core
   - repo: adhd
-    subdirectory: modules/dev/module_adder_core
+    subdirectory: modules/dev/module_lifecycle_core
   
   # CLI infrastructure
   - repo: adhd

@@ -71,6 +71,17 @@ When uncertain about intent or impact, emit an `[UNSURE]` marker and escalate to
 
 Use `# TODO(verify):` for low-risk assumptions. Use `[UNSURE]` for blocking questions.
 
+#### Contextual Questions
+
+Agents' thinking tokens are not visible to users. Every question must be self-contained with full context: what you were trying to do, why you need the answer, what options you're considering, and relevant background.
+
+Without context, the user sees: "Should I use option A or B?" — but doesn't know what A and B are for, what you've already tried, or why it matters.
+
+```
+✅ CORRECT:  "Task 3/7 needs config key `api_timeout`. I'm implementing rate limiting in the API module. Should this be 30s (default) or 60s (for slow networks)?"
+❌ DEFECT:   "Should this be 30s or 60s?"
+```
+
 ## Batched Escalation
 
 Collect ALL `[UNSURE]` items and questions during the current work phase. Present as a single numbered list at the end — NOT one question per round-trip.
@@ -80,6 +91,23 @@ Collect ALL `[UNSURE]` items and questions during the current work phase. Presen
 ```
 ✅ CORRECT:  Finish phase, then: "3 items need your input: 1) ... 2) ... 3) ..."
 ❌ DEFECT:   Stop after each uncertainty to ask a single question
+```
+
+### Skip-and-Continue on Blockers
+
+When executing a batch of tasks and one task is blocked (needs user clarification, missing dependency, external decision), do NOT stop immediately. Instead:
+
+1. **Skip** the blocked task.
+2. **Execute** all remaining non-blocking tasks first.
+3. **Batch** all blockers into a single numbered list presented AFTER completing everything that CAN be done.
+
+The user unblocks everything at once and the next pass picks up the remaining work.
+
+```
+✅ CORRECT:  Task 3/7 blocked (missing config key). Skipped. Completed tasks 1,2,4,5,6,7.
+             "1 blocker: Task 3 needs config key X — what value?"
+❌ DEFECT:   Task 3/7 blocked. Stopped everything to ask about config key X.
+             (Tasks 4–7 could have been done in this same request.)
 ```
 
 ## The Litmus Test

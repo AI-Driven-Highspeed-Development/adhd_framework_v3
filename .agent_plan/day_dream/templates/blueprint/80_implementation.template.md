@@ -3,6 +3,7 @@ project: "{Project Name}"
 current_phase: 0
 phase_name: "Walking Skeleton"
 status: TODO
+start_date: "{YYYY-MM-DD}"
 last_updated: "{YYYY-MM-DD}"
 ---
 
@@ -38,11 +39,19 @@ command syntax, and implementation details based on current codebase state.
 
 ---
 
-## 🦴 Phase 0: Walking Skeleton
+## ⚙️ Phase 0: {Foundation / Walking Skeleton}
 
-**Goal:** *"Prove the plumbing works with the dumbest possible implementation"*
+**Goal:** *"{One sentence goal — foundation tasks or integration proof}"*
 
-**Duration:** 3-5 days (HARD LIMIT)
+**Duration:** ■□□□ Light (1 slot)
+
+<!--
+🦴 Walking Skeleton is CONDITIONAL — include it as P0 only when:
+  - Multiple modules must integrate through untested boundaries
+  - A new data flow spans 3+ components end-to-end
+  - The integration path itself is the primary risk
+Otherwise, P0 is foundation tasks (skill updates, config, scaffolding).
+-->
 
 ### Exit Gate
 
@@ -57,7 +66,9 @@ command syntax, and implementation details based on current codebase state.
 
 ### P0 Hard Limits
 
-- ❌ No `[RESEARCH]` or `[EXPERIMENTAL]` items • Max 5 tasks
+- ❌ No `[RESEARCH]` or `[EXPERIMENTAL]` items
+- ❌ Max 5 tasks
+- ❌ Must fit within slot budget (≤1 slot)
 
 ### Target Folder Structure (P0)
 
@@ -79,6 +90,7 @@ command syntax, and implementation details based on current codebase state.
 - [ ] All tasks marked ✅
 - [ ] No `[RESEARCH]` or `[EXPERIMENTAL]` items
 - [ ] ≤5 tasks total
+- [ ] Slot budget respected
 - [ ] Manual verification steps pass
 
 ---
@@ -86,7 +98,7 @@ command syntax, and implementation details based on current codebase state.
 ## 🏗️ Phase 1: {Phase Name}
 
 **Goal:** *"{One sentence goal}"*  
-**Duration:** {1-2 weeks}
+**Duration:** ■■□□ Standard (2 slots)
 
 ### Exit Gate
 
@@ -125,7 +137,7 @@ command syntax, and implementation details based on current codebase state.
 ## 📡 Phase 2+: {Phase Name}
 
 **Goal:** *"{One sentence goal}"*  
-**Duration:** {estimate}
+**Duration:** ■■■□ Heavy (3 slots)
 
 ### Tasks
 
@@ -186,5 +198,7 @@ NOTES:
 1. Update YAML frontmatter when changing phases
 2. Status flow: ⏳ → 🔄 → ✅
 3. Target Folder Structure: NEW/MODIFIED files per phase only
-4. Task size: completable in 1-4 hours, 1-3 exit gate checks
+4. Task size: completable in 1-3 slots. Epic tasks (4+ slots) must decompose.
+5. Duration format: ■□□□ Light (1 slot), ■■□□ Standard (2 slots), ■■■□ Heavy (3 slots), ■■■■ Epic (4+ slots → must decompose)
+6. Walking skeleton is CONDITIONAL — only for cross-boundary integration risk. Otherwise P0 = foundation.
 -->
