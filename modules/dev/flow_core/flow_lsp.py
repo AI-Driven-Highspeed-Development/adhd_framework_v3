@@ -39,8 +39,16 @@ from .errors import FlowError
 # =============================================================================
 
 FLOW_LANGUAGE_ID = "flow"
+FLOW_FILE_PATTERN = "**/*.flow"
 SERVER_NAME = "flow-lsp"
 SERVER_VERSION = "0.1.0"
+
+# Document selector for Flow files - used for registration
+# Note: These are TypedDict-style classes, not regular classes
+FLOW_DOCUMENT_SELECTOR = [
+    lsp.TextDocumentFilterLanguage(language=FLOW_LANGUAGE_ID),
+    lsp.TextDocumentFilterPattern(pattern=FLOW_FILE_PATTERN),
+]
 
 
 class FlowLanguageServer(LanguageServer):
@@ -167,14 +175,79 @@ server = FlowLanguageServer()
 
 
 # =============================================================================
+# Server Initialization
+# =============================================================================
+
+@server.feature(lsp.INITIALIZE)
+def initialize(ls: FlowLanguageServer, params: lsp.InitializeParams) -> lsp.InitializeResult:
+    """
+    Handle LSP initialize request.
+    
+    Returns server capabilities including text document sync configuration.
+    """
+    ls.logger.info(f"Initialize request from: {params.client_info}")
+    
+    # Build server capabilities
+    capabilities = lsp.ServerCapabilities(
+        # Text document sync: Full document sync on open/change
+        text_document_sync=lsp.TextDocumentSyncOptions(
+            open_close=True,
+            change=lsp.TextDocumentSyncKind.Full,
+            save=lsp.SaveOptions(include_text=False),
+        ),
+        # Completion with trigger characters
+        completion_provider=lsp.CompletionOptions(
+            trigger_characters=["$", "^"],
+            resolve_provider=False,
+        ),
+        # Go-to-definition support
+        definition_provider=True,
+        # Hover support
+        hover_provider=True,
+        # Document symbols (outline)
+        document_symbol_provider=True,
+    )
+    
+    return lsp.InitializeResult(
+        capabilities=capabilities,
+        server_info=lsp.ServerInfo(
+            name=SERVER_NAME,
+            version=SERVER_VERSION,
+        ),
+    )
+
+
+# =============================================================================
 # Document Synchronization
 # =============================================================================
+
+def _is_flow_document(uri: str, language_id: Optional[str] = None) -> bool:
+    """
+    Check if a document is a Flow file.
+    
+    Accepts documents that:
+    - Have a `.flow` extension, OR
+    - Have language ID 'flow'
+    """
+    if language_id == FLOW_LANGUAGE_ID:
+        return True
+    # Also check file extension for robustness
+    return uri.lower().endswith(".flow")
+
 
 @server.feature(lsp.TEXT_DOCUMENT_DID_OPEN)
 def did_open(ls: FlowLanguageServer, params: lsp.DidOpenTextDocumentParams) -> None:
     """Handle document open event."""
-    document = ls.workspace.get_text_document(params.text_document.uri)
-    ls.logger.debug(f"Document opened: {params.text_document.uri}")
+    uri = params.text_document.uri
+    language_id = params.text_document.language_id
+    
+    # Only process Flow files
+    if not _is_flow_document(uri, language_id):
+        ls.logger.debug(f"Ignoring non-flow document: {uri} (lang={language_id})")
+        return
+    
+    document = ls.workspace.get_text_document(uri)
+    ls.logger.info(f"Flow document opened: {uri}")
     
     # Parse and publish diagnostics
     _publish_diagnostics(ls, document)
@@ -183,8 +256,14 @@ def did_open(ls: FlowLanguageServer, params: lsp.DidOpenTextDocumentParams) -> N
 @server.feature(lsp.TEXT_DOCUMENT_DID_CHANGE)
 def did_change(ls: FlowLanguageServer, params: lsp.DidChangeTextDocumentParams) -> None:
     """Handle document change event."""
-    document = ls.workspace.get_text_document(params.text_document.uri)
-    ls.logger.debug(f"Document changed: {params.text_document.uri}")
+    uri = params.text_document.uri
+    
+    # Only process Flow files
+    if not _is_flow_document(uri):
+        return
+    
+    document = ls.workspace.get_text_document(uri)
+    ls.logger.debug(f"Flow document changed: {uri}")
     
     # Reparse and publish diagnostics
     _publish_diagnostics(ls, document)
@@ -194,7 +273,12 @@ def did_change(ls: FlowLanguageServer, params: lsp.DidChangeTextDocumentParams) 
 def did_close(ls: FlowLanguageServer, params: lsp.DidCloseTextDocumentParams) -> None:
     """Handle document close event."""
     uri = params.text_document.uri
-    ls.logger.debug(f"Document closed: {uri}")
+    
+    # Only process Flow files
+    if not _is_flow_document(uri):
+        return
+    
+    ls.logger.debug(f"Flow document closed: {uri}")
     
     # Clear cache
     if uri in ls._file_cache:

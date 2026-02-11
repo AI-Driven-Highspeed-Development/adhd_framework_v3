@@ -97,6 +97,53 @@ python -m cores.flow_core.flow_cli tokenize myfile.flow --verbose
 python -m cores.flow_core.playground.tokenizer_playground
 ```
 
+## LSP Server (Language Server Protocol)
+
+The Flow LSP server provides editor features for `.flow` files:
+- **Diagnostics**: Real-time error reporting
+- **Completion**: Autocomplete for `$node_id` and `^node_id` references
+- **Go-to-Definition**: Jump to node definitions
+- **Hover**: Show node information on hover
+- **Document Symbols**: Outline view with node structure
+
+### Starting the LSP Server
+
+```bash
+# Start in stdio mode (for editor integration)
+python admin_cli.py flow lsp
+
+# Start in TCP mode (for development/testing)
+python admin_cli.py flow lsp --tcp --port 2087
+```
+
+### VS Code Setup
+
+1. **File Association**: Add to `.vscode/settings.json`:
+   ```json
+   {
+     "files.associations": {
+       "*.flow": "flow"
+     }
+   }
+   ```
+
+2. **LSP Client**: The LSP server requires a VS Code extension to connect.
+   Options:
+   - Use a generic LSP client extension (e.g., `lspClientExtension`)
+   - Create a dedicated Flow extension
+   - For development, connect manually via TCP mode
+
+### TCP Mode Development
+
+For testing the LSP server:
+```bash
+# Terminal 1: Start server
+python admin_cli.py flow lsp --tcp --port 2087
+
+# Terminal 2: Test with netcat (basic connection test)
+nc localhost 2087
+```
+
 ## Module Structure
 
 ```
