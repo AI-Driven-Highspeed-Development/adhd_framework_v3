@@ -324,7 +324,7 @@ except:
 # {Asset Title}
 
 **Type:** {type}
-**Related Feature:** [Feature Title](../NN_feature.md)
+**Related Feature:** [Feature Title]()
 **Status:** `⏳ [TODO]` | `🔄 [WIP]` | `✅ [DONE]`
 
 ## Context
