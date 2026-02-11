@@ -89,6 +89,7 @@ HyperOrch drafts synthesis:
 - Identify common ground
 - Propose resolution for divergences
 - Draft consensus statement
+- **If outcome diverges from human's original proposal**: Include an Intent Interpretation block (see Output Format) in the synthesis draft. State what the agents believe the human intended, why they diverged, and list assumptions for the human to validate. This is mandatory — the human cannot catch agent misunderstandings without it.
 
 Present to all participants:
 ```yaml
@@ -121,6 +122,14 @@ output_format: "summary"
 | Agent | Final Position | Vote |
 |-------|----------------|------|
 | [name] | [position] | ACCEPT |
+
+### Intent Interpretation (include when outcome ≠ human's original proposal)
+**Your stated goal (as we understood it):** [agents' interpretation of the human's intent]
+**Why we diverged:** [specific technical reasoning for rejecting/modifying the proposal]
+**Assumptions we made:**
+- [assumption — e.g., "We assumed production-grade security is required"]
+- [assumption — e.g., "We assumed no existing auth library is in use"]
+**If we misread your intent:** [what the human should clarify to realign]
 ```
 
 ### Impasse
@@ -136,6 +145,14 @@ output_format: "summary"
 | Agent | Final Position |
 |-------|----------------|
 | [name] | [position] |
+
+### Intent Interpretation (include when outcome ≠ human's original proposal)
+**Your stated goal (as we understood it):** [agents' interpretation of the human's intent]
+**Why we diverged:** [specific technical reasoning for rejecting/modifying the proposal]
+**Assumptions we made:**
+- [assumption — e.g., "We assumed enterprise-scale when you may be prototyping"]
+- [assumption — e.g., "We assumed no prior art exists for this problem"]
+**If we misread your intent:** [what the human should clarify to realign]
 
 ### Recommendation
 [HyperOrch's suggested path forward]
@@ -175,3 +192,4 @@ handoff_template:
 - **Sequential Execution**: One agent at a time to prevent crosstalk.
 - **No HyperOrch Voting**: Orchestrator facilitates, does not vote.
 - **Summary Discipline**: Each phase summary max 1000 chars.
+- **Intent Transparency**: When agents reject or modify the human's original proposal, the conclusion MUST include an explicit interpretation of the human's intent and reasoning for divergence. Omitting this is a defect — the human cannot catch misunderstandings without it. Common misalignment causes to check: scale mismatch, over/under-engineering, unknown tools or libraries, missing context, domain assumptions.

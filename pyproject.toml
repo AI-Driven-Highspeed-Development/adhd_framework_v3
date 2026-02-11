@@ -19,6 +19,8 @@ dependencies = [
     "module-creator-core",
     "creator-common-core",
     "module-lifecycle-core",
+    "lsprotocol>=2025.0.0",
+    "pygls>=2.0.1",
 ]
 
 [project.optional-dependencies]
