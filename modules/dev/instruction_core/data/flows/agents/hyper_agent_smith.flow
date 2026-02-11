@@ -151,11 +151,11 @@ Read format instructions before creating files:
 |<<<- **Template Compliance**: NEVER deviate from the official schema for each file type., Templates: `*.template.md`. Always lowercase snake_case.
 - **Header Mandatory**: Every file MUST have YAML frontmatter (except templates which use markdown headers, and Skills which use YAML frontmatter in SKILL.md).
 - **Edit Locations**: ONLY edit source files in these paths:
-  - Agents (.flow + .yaml): `modules/dev/instruction_core/data/flows/agents/`
-  - Instructions: `modules/dev/instruction_core/data/instructions/`
-  - Prompts: `modules/dev/instruction_core/data/prompts/`
-  - Skills: `modules/dev/instruction_core/data/skills/<name>/`
-  - Templates: `.agent_plan/day_dream/templates/`
+  - Agents (.flow + .yaml): `>>|++modules/dev/instruction_core/data/flows/agents/|<<`
+  - Instructions: `>>|++modules/dev/instruction_core/data/instructions/|<<`
+  - Prompts: `>>|++modules/dev/instruction_core/data/prompts/|<<`
+  - Skills: `>>|++modules/dev/instruction_core/data/skills|<</<name>/`
+  - Templates: `>>|++.agent_plan/day_dream/templates/|<<`
   - Module instructions: `modules/<layer>/<name>/<name>.instructions.md`
   - NEVER edit `.github/` directly — auto-synced via `adhd r -f`.
 - **Length Guidelines (Agents)**: Target 50–80 lines, accept ≤100, trim if >100, refactor if >120.
