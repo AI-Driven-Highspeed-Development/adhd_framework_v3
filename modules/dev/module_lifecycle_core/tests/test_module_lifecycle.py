@@ -511,6 +511,226 @@ class TestModuleUpdaterSuccess:
         assert bak_dir.exists(), "--keep-backup should preserve .bak directory"
 
 
+class TestModuleUpdaterSubfolderUrl:
+    """Update from monorepo subfolder URL should clone full repo and extract subfolder."""
+
+    def test_subfolder_url_extracts_module(self, tmp_path: Path) -> None:
+        """Simulate: module.repo_url is a /tree/main/... browser URL.
+
+        MOCKS: subprocess.run creates a monorepo-style directory with the module
+        nested inside a subfolder. parse_github_url decomposes the URL and the
+        updater clones the full repo then extracts only the subfolder.
+        """
+        module_dir = _create_module_dir(tmp_path, "my_widget", version="1.0.0")
+        _create_root_pyproject(tmp_path, package_name="my-widget")
+
+        monorepo_url = (
+            "https://github.com/org/monorepo/tree/main/packages/my_widget"
+        )
+        module = _make_module_info(
+            "my_widget",
+            path=module_dir,
+            version="1.0.0",
+            repo_url=monorepo_url,
+        )
+
+        def _monorepo_clone_side_effect(
+            cmd: list[str],
+            *,
+            capture_output: bool,
+            text: bool,
+            timeout: int,
+        ) -> MagicMock:
+            """Simulate cloning a monorepo: create packages/my_widget/ inside dest.
+
+            MOCK: Replaces ``git clone``. Creates monorepo layout with module
+            in a subfolder. RISK: Real monorepo might have different structure.
+            """
+            dest = Path(cmd[-1])
+            dest.mkdir(parents=True, exist_ok=True)
+            widget_dir = dest / "packages" / "my_widget"
+            widget_dir.mkdir(parents=True)
+            (widget_dir / "__init__.py").write_text('"""cloned."""\n')
+            (widget_dir / "pyproject.toml").write_text(
+                '[project]\nname = "my-widget"\nversion = "2.0.0"\n'
+                'dependencies = []\n\n[tool.adhd]\nlayer = "runtime"\n'
+            )
+            (dest / ".git").mkdir()
+            result = MagicMock()
+            result.returncode = 0
+            return result
+
+        with (
+            patch(_UPDATER_CTRL_PATCH) as MockCtrl,
+            patch(
+                "module_lifecycle_core._git_utils.subprocess.run",
+                side_effect=_monorepo_clone_side_effect,
+            ),
+            patch.object(ModuleUpdater, "_has_local_changes", return_value=False),
+        ):
+            ctrl_inst = MockCtrl.return_value
+            ctrl_inst.get_module_by_name.return_value = module
+
+            updater = ModuleUpdater(project_root=tmp_path)
+            result = updater.update("my_widget", force=True)
+
+        assert result.success is True
+        assert result.new_version == "2.0.0"
+        assert module_dir.exists()
+
+    def test_subfolder_url_with_cli_branch_override(self, tmp_path: Path) -> None:
+        """CLI --branch should override branch parsed from URL.
+
+        MOCKS: subprocess.run — verifies that the branch passed to git clone
+        is the CLI override, not the URL-parsed branch.
+        """
+        module_dir = _create_module_dir(tmp_path, "my_widget", version="1.0.0")
+        _create_root_pyproject(tmp_path, package_name="my-widget")
+
+        monorepo_url = (
+            "https://github.com/org/monorepo/tree/main/packages/my_widget"
+        )
+        module = _make_module_info(
+            "my_widget",
+            path=module_dir,
+            version="1.0.0",
+            repo_url=monorepo_url,
+        )
+
+        clone_args_captured: list[list[str]] = []
+
+        def _capture_clone(
+            cmd: list[str],
+            *,
+            capture_output: bool,
+            text: bool,
+            timeout: int,
+        ) -> MagicMock:
+            """Capture git clone args and create monorepo layout.
+
+            MOCK: Records the exact git clone command for branch assertion.
+            """
+            clone_args_captured.append(list(cmd))
+            dest = Path(cmd[-1])
+            dest.mkdir(parents=True, exist_ok=True)
+            widget_dir = dest / "packages" / "my_widget"
+            widget_dir.mkdir(parents=True)
+            (widget_dir / "__init__.py").write_text('"""cloned."""\n')
+            (widget_dir / "pyproject.toml").write_text(
+                '[project]\nname = "my-widget"\nversion = "2.0.0"\n'
+                'dependencies = []\n\n[tool.adhd]\nlayer = "runtime"\n'
+            )
+            (dest / ".git").mkdir()
+            result = MagicMock()
+            result.returncode = 0
+            return result
+
+        with (
+            patch(_UPDATER_CTRL_PATCH) as MockCtrl,
+            patch(
+                "module_lifecycle_core._git_utils.subprocess.run",
+                side_effect=_capture_clone,
+            ),
+            patch.object(ModuleUpdater, "_has_local_changes", return_value=False),
+        ):
+            ctrl_inst = MockCtrl.return_value
+            ctrl_inst.get_module_by_name.return_value = module
+
+            updater = ModuleUpdater(project_root=tmp_path)
+            result = updater.update("my_widget", branch="dev", force=True)
+
+        assert result.success is True
+        # Verify git clone used "--branch dev" not "--branch main"
+        assert "--branch" in clone_args_captured[0]
+        branch_idx = clone_args_captured[0].index("--branch")
+        assert clone_args_captured[0][branch_idx + 1] == "dev"
+
+    def test_subfolder_not_found_returns_failure(self, tmp_path: Path) -> None:
+        """If parsed subfolder doesn't exist in clone, update should fail.
+
+        MOCKS: subprocess.run creates an empty repo (no subfolder).
+        """
+        module_dir = _create_module_dir(tmp_path, "my_widget", version="1.0.0")
+        _create_root_pyproject(tmp_path, package_name="my-widget")
+
+        monorepo_url = (
+            "https://github.com/org/monorepo/tree/main/packages/my_widget"
+        )
+        module = _make_module_info(
+            "my_widget",
+            path=module_dir,
+            version="1.0.0",
+            repo_url=monorepo_url,
+        )
+
+        def _empty_clone(
+            cmd: list[str],
+            *,
+            capture_output: bool,
+            text: bool,
+            timeout: int,
+        ) -> MagicMock:
+            """Clone creates an empty repo (no packages/ directory).
+
+            MOCK: Simulates a repo that doesn't contain the expected subfolder.
+            """
+            dest = Path(cmd[-1])
+            dest.mkdir(parents=True, exist_ok=True)
+            (dest / ".git").mkdir()
+            result = MagicMock()
+            result.returncode = 0
+            return result
+
+        with (
+            patch(_UPDATER_CTRL_PATCH) as MockCtrl,
+            patch(
+                "module_lifecycle_core._git_utils.subprocess.run",
+                side_effect=_empty_clone,
+            ),
+            patch.object(ModuleUpdater, "_has_local_changes", return_value=False),
+        ):
+            ctrl_inst = MockCtrl.return_value
+            ctrl_inst.get_module_by_name.return_value = module
+
+            updater = ModuleUpdater(project_root=tmp_path)
+            result = updater.update("my_widget", force=True)
+
+        assert result.success is False
+        assert "not found" in result.message.lower()
+
+    def test_plain_git_url_still_works(self, tmp_path: Path) -> None:
+        """Standard .git URL (no /tree/) should work exactly as before.
+
+        MOCKS: subprocess.run creates a standalone module (no subfolder).
+        """
+        module_dir = _create_module_dir(tmp_path, "my_widget", version="1.0.0")
+        _create_root_pyproject(tmp_path, package_name="my-widget")
+
+        module = _make_module_info(
+            "my_widget",
+            path=module_dir,
+            version="1.0.0",
+            repo_url="https://github.com/org/my-widget.git",
+        )
+
+        with (
+            patch(_UPDATER_CTRL_PATCH) as MockCtrl,
+            patch(
+                "module_lifecycle_core._git_utils.subprocess.run",
+                side_effect=_fake_clone_side_effect,
+            ),
+            patch.object(ModuleUpdater, "_has_local_changes", return_value=False),
+        ):
+            ctrl_inst = MockCtrl.return_value
+            ctrl_inst.get_module_by_name.return_value = module
+
+            updater = ModuleUpdater(project_root=tmp_path)
+            result = updater.update("my_widget", force=True)
+
+        assert result.success is True
+        assert result.new_version == "2.0.0"
+
+
 # ===========================================================================
 # BatchUpdateResult / batch_update tests
 # ===========================================================================

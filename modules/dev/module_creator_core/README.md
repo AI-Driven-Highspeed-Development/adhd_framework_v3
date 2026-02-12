@@ -1,50 +1,52 @@
 # Module Creator Core
 
-Compact scaffolder for ADHD Framework modules with optional GitHub repository bootstrap and template cloning.
+Scaffolder for new ADHD Framework modules with embedded templates and optional GitHub repository provisioning.
 
 ## Overview
-- Normalizes module names and folder selection via the interactive wizard powered by Questionary Core
-- Clones optional templates and removes their `.git` metadata before writing new files
-- Writes `pyproject.toml` with `[tool.adhd]` metadata, README stub, and `__init__.py` for the selected folder
-- Integrates with Github API Core + Creator Common Core to provision remote repos and push the first commit
+- Generates module directories with `pyproject.toml`, `__init__.py`, main source file, README, and config template
+- Uses embedded templates from `data/templates/` instead of cloning external repositories
+- Supports MCP module scaffolding with additional server, CLI, and refresh files
+- Integrates with GitHub API Core to create remote repos and push the initial commit
 
 ## Features
-- **Interactive wizard** – guides users through naming, module type selection, template choice, and repo ownership
-- **Programmatic API** – `ModuleCreator` + `ModuleParams` allow scripted scaffolding from automation or tests
-- **Template hydration** – clones template repositories listed in `data/module_creator_core/module_templates.yaml`
-- **Repo automation** – automatically computes `repo_url`, creates the remote, and pushes the initial commit when requested
+- **Embedded templates** – all scaffolding content is generated from bundled template files
+- **MCP support** – `is_mcp` flag generates MCP server, CLI, refresh, and init files via `McpModCreator`
+- **Name validation** – `validate_module_name` enforces snake_case conventions before any file operations
+- **Interactive wizard** – `run_module_creation_wizard` guides users through naming, layer, MCP flag, and repo setup
+- **Repo automation** – creates the remote repository and pushes the initial commit when `RepoCreationOptions` is provided
+- **Instructions file** – optionally generates a `.instructions.md` file for AI agent context
 
 ## Quickstart
 
 Programmatic creation:
 
 ```python
-from cores.module_creator_core.module_creator import ModuleCreator, ModuleParams
-from cores.creator_common_core.creator_common_core import RepoCreationOptions
+from module_creator_core import ModuleCreator, ModuleCreationParams
+from creator_common_core import RepoCreationOptions
 
-params = ModuleParams(
-	module_name="github_sync",
-	folder="cores",
-	layer="runtime",
-	repo_options=RepoCreationOptions(owner="my-org", visibility="private"),
-	template_url="https://github.com/org/module-template",
+params = ModuleCreationParams(
+    module_name="github_sync",
+    layer="runtime",
+    is_mcp=False,
+    description="Syncs GitHub data",
+    repo_options=RepoCreationOptions(owner="my-org", visibility="private"),
 )
 
 creator = ModuleCreator()
 module_path = creator.create(params)
-print(f"Module scaffolded at {module_path}")
 ```
 
 Interactive wizard:
 
 ```python
-from cores.module_creator_core.module_creation_wizard import run_module_creation_wizard
-from cores.questionary_core.questionary_core import QuestionaryCore
-from utils.logger_util.logger import Logger
+from module_creator_core.module_creation_wizard import run_module_creation_wizard, ModuleWizardArgs
+from creator_common_core import QuestionaryCore
+from logger_util import Logger
 
 run_module_creation_wizard(
-	prompter=QuestionaryCore(),
-	logger=Logger("ModuleWizard"),
+    prompter=QuestionaryCore(),
+    logger=Logger("ModuleWizard"),
+    prefilled=ModuleWizardArgs(name="my_tool", layer="dev"),
 )
 ```
 
@@ -52,51 +54,79 @@ run_module_creation_wizard(
 
 ```python
 @dataclass
-class ModuleParams:
-	module_name: str
-	folder: str       # cores | managers | plugins | utils | mcps
-	layer: str        # foundation | runtime | dev
-	repo_options: RepoCreationOptions | None = None
-	template_url: str | None = None
+class ModuleCreationParams:
+    module_name: str
+    layer: str = "runtime"                          # foundation | runtime | dev
+    is_mcp: bool = False
+    description: str = ""
+    repo_options: Optional[RepoCreationOptions] = None
+    shows_in_workspace: Optional[bool] = None
+    create_instructions: bool = False
 
 class ModuleCreator:
-	def __init__(self) -> None: ...
-	def create(self, params: ModuleParams) -> pathlib.Path: ...
+    def __init__(self) -> None: ...
+    def create(self, params: ModuleCreationParams) -> Path: ...
 
-def run_module_creation_wizard(*, prompter: QuestionaryCore, logger: Logger) -> None: ...
+def validate_module_name(name: str) -> None: ...
+
+# In module_creation_wizard.py:
+@dataclass
+class ModuleWizardArgs:
+    name: Optional[str] = None
+    layer: Optional[str] = None
+    is_mcp: Optional[bool] = None
+    description: Optional[str] = None
+    create_instructions: Optional[bool] = None
+    create_repo: Optional[bool] = None
+    owner: Optional[str] = None
+    visibility: Optional[str] = None
+
+def run_module_creation_wizard(
+    *,
+    prompter: QuestionaryCore,
+    logger: Logger,
+    prefilled: Optional[ModuleWizardArgs] = None,
+) -> None: ...
 ```
 
 ## Notes
-- The wizard reads folder options and template locations from `main_config`; keep that file in sync with project data.
-- `ModuleCreator` writes `pyproject.toml` with `[tool.adhd]` containing `layer` and optional `mcp = true` for MCP servers.
-- Template cloning removes `.git` folders so the new repo starts with a clean history.
+- `ModuleCreator` writes `pyproject.toml` with `[tool.adhd]` containing `layer` and optional `mcp = true`.
+- `validate_module_name` rejects Python keywords, names over 50 chars, and non-snake_case formats.
+- The wizard normalizes names via `to_snake_case` and prompts for layer, MCP flag, instructions, and repo options.
 
 ## Requirements & prerequisites
-- GitHub CLI (`gh`) and git (for cloning + pushes)
-- Python dependency: `pyyaml`
-- ConfigManager must be initialized so module type mappings and data paths are available
+- config-manager
+- logger-util
+- creator-common-core
+- exceptions-core
+- github-api-core
+- modules-controller-core
 
 ## Troubleshooting
-- **"Invalid folder '...'"** – ensure the folder is one of: `cores`, `managers`, `plugins`, `utils`, `mcps`.
-- **Template selection shows only "Blank"** – verify `project/data/module_creator_core/module_templates.yaml` exists and contains entries.
-- **Remote repo creation failed** – confirm GitHub CLI authentication and that you have rights to the selected owner.
-- **`repo_url` missing in pyproject.toml** – repository owner must be provided; otherwise the URL is omitted by design.
+- **`ADHDError: Invalid module name`** – name must be snake_case, start with a letter, and not end with an underscore.
+- **`ADHDError: Invalid layer`** – layer must be one of `foundation`, `runtime`, or `dev`.
+- **Remote repo creation failed** – confirm GitHub CLI authentication and push rights for the selected owner.
+- **`FileNotFoundError: Bundled template not found`** – the `data/templates/` directory is missing or incomplete.
+- **MCP files not generated** – ensure `is_mcp=True` in `ModuleCreationParams`.
 
 ## Module structure
 
 ```
-cores/module_creator_core/
-├─ __init__.py                    # copies bundled templates into project/data
-├─ module_creator.py              # ModuleCreator + params dataclass
-├─ module_creation_wizard.py      # interactive CLI workflow
+module_creator_core/
+├─ __init__.py                    # exports ModuleCreator, ModuleCreationParams, validate_module_name
+├─ module_creator.py              # ModuleCreator class and ModuleCreationParams dataclass
+├─ module_creation_wizard.py      # interactive wizard and ModuleWizardArgs
+├─ mcps_mod.py                    # MCP-specific file generation
+├─ requirements.txt               # pip requirements
+├─ pyproject.toml                 # package metadata and dependencies
 ├─ data/
-│  └─ module_templates.yaml       # bundled template catalog copied into project/data
-├─ init.yaml                      # module metadata
+│  ├─ templates/                  # embedded module scaffolding templates
+│  └─ mcps_mod/                   # MCP-specific templates
 └─ README.md                      # this file
 ```
 
 ## See also
-- Creator Common Core – shared clone/repo helpers
-- GitHub API Core – low-level gh wrapper used for cloning/pushing
-- Questionary Core – provides the prompts powering the wizard
+- Creator Common Core – shared clone/repo helpers and QuestionaryCore
+- GitHub API Core – low-level gh CLI wrapper for cloning and pushing
+- Modules Controller Core – provides layer constants and module directory paths
 - Project Creator Core – complementary scaffolder for full projects

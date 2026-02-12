@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, List, Optional
 from exceptions_core import ADHDError
 from logger_util import Logger
 
-from ._git_utils import clone_repo
+from ._git_utils import clone_repo, parse_github_url
 
 if TYPE_CHECKING:
     from modules_controller_core.modules_controller import ModulesController, ModuleInfo
@@ -298,10 +298,30 @@ class ModuleUpdater:
         temp_dir = Path(tempfile.mkdtemp(prefix=f"adhd_update_{module.name}_"))
 
         try:
-            # 5. Clone new version to temp dir
-            self.logger.info(f"📥 Cloning latest from: {module.repo_url}")
+            # 5. Parse source URL and clone new version
+            parsed = parse_github_url(module.repo_url)
+            # CLI --branch takes precedence over branch parsed from URL
+            effective_branch = branch or parsed.branch
+
+            self.logger.info(f"📥 Cloning latest from: {parsed.clone_url}")
             clone_dest = temp_dir / module.name
-            clone_repo(module.repo_url, clone_dest, branch=branch)
+
+            if parsed.subfolder:
+                # Monorepo URL: clone full repo, extract subfolder
+                # JUSTIFY: Full clone + subfolder copy is simpler than sparse
+                # checkout and matches ModuleAdder.add_from_repo() pattern.
+                # ADHD-sized repos are typically <50MB.
+                full_clone = temp_dir / "_full_clone"
+                clone_repo(parsed.clone_url, full_clone, branch=effective_branch)
+                subfolder_path = full_clone / parsed.subfolder
+                if not subfolder_path.is_dir():
+                    raise ADHDError(
+                        f"Subfolder '{parsed.subfolder}' not found in repository "
+                        f"{parsed.clone_url}. Check the Repository URL in pyproject.toml."
+                    )
+                shutil.copytree(subfolder_path, clone_dest)
+            else:
+                clone_repo(parsed.clone_url, clone_dest, branch=effective_branch)
 
             # 6. Validate new module
             new_pyproject = self._read_and_validate_pyproject(clone_dest, module.name)

@@ -9,7 +9,7 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/AI-Driven-Highspeed-Development/modules_controller_core.git"
+Repository = "https://github.com/AI-Driven-Highspeed-Development/adhd_framework_v3/tree/main/modules/foundation/modules_controller_core"
 
 [tool.adhd]
 layer = "foundation"

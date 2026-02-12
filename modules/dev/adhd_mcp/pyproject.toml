@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/AI-Driven-Highspeed-Development/adhd_mcp.git"
+Repository = "https://github.com/AI-Driven-Highspeed-Development/adhd_framework_v3/tree/main/modules/dev/adhd_mcp"
 
 [tool.adhd]
 layer = "dev"

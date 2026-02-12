@@ -1,79 +1,98 @@
 # Instruction Core
 
-## Overview
-Manages synchronization of AI context files (instructions, agents, prompts) from source directories to target directories (e.g., `.github/`). This enables VS Code Copilot to access project-specific agent configurations and instructions.
+Compiles Flow files and synchronizes instructions, agents, and prompts across configured targets.
 
-Supports two sync modes:
-- **Official sync**: From `cores/instruction_core/data/` to configured target directories
-- **Custom sync**: From project-specific data path to configured target directories
+## Overview
+
+- Orchestrates the full instruction lifecycle: compile `.flow` sources, sync outputs to target directories.
+- Supports official and custom sync targets, each configurable as a list of paths via `ConfigManager`.
+- Incrementally compiles `.flow` files using SHA-256 manifest caching to skip unchanged sources.
+- Injects MCP tool permissions into agent YAML headers during sync.
+- Generates a skills index from discovered skill directories.
 
 ## Features
-- Syncs `.instructions.md`, `.agent.md`, and `.prompt.md` files
-- Scans all modules for their instruction/agent/prompt files
-- **MCP Permission Injection**: Injects project-specific tool permissions into copied agent files
 
-## Configuration
-Located in `.config` (generated from `.config_template`):
+- Incremental `.flow` compilation with transitive-hash cache invalidation.
+- Sidecar `.yaml` frontmatter prepended to compiled agent files.
+- Multi-target sync for official and custom source directories.
+- MCP permission injection into `.agent.md` files from a JSON config.
+- Skills index generation from `SKILL.md` frontmatter.
+- Module-level instruction/agent/prompt file collection across all workspace modules.
 
-```json
-{
-    "module_name": "instruction_core",
-    "path": {
-        "data": "./project/data/instruction_core",
-        "official_target_dir": ["./.github"],
-        "custom_target_dir": [],
-        "mcp_permission_injection_json": "./project/data/instruction_core/mcp_permission_injection.json"
-    }
-}
-```
-
-## MCP Permission Injection
-Allows projects to add project-specific MCP tools to agents without modifying the source agent files.
-
-### JSON Format
-Create a JSON file at the configured `mcp_permission_injection_json` path:
-
-```json
-{
-    "hyper_architect": ["unity_adhd_mcp/*", "custom_tool"],
-    "hyper_san_checker": ["unity_adhd_mcp/some_tool"]
-}
-```
-
-- **Keys**: Agent filename stem (e.g., `hyper_architect` from `hyper_architect.adhd.agent.md`)
-- **Values**: List of tool strings to inject into the agent's `tools:` YAML field
-
-### Behavior
-- Injection happens **after** copying to target directory (source files remain unchanged)
-- Tools are deduplicated while preserving order
-- Missing/empty JSON file is gracefully handled (no injection occurs)
-
-## Usage
-Typically invoked via the refresh command:
-
-```bash
-python adhd_framework.py refresh --module instruction_core
-```
-
-Or programmatically:
+## Quickstart
 
 ```python
-from cores.instruction_core.instruction_controller import InstructionController
+from instruction_core import InstructionController
+from logger_util import Logger
+from pathlib import Path
 
-controller = InstructionController()
+logger = Logger(name="InstructionSync")
+controller = InstructionController(root_path=Path.cwd(), logger=logger)
+
+# Full sync: compile flows, sync to all targets, generate skills index
 controller.run()
+
+# Compile only (no sync) — useful for CI validation
+manifest = controller.compile_only(force=True)
 ```
 
-## Module Structure
+## API
+
+```python
+class InstructionController:
+    def __init__(self, root_path: Optional[Path] = None, logger: Optional[Logger] = None): ...
+    def run(self) -> None: ...
+    def compile_only(self, force: bool = False) -> dict: ...
+```
+
+- `__init__`: Loads config via `ConfigManager`, resolves official/custom source and target paths.
+- `run()`: Full pipeline — compile `.flow` files, sync to all configured targets, inject MCP permissions, generate skills index.
+- `compile_only(force)`: Compile `.flow` files and write manifest without syncing. Returns manifest dict. Pass `force=True` to ignore cache.
+
+## Notes
+
+- Config is read from the `instruction_core` section via `ConfigManager`. Key paths: `path.data`, `path.official_target_dir`, `path.custom_target_dir`, `path.mcp_permission_injection_json`.
+- Flow files under `data/flows/_lib/` are treated as shared fragments and excluded from standalone compilation.
+- Output filenames are derived from subdirectory: `flows/agents/foo.flow` → `agents/foo.adhd.agent.md`, `flows/instructions/bar.flow` → `instructions/bar.instructions.md`.
+
+## Requirements & prerequisites
+
+- `exceptions-core` — ADHD exception hierarchy
+- `modules-controller-core` — module discovery and enumeration
+- `logger-util` — structured logging
+- `config-manager` — configuration loading
+- `flow-core` — Flow DSL compiler
+- `pyyaml>=6.0` — YAML parsing
+
+## Troubleshooting
+
+- **"No official targets configured"**: Set `instruction_core.path.official_target_dir` in your project config to a list of target paths.
+- **Compilation skipped for unchanged files**: Pass `force=True` to `compile_only()` or delete `data/compiled/compiled_manifest.json` to force full recompilation.
+- **MCP injection not applying**: Verify the JSON file at `path.mcp_permission_injection_json` exists, contains a valid dict mapping agent keys to tool lists, and that agent files have a `tools: [...]` line in their YAML header.
+- **Import errors**: Ensure all dependencies are installed in the workspace. Run `uv sync` from the project root.
+- **Skills index empty**: Check that skill directories contain a `SKILL.md` with valid YAML frontmatter (`name`, `description` fields).
+
+## Module structure
+
 ```
 instruction_core/
-├── __init__.py
-├── init.yaml
-├── instruction_controller.py    # Main controller class
-├── refresh.py                   # Refresh entry point
-├── README.md
-└── data/
-    ├── agents/                  # Official agent definitions
-    ├── instructions/            # Official instruction files
-    └── prompts/                 # Official prompt files
+├─ __init__.py              # exports InstructionController
+├─ instruction_controller.py # main implementation
+├─ refresh_full.py          # CLI refresh entry point
+├─ .config_template         # default config keys
+├─ pyproject.toml           # package metadata and dependencies
+├─ data/                    # official source data
+│  ├─ compiled/             # compiled flow output and manifest
+│  ├─ flows/                # .flow source files
+│  ├─ instructions/         # instruction files
+│  ├─ prompts/              # prompt files
+│  └─ skills/               # skill directories
+└─ playground/              # exploration scripts
 ```
+
+## See also
+
+- Flow Core — Flow DSL compiler used for `.flow` compilation
+- Config Manager — configuration loading for sync paths
+- Modules Controller Core — module discovery for collecting per-module files
+- Logger Util — structured logging

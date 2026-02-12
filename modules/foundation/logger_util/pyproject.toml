@@ -8,7 +8,7 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/AI-Driven-Highspeed-Development/Logger-Util.git"
+Repository = "https://github.com/AI-Driven-Highspeed-Development/adhd_framework_v3/tree/main/modules/foundation/logger_util"
 
 [tool.adhd]
 layer = "foundation"

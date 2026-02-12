@@ -10,7 +10,7 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/AI-Driven-Highspeed-Development/config-manager.git"
+Repository = "https://github.com/AI-Driven-Highspeed-Development/adhd_framework_v3/tree/main/modules/foundation/config_manager"
 
 [tool.adhd]
 layer = "foundation"

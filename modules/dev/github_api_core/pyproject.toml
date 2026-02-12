@@ -10,7 +10,7 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/AI-Driven-Highspeed-Development/github_api_core.git"
+Repository = "https://github.com/AI-Driven-Highspeed-Development/adhd_framework_v3/tree/main/modules/dev/github_api_core"
 
 [tool.adhd]
 layer = "dev"

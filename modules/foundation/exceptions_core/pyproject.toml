@@ -6,7 +6,7 @@ requires-python = ">=3.11"
 dependencies = []
 
 [project.urls]
-Repository = "https://github.com/AI-Driven-Highspeed-Development/exceptions_core.git"
+Repository = "https://github.com/AI-Driven-Highspeed-Development/adhd_framework_v3/tree/main/modules/foundation/exceptions_core"
 
 [tool.adhd]
 layer = "foundation"

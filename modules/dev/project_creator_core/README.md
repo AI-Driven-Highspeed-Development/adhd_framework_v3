@@ -1,169 +1,121 @@
 # Project Creator Core
 
-Fast, opinionated scaffolder that creates ADHD Framework projects with uv workspace configuration. Clones preload modules as workspace members, enabling local dependency resolution without PyPI.
+Creates new ADHD Framework projects from embedded templates with module preloading and workspace configuration.
 
 ## Overview
-- Creates new projects with **uv workspace** configuration
-- Clones modules into layer-specific folders (`modules/foundation/`, `modules/runtime/`, `modules/dev/`)
-- Generates `[tool.uv.sources]` with workspace references for ADHD modules
-- Dependencies between ADHD modules resolve locally (no PyPI lookup required)
-- Supports optional GitHub repo creation + initial push via shared creator helpers
+- Scaffolds a complete ADHD Framework project directory with standard layout.
+- Installs preloaded modules by cloning them from git into workspace folders.
+- Generates `pyproject.toml` with workspace members and `uv` source mappings.
+- Provides an interactive wizard for guided project creation.
 
 ## Features
-- **uv Workspace Setup** – projects use workspace members pattern matching source framework
-- **Module Installation** – clones modules from git, extracts metadata from `pyproject.toml`
-- **Automatic Configuration** – generates dependencies and `[tool.uv.sources]` from installed modules
-- **Remote repo automation** – uses Creator Common Core helpers to create/push to GitHub
-
-## How It Works
-
-When creating a project with preload modules:
-
-1. **Clone modules** – Each module URL is cloned temporarily
-2. **Extract metadata** – Reads `pyproject.toml` for package name, module type
-3. **Install to workspace** – Moves module to `modules/foundation/`, `modules/runtime/`, or `modules/dev/` based on layer
-4. **Generate pyproject.toml** – Creates workspace config with all modules as workspace sources
-5. **Run uv sync** – Dependencies resolve locally between workspace members
-
-The generated `pyproject.toml` structure:
-\`\`\`toml
-[project]
-dependencies = [
-    "argcomplete>=3.0",
-    "mcp>=1.0",
-    "logger-util",     # From installed modules
-    "config-manager",
-]
-
-[tool.uv.workspace]
-members = [
-    "modules/foundation/*",
-    "modules/runtime/*",
-    "modules/dev/*",
-]
-
-[tool.uv.sources]
-logger-util = { workspace = true }
-config-manager = { workspace = true }
-\`\`\`
+- **Embedded templates** — project files generated from bundled templates, no external cloning required.
+- **Module preload sets** — YAML-defined bundles of core and optional modules auto-installed during creation.
+- **Monorepo and standalone sources** — supports module sources from monorepo subdirectories or standalone repos.
+- **Remote repo creation** — optionally creates a GitHub repository and pushes the initial project.
+- **Interactive wizard** — guided prompts for project name, directory, description, and module selection.
+- **Preload set parsing** — v1 and v2 YAML formats with repo aliases and multiple source types.
 
 ## Quickstart
-
-Programmatic creation:
-
-\`\`\`python
-from project_creator_core import ProjectCreator, ProjectParams
-from creator_common_core import RepoCreationOptions
+```python
+from project_creator_core import ProjectCreator, ProjectParams, ModuleSource
 
 params = ProjectParams(
-    repo_path="./demo_service",
-    module_urls=[
-        "https://github.com/AI-Driven-Highspeed-Development/Logger-Util.git",
-        "https://github.com/AI-Driven-Highspeed-Development/Config-Manager.git",
+    repo_path="~/projects/my_new_project",
+    module_sources=[
+        ModuleSource(url="https://github.com/org/repo.git", subdirectory="modules/foundation/config_manager"),
     ],
-    project_name="demo_service",
-    description="A demo ADHD Framework project",
-    repo_options=RepoCreationOptions(owner="my-org", visibility="private"),
+    project_name="my_new_project",
+    description="My ADHD project",
 )
 
 creator = ProjectCreator(params)
-project_dir = creator.create()  # Creates project with workspace-based modules
-print(f"Project ready at {project_dir}")
-\`\`\`
-
-Interactive wizard:
-
-\`\`\`python
-from project_creator_core.project_creation_wizard import run_project_creation_wizard
-from creator_common_core import QuestionaryCore
-from logger_util import Logger
-
-run_project_creation_wizard(
-    prompter=QuestionaryCore(),
-    logger=Logger("ProjectWizard"),
-)
-\`\`\`
+project_path = creator.create()
+```
 
 ## API
-
-\`\`\`python
-@dataclass
-class ModuleMetadata:
-    package_name: str  # e.g., "logger-util"
-    module_type: str   # e.g., "util", "manager", "core"
-    folder_name: str   # e.g., "logger_util"
-    url: str           # Original git URL
+```python
+class ProjectCreator:
+    def __init__(self, params: ProjectParams): ...
+    def create(self) -> Path: ...
 
 @dataclass
 class ProjectParams:
     repo_path: str
-    module_urls: list[str]  # Git URLs for modules to install
+    module_sources: List[ModuleSource]
     project_name: str
     description: str = ""
-    repo_options: RepoCreationOptions | None = None
+    repo_options: Optional[RepoCreationOptions] = None
 
-class ProjectCreator:
-    def __init__(self, params: ProjectParams) -> None: ...
-    def create(self) -> pathlib.Path: ...
+@dataclass
+class ModuleInfo:
+    package_name: str       # from [project] name in pyproject.toml
+    layer: str              # from [tool.adhd] layer
+    folder_name: str        # directory name (e.g., "config_manager")
+    git_url: str            # original git URL
+    subdirectory: Optional[str] = None
 
-def run_project_creation_wizard(*, prompter: QuestionaryCore, logger: Logger) -> None: ...
+@dataclass
+class ModuleSource:
+    url: str
+    subdirectory: Optional[str] = None
 
 @dataclass
 class PreloadSet:
     name: str
     description: str
-    urls: list[str]
+    modules: List[ModuleSource]
 
-def parse_preload_sets(yaml: YamlFile) -> tuple[list[str], list[PreloadSet]]: ...
-\`\`\`
+def parse_preload_sets(yf: YamlFile) -> Tuple[List[ModuleSource], List[PreloadSet]]: ...
 
-## Module Layers
-
-Modules are installed to directories based on `[tool.adhd].layer` in their `pyproject.toml`:
-
-| Layer       | Target Directory      |
-|-------------|----------------------|
-| `foundation`| `modules/foundation/` |
-| `runtime`   | `modules/runtime/`    |
-| `dev`       | `modules/dev/`        |
+def run_project_creation_wizard(
+    *,
+    prompter: QuestionaryCore,
+    logger: Logger,
+    prefilled: Optional[ProjectWizardArgs] = None,
+) -> None: ...
+```
 
 ## Notes
-- Modules must have `[tool.adhd].layer` in their `pyproject.toml` for correct placement
-- Unknown layers default to `modules/runtime/`
-- The `.git` folder is removed from cloned modules (no nested git repos)
+- `ensure_templates()` copies bundled YAML templates to `project/data/project_creator_core/` on first use; called lazily, not on import.
+- The wizard validates that the destination path does not already exist, re-prompting if it does.
+- `ModuleInfo` is extracted from cloned module `pyproject.toml` files during installation — it is not user-supplied.
+- `parse_preload_sets` supports both v1 (legacy `framework_repo` + `subdirectories`) and v2 (`repos` aliases + `modules`) YAML formats.
 
 ## Requirements & prerequisites
-- GitHub CLI (\`gh\`) installed and authenticated
-- \`git\` available on PATH
-- \`uv\` package manager installed
+- logger-util
+- creator-common-core
+- exceptions-core
+- github-api-core
+- modules-controller-core
+- pyyaml>=6.0
 
 ## Troubleshooting
-- **Module clone fails** – run \`gh auth status\` to confirm GitHub CLI auth
-- **Wrong module directory** – check module's `[tool.adhd].layer` in `pyproject.toml`
-- **uv sync fails** – ensure all modules have valid \`pyproject.toml\` with package names
-- **Missing dependencies** – modules may need PyPI dependencies in their \`requirements.txt\`
+- **"Framework file not found"**: `ProjectCreator` expects to run from the ADHD Framework root where `adhd_framework.py` exists. Ensure the correct working directory.
+- **"Template not found"**: Embedded templates in `data/templates/` are missing. Reinstall or re-clone the module.
+- **"Path already exists"**: The wizard refuses to overwrite existing directories. Choose a different project name or parent directory.
+- **"Unknown repo alias"**: A module source references a repo alias not defined in the `repos` section of `module_preload_sets.yaml`. Add the alias or use an explicit `url`.
+- **uv sync fails after creation**: The generated `pyproject.toml` may reference modules that failed to clone. Check network connectivity and retry.
 
 ## Module structure
-
-\`\`\`
-cores/project_creator_core/
-├─ __init__.py                    # package marker / exports
-├─ project_creator.py             # ProjectCreator + params
-├─ project_creation_wizard.py     # interactive flow
-├─ preload_sets.py                # parse preload definitions
-├─ templates.py                   # legacy template listing helpers
+```
+project_creator_core/
+├─ __init__.py                  # exports: ProjectCreator, ProjectParams, ModuleInfo, PreloadSet, ModuleSource, parse_preload_sets
+├─ project_creator.py           # main project creation logic
+├─ project_creation_wizard.py   # interactive wizard for guided creation
+├─ preload_sets.py              # preload set parsing and ModuleSource/PreloadSet types
+├─ yaml_utils.py                # inlined YAML reading utilities (YamlFile, YamlReader)
+├─ pyproject.toml               # package metadata and dependencies
+├─ requirements.txt             # PyPI dependencies (pyyaml)
+├─ README.md                    # this file
 ├─ data/
-│  ├─ templates/                  # embedded project templates
-│  │  ├─ pyproject.toml.template
-│  │  ├─ gitignore.template
-│  │  └─ ...
-│  └─ module_preload_sets.yaml    # default preload module sets
-├─ init.yaml                      # module metadata
-└─ README.md                      # this file
-\`\`\`
+│  ├─ module_preload_sets.yaml  # default module preload set definitions
+│  └─ templates/                # embedded project templates
+└─ tests/                       # unit tests
+```
 
 ## See also
-- Creator Common Core – shared clone/repo helpers used by this module
-- GitHub API Core – low-level gh wrapper
-- Module Creator Core – complementary scaffolder for modules
-- Questionary Core – provides the prompt UX used in the wizard
+- Creator Common Core — shared prompting, repo creation, and naming utilities
+- Module Lifecycle Core — add, remove, and update modules in existing projects
+- Modules Controller Core — module discovery and workspace sync
+- GitHub API Core — GitHub repository operations

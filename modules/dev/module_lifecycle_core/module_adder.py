@@ -21,7 +21,7 @@ from logger_util import Logger
 
 from .pyproject_patcher import add_to_root_pyproject
 from .pyproject_scaffolder import scaffold_pyproject
-from ._git_utils import clone_repo
+from ._git_utils import clone_repo, parse_github_url
 
 
 @dataclass
@@ -35,9 +35,8 @@ class AddModuleResult:
 
 
 # Git-related items to remove by default (unless --keep-git)
+# Note: .gitignore and .gitattributes are always preserved (not in this list).
 _GIT_ITEMS_TO_REMOVE = [".git", ".github", ".gitmodules"]
-# Git-related items to always preserve
-_GIT_ITEMS_TO_PRESERVE = [".gitignore", ".gitattributes"]
 
 
 class ModuleAdder:
@@ -68,16 +67,36 @@ class ModuleAdder:
         Returns:
             AddModuleResult with success/failure info.
         """
+        # Parse URL to handle GitHub browser URLs with embedded subfolder
+        parsed = parse_github_url(repo_url)
+
+        # Conflict: URL contains subfolder AND explicit --path also provided
+        if parsed.subfolder and subfolder:
+            return AddModuleResult(
+                success=False,
+                module_name="",
+                message=(
+                    f"Conflicting subfolder: URL contains path '{parsed.subfolder}' "
+                    f"but --path '{subfolder}' was also provided. Use one or the other."
+                ),
+            )
+
+        effective_subfolder = subfolder or parsed.subfolder
+        effective_url = parsed.clone_url
+
         # Validate URL format
-        if not (repo_url.startswith("http://") or repo_url.startswith("https://")):
+        if not (effective_url.startswith("http://") or effective_url.startswith("https://")):
             return AddModuleResult(
                 success=False,
                 module_name="",
                 message="Invalid URL format. Must start with http:// or https://",
             )
 
-        # Infer module name from URL
-        inferred_name = repo_url.rstrip("/").removesuffix(".git").split("/")[-1]
+        # Infer module name from subfolder (last component) or clone URL
+        if effective_subfolder:
+            inferred_name = effective_subfolder.rstrip("/").split("/")[-1]
+        else:
+            inferred_name = effective_url.rstrip("/").removesuffix(".git").split("/")[-1]
         inferred_name = inferred_name.lower().replace("-", "_")
 
         self.logger.info(f"\U0001f4e5 Adding module from: {repo_url}")
@@ -86,16 +105,16 @@ class ModuleAdder:
         try:
             # Clone the repository
             self.logger.info("🔄 Cloning repository...")
-            clone_path = clone_repo(repo_url, temp_dir / inferred_name)
+            clone_path = clone_repo(effective_url, temp_dir / inferred_name, branch=parsed.branch)
 
             # Determine the source directory (whole clone or subfolder)
-            if subfolder:
-                source_dir = clone_path / subfolder
+            if effective_subfolder:
+                source_dir = clone_path / effective_subfolder
                 if not source_dir.exists() or not source_dir.is_dir():
                     return AddModuleResult(
                         success=False,
                         module_name=inferred_name,
-                        message=f"Subfolder not found in repository: {subfolder}",
+                        message=f"Subfolder not found in repository: {effective_subfolder}",
                     )
             else:
                 source_dir = clone_path
@@ -103,10 +122,7 @@ class ModuleAdder:
             # Ensure pyproject.toml exists (or scaffold one)
             pyproject_path = source_dir / "pyproject.toml"
             if not pyproject_path.exists():
-                if skip_prompt:
-                    scaffold_pyproject(source_dir, skip_prompt=True)
-                else:
-                    scaffold_pyproject(source_dir, skip_prompt=False)
+                scaffold_pyproject(source_dir, skip_prompt=skip_prompt)
 
             # Read and validate pyproject.toml
             result = self._read_and_validate_pyproject(source_dir)

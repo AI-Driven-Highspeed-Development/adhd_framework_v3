@@ -1,145 +1,110 @@
 # UV Migrator Core
 
+Migration tool that converts ADHD framework modules from legacy `init.yaml` format to `pyproject.toml`.
+
 ## Overview
-
-Migration tool that converts ADHD framework modules from `init.yaml` format to `pyproject.toml` format compatible with uv workspaces.
-
-**Layer:** dev (used only during migration)
+- Converts module metadata from `init.yaml` to uv-compatible `pyproject.toml` format
+- Supports single-module and batch migration with dry-run preview
+- Automatically infers layer classification and converts GitHub URLs to package dependencies
 
 ## Features
+- **Single module migration** – `migrate_module` converts one module with optional dry-run
+- **Batch migration** – `migrate_all` processes all discovered modules
+- **Preview mode** – `preview_migration` returns generated content without writing
+- **Safe mode** – `no_overwrite` flag skips modules with existing `pyproject.toml`
+- **Layer inference** – determines `foundation`, `runtime`, or `dev` from module path
+- **GitHub URL conversion** – converts GitHub URLs to `[tool.uv.sources]` workspace entries
+- **Template-based generation** – uses composable template parts for consistent output
 
-- **Single module migration**: `adhd migrate <module_name>`
-- **Batch migration**: `adhd migrate --all`
-- **Preview mode**: `adhd migrate --dry-run` to see output without writing
-- **Safe mode**: `adhd migrate --no-overwrite` to skip existing files
-- **Automatic layer inference**: Determines layer based on module type
-- **GitHub URL conversion**: Converts GitHub URLs to `[tool.uv.sources]` entries
-
-## Usage
-
-### CLI Commands
-
-```bash
-# Migrate a single module
-adhd migrate session_manager
-
-# Preview migration without writing
-adhd migrate session_manager --dry-run
-
-# Migrate all modules
-adhd migrate --all
-
-# Migrate all, skip existing pyproject.toml
-adhd migrate --all --no-overwrite
-```
-
-### Programmatic Usage
+## Quickstart
 
 ```python
-from cores.uv_migrator_core import UVMigratorCore
+from uv_migrator_core import UVMigratorCore
 
 migrator = UVMigratorCore()
 
-# Migrate single module
+# Migrate a single module
 result = migrator.migrate_module("session_manager")
 print(result.success, result.message)
 
-# Preview migration
+# Preview without writing
 content = migrator.preview_migration("session_manager")
 print(content)
 
 # Migrate all modules
 report = migrator.migrate_all(dry_run=False)
-report.print_summary()
+report.print_summary(migrator.logger)
 ```
 
-## Conversion Logic
+## API
 
-### Input → Output Mapping
+```python
+@dataclass
+class MigrationResult:
+    module_name: str
+    success: bool
+    message: str
+    output_path: Path | None = None
+    content: str | None = None
 
-| init.yaml field | pyproject.toml field |
-|-----------------|---------------------|
-| `version` | `[project].version` |
-| folder location | `[tool.adhd].layer` (inferred from path) |
-| `requirements` (GitHub URLs) | `[tool.uv.sources]` + `[project].dependencies` |
-| `requirements.txt` (PyPI) | `[project].dependencies` |
+@dataclass
+class MigrationReport:
+    results: list[MigrationResult]
+    @property
+    def successful(self) -> list[MigrationResult]: ...
+    @property
+    def failed(self) -> list[MigrationResult]: ...
+    def print_summary(self, logger: Logger) -> None: ...
 
-### Layer Inference Defaults
+class UVMigratorCore:
+    def __init__(self, root_path: Path | None = None): ...
+    def migrate_module(self, module_name: str, dry_run=False, no_overwrite=False) -> MigrationResult: ...
+    def migrate_all(self, dry_run=False, no_overwrite=False, include_cores=True) -> MigrationReport: ...
+    def preview_migration(self, module_name: str) -> str | None: ...
 
-| Folder | Default Layer |
-|--------|---------------|
-| cores | foundation (unless dev-specific) |
-| utils | foundation |
-| managers | runtime |
-| plugins | runtime |
-| mcps | runtime (+ `mcp = true`) |
-
-### Example Conversion
-
-**Input: init.yaml** (legacy)
-```yaml
-version: 0.0.1
-requirements:
-  - https://github.com/AI-Driven-Highspeed-Development/Logger-Util.git
+# Low-level conversion functions (migrator.py)
+def parse_init_yaml(module_path: Path) -> dict: ...
+def parse_requirements_txt(module_path: Path) -> list[str]: ...
+def github_url_to_package_name(url: str) -> str: ...
+def convert_requirements(requirements: list) -> tuple[list[str], dict]: ...
+def infer_layer(module_path: Path) -> str: ...
+def generate_pyproject_toml(module_path: Path, dry_run=False) -> str: ...
 ```
 
-**Input: requirements.txt**
-```
-sqlalchemy>=2.0.0
-```
+## Notes
+- This is a dev-only migration tool used during the `init.yaml` → `pyproject.toml` transition.
+- Layer inference defaults: `cores/utils → foundation`, `managers/plugins → runtime`, `mcps → dev`.
+- Some known dev-only cores (e.g., `module_creator_core`, `project_creator_core`) override the foundation default.
 
-**Output: pyproject.toml**
-```toml
-[project]
-name = "session-manager"
-version = "0.0.1"
-dependencies = [
-    "logger-util",
-    "sqlalchemy>=2.0.0",
-]
+## Requirements & prerequisites
+- `logger-util`
+- `modules-controller-core`
+- `pyyaml>=6.0`
 
-[tool.adhd]
-layer = "runtime"
+## Troubleshooting
+- **`FileNotFoundError: No init.yaml`** – the target module has no legacy `init.yaml` to migrate.
+- **Layer inferred incorrectly** – check the module's folder location; override via `[tool.adhd].layer` in the generated `pyproject.toml`.
+- **GitHub URLs not converted** – ensure URLs follow `https://github.com/<org>/<repo>.git` format.
+- **`no_overwrite` skips everything** – modules that already have `pyproject.toml` are intentionally skipped.
 
-[tool.uv.sources]
-logger-util = { git = "https://github.com/AI-Driven-Highspeed-Development/Logger-Util.git" }
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-```
-
-## Module Structure
+## Module structure
 
 ```
-cores/uv_migrator_core/
-├── __init__.py           # Module exports
-├── pyproject.toml        # Module metadata
-├── migrator.py           # Conversion logic
-├── templates.py          # pyproject.toml template strings
-├── uv_migrator_cli.py    # CLI command registration
-├── refresh.py            # Framework refresh hook
-├── README.md             # This file
-├── requirements.txt      # PyPI dependencies
-├── tests/                # Unit tests
-└── playground/           # Interactive exploration
+uv_migrator_core/
+├─ __init__.py              # exports UVMigratorCore, MigrationResult, MigrationReport, helpers
+├─ uv_migrator_core.py      # UVMigratorCore controller
+├─ migrator.py              # conversion logic (parse, convert, generate)
+├─ templates.py             # pyproject.toml template strings
+├─ uv_migrator_cli.py       # CLI command registration
+├─ refresh.py               # framework refresh hook
+├─ pyproject.toml           # module metadata
+├─ requirements.txt         # PyPI dependencies
+├─ README.md                # this file
+├─ tests/                   # unit tests
+└─ playground/              # interactive exploration
 ```
 
-## Dependencies
-
-- `logger_util` - Logging
-- `yaml_reading_core` - YAML parsing
-- `modules_controller_core` - Module discovery
-- `cli_manager` - CLI command registration
-
-
-## Testing
-
-### Unit Tests (Optional)
-```bash
-pytest cores/uv_migrator_core/tests/
-```
-
-### Adversarial Testing
-HyperRed will attack this module based on threat model.
-Configure in testing scope: `internal` | `external` | `adversarial`
+## See also
+- Modules Controller Core – module discovery used to find migration targets
+- Logger Util – logging throughout migration operations
+- Config Manager – project root path resolution

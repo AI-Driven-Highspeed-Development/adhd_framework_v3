@@ -5,99 +5,56 @@ Centralized CLI command registration and admin CLI generation for ADHD projects.
 ## Overview
 
 - Modules register their CLI commands via `CLIManager.register_module()`
-- Commands are stored in `./project/data/cli_manager/commands.json`
-- `admin_cli.py` is copied to project root on refresh
-- Supports module short names (aliases) for convenience
-- Deduplication by module name; short_name conflicts are warned
+- Commands are persisted to a JSON registry and used to build an `argparse`-based admin CLI
+- Singleton pattern ensures consistent state across the project
+- Supports module short names (aliases) with conflict detection
 
 ## Features
 
-- Dataclass-based command/argument definitions
-- Singleton pattern for consistent state
-- Dynamic handler resolution via `module.path:function_name`
-- Argparse integration with nested subparsers
-- Configurable admin CLI filename and output directory
+- Dataclass-based command and argument definitions (`Command`, `CommandArg`, `ModuleRegistration`)
+- Thread-safe singleton with file-level locking for concurrent access
+- Dynamic handler resolution via `module.path:function_name` strings
+- Argparse integration with nested module → command subparsers
+- Configurable admin CLI filename and output directory via Config Manager
 
 ## Quickstart
 
-### 1. Register Commands (in your module)
-
-Create a `cli_commands.py` in your module:
-
 ```python
-from managers.cli_manager import CLIManager, ModuleRegistration, Command, CommandArg
+from cli_manager import CLIManager, ModuleRegistration, Command, CommandArg
 
-def register_cli():
-    cli = CLIManager()
-    cli.register_module(ModuleRegistration(
-        module_name="secret_manager",
-        short_name="sm",
-        description="Manage secrets securely",
-        commands=[
-            Command(
-                name="list",
-                help="List all secret keys",
-                handler="managers.secret_manager.secret_cli:list_secrets",
-            ),
-            Command(
-                name="get",
-                help="Get a secret value",
-                handler="managers.secret_manager.secret_cli:get_secret",
-                args=[
-                    CommandArg(name="key", help="The secret key"),
-                ],
-            ),
-            Command(
-                name="set",
-                help="Set a secret value",
-                handler="managers.secret_manager.secret_cli:set_secret",
-                args=[
-                    CommandArg(name="key", help="The secret key"),
-                    CommandArg(name="--value", short="-v", help="Value (prompts if omitted)"),
-                ],
-            ),
-        ],
-    ))
-```
+cli = CLIManager()
+cli.register_module(ModuleRegistration(
+    module_name="my_module",
+    short_name="mm",
+    description="My module commands",
+    commands=[
+        Command(
+            name="run",
+            help="Run the main task",
+            handler="my_module.cli:run_handler",
+            args=[
+                CommandArg(name="--verbose", short="-v", action="store_true", help="Verbose output"),
+            ],
+        ),
+    ],
+))
 
-Then call it from your module's `refresh.py`:
-
-```python
-from .cli_commands import register_cli
-register_cli()
-```
-
-### 2. Run Refresh
-
-```bash
-python adhd_framework.py refresh
-```
-
-This:
-- Copies `admin_cli.py` to project root
-- Modules register their commands to `commands.json`
-
-### 3. Use Admin CLI
-
-```bash
-# Full module name
-python admin_cli.py secret_manager list
-python admin_cli.py secret_manager get MY_KEY
-
-# Short name alias
-python admin_cli.py sm list
+# Build parser and dispatch
+parser = cli.build_parser()
+args = parser.parse_args()
+cli.dispatch(args)
 ```
 
 ## API
 
 ```python
-class CLIManager:
+class CLIManager:                                   # singleton
     def register_module(self, registration: ModuleRegistration) -> bool: ...
     def unregister_module(self, module_name: str) -> bool: ...
     def get_registry(self) -> dict[str, dict]: ...
     def list_modules(self) -> list[str]: ...
-    def build_parser(self, prog: str, description: str) -> ArgumentParser: ...
-    def dispatch(self, args: Namespace) -> int: ...
+    def build_parser(self, prog: str = "admin_cli", description: str = "Project Admin CLI") -> argparse.ArgumentParser: ...
+    def dispatch(self, args: argparse.Namespace) -> int: ...
     def resolve_handler(self, handler_path: str) -> Callable | None: ...
     def get_admin_cli_path(self) -> Path: ...
 
@@ -112,71 +69,58 @@ class ModuleRegistration:
 class Command:
     name: str
     help: str
-    handler: str  # "module.path:function_name"
+    handler: str                                     # "module.path:function_name"
     args: list[CommandArg] = field(default_factory=list)
 
 @dataclass
 class CommandArg:
     name: str
     help: str = ""
-    short: str | None = None  # e.g., "-v" for --value
-    type: str = "str"  # str, int, float, bool
+    short: str | None = None
+    type: str = "str"                                # str, int, float, bool
     required: bool = False
     default: Any = None
-    nargs: str | None = None  # ?, *, +
+    nargs: str | None = None                         # ?, *, +
     choices: list | None = None
-    action: str | None = None  # store_true, store_false, count
+    action: str | None = None                        # store_true, store_false, count
 ```
 
-## Configuration
+## Notes
 
-In `.config`:
+- Handler functions receive the parsed `argparse.Namespace` and return `int | None` (0 or None = success).
+- The registry file is locked with `fcntl` for process-safe reads and writes.
+- Short name conflicts are logged as warnings; the conflicting alias is silently dropped.
 
-```json
-{
-  "cli_manager": {
-    "path": {
-      "data": "./project/data/cli_manager"
-    },
-    "admin_cli": {
-      "filename": "admin_cli.py",
-      "output_dir": "./"
-    }
-  }
-}
+## Requirements & prerequisites
+
+- `logger-util`
+- `config-manager`
+
+## Troubleshooting
+
+- **Import error**: Ensure you import from the package — `from cli_manager import CLIManager`.
+- **Handler not found**: Verify the `handler` string uses the format `package.module:function_name` and the target is importable.
+- **Short name ignored**: Another module already claimed that alias; check the warning log.
+- **Registry file missing**: `CLIManager` creates `commands.json` automatically on first use.
+- **Permission errors**: The data directory must be writable; check path in `.config`.
+
+## Module structure
+
+```
+cli_manager/
+├─ __init__.py                  # exports CLIManager, Command, CommandArg, ModuleRegistration
+├─ cli_manager.py               # singleton manager and parser builder
+├─ cli_manager.instructions.md  # agent instructions
+├─ refresh_full.py              # refresh hook
+├─ .config_template             # default config schema
+├─ pyproject.toml               # package metadata and dependencies
+├─ data/                        # runtime registry storage
+├─ tests/                       # unit tests
+└─ README.md                    # this file
 ```
 
-## Handler Function Signature
+## See also
 
-Handler functions receive the parsed `argparse.Namespace`:
-
-```python
-def list_secrets(args: argparse.Namespace) -> int | None:
-    """List all secrets. Return 0 or None for success, non-zero for error."""
-    sm = SecretManager()
-    for key in sm.list_secrets():
-        print(f"  - {key}")
-    return 0
-```
-
-## Data Structure
-
-`./project/data/cli_manager/commands.json`:
-
-```json
-{
-  "secret_manager": {
-    "module_name": "secret_manager",
-    "short_name": "sm",
-    "description": "Manage secrets securely",
-    "commands": [
-      {
-        "name": "list",
-        "help": "List all secret keys",
-        "handler": "managers.secret_manager.secret_cli:list_secrets",
-        "args": []
-      }
-    ]
-  }
-}
-```
+- Config Manager — configuration access used by CLIManager
+- Logger Utility — logging used internally
+- Modules Controller Core — module discovery and metadata

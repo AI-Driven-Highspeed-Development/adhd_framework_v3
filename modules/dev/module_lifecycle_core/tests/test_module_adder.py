@@ -419,3 +419,155 @@ class TestGitStripping:
         assert not (target / ".git").exists(), ".git/ should be removed"
         assert not (target / ".github").exists(), ".github/ should be removed"
         assert (target / ".gitignore").exists(), ".gitignore should be preserved"
+
+
+class TestAddFromBrowserUrl:
+    """Test auto-parsing of GitHub browser URLs in add_from_repo."""
+
+    def test_browser_url_auto_detects_subfolder(self, project_root):
+        """Browser URL with /tree/main/path should auto-extract subfolder.
+
+        MOCKS: subprocess.run (creates monorepo with subfolder), ModulesController.sync
+        """
+        from module_lifecycle_core import ModuleAdder
+
+        def mock_run(args, **kwargs):
+            if args[0] == "git" and args[1] == "clone":
+                dest = Path(args[-1])
+                dest.mkdir(parents=True, exist_ok=True)
+                # Create monorepo structure with subfolder
+                alpha_dir = dest / "packages" / "alpha"
+                alpha_dir.mkdir(parents=True)
+                (alpha_dir / "pyproject.toml").write_text("""[project]
+name = "testing-alpha"
+version = "0.1.0"
+dependencies = []
+
+[tool.adhd]
+layer = "runtime"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+""")
+                (alpha_dir / "__init__.py").write_text('"""Alpha."""\n')
+                (dest / ".git").mkdir()
+                return MagicMock(returncode=0, stderr="", stdout="")
+            return MagicMock(returncode=0)
+
+        with patch("subprocess.run", side_effect=mock_run):
+            with patch("shutil.which", return_value="/usr/bin/uv"):
+                with patch("modules_controller_core.ModulesController.sync"):
+                    adder = ModuleAdder(project_root=project_root)
+                    result = adder.add_from_repo(
+                        "https://github.com/org/monorepo/tree/main/packages/alpha",
+                        skip_prompt=True,
+                    )
+
+        assert result.success is True
+        assert result.module_name == "testing_alpha"
+        target = project_root / "modules" / "runtime" / "testing_alpha"
+        assert target.exists()
+
+    def test_browser_url_conflicts_with_explicit_path(self, project_root):
+        """Browser URL subfolder + explicit --path should error.
+
+        MOCKS: None (validation happens before clone).
+        """
+        from module_lifecycle_core import ModuleAdder
+
+        adder = ModuleAdder(project_root=project_root)
+        result = adder.add_from_repo(
+            "https://github.com/org/monorepo/tree/main/packages/alpha",
+            subfolder="packages/beta",
+            skip_prompt=True,
+        )
+
+        assert result.success is False
+        assert "conflicting" in result.message.lower()
+
+    def test_bare_github_url_normalises_to_git(self, project_root):
+        """Bare GitHub URL (no .git suffix) should still work with normalised URL.
+
+        MOCKS: subprocess.run, ModulesController.sync
+        """
+        from module_lifecycle_core import ModuleAdder
+
+        clone_urls: list[str] = []
+
+        def mock_run(args, **kwargs):
+            if args[0] == "git" and args[1] == "clone":
+                clone_urls.append(args[-2])
+                dest = Path(args[-1])
+                _create_mock_clone_dir(dest)
+                return MagicMock(returncode=0, stderr="", stdout="")
+            return MagicMock(returncode=0)
+
+        with patch("subprocess.run", side_effect=mock_run):
+            with patch("shutil.which", return_value="/usr/bin/uv"):
+                with patch("modules_controller_core.ModulesController.sync"):
+                    adder = ModuleAdder(project_root=project_root)
+                    result = adder.add_from_repo(
+                        "https://github.com/org/testing-standalone-module",
+                        skip_prompt=True,
+                    )
+
+        assert result.success is True
+        # The URL passed to git clone should have .git suffix
+        assert clone_urls[0].endswith(".git")
+
+    def test_browser_url_passes_parsed_branch(self, project_root):
+        """Branch from browser URL should be passed to git clone.
+
+        MOCKS: subprocess.run (captures args), ModulesController.sync
+        """
+        from module_lifecycle_core import ModuleAdder
+
+        clone_args: list[list[str]] = []
+
+        def mock_run(args, **kwargs):
+            if args[0] == "git" and args[1] == "clone":
+                clone_args.append(list(args))
+                dest = Path(args[-1])
+                dest.mkdir(parents=True, exist_ok=True)
+                # Create module in subfolder
+                mod_dir = dest / "src" / "my_mod"
+                mod_dir.mkdir(parents=True)
+                (mod_dir / "pyproject.toml").write_text("""[project]
+name = "my-mod"
+version = "0.1.0"
+dependencies = []
+
+[tool.adhd]
+layer = "runtime"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+""")
+                (mod_dir / "__init__.py").write_text('"""Mod."""\n')
+                (dest / ".git").mkdir()
+                return MagicMock(returncode=0, stderr="", stdout="")
+            return MagicMock(returncode=0)
+
+        with patch("subprocess.run", side_effect=mock_run):
+            with patch("shutil.which", return_value="/usr/bin/uv"):
+                with patch("modules_controller_core.ModulesController.sync"):
+                    adder = ModuleAdder(project_root=project_root)
+                    result = adder.add_from_repo(
+                        "https://github.com/org/repo/tree/develop/src/my_mod",
+                        skip_prompt=True,
+                    )
+
+        assert result.success is True
+        # Verify --branch develop was passed
+        assert "--branch" in clone_args[0]
+        branch_idx = clone_args[0].index("--branch")
+        assert clone_args[0][branch_idx + 1] == "develop"
+
