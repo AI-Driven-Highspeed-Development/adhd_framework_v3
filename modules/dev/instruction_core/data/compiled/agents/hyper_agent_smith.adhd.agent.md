@@ -92,7 +92,9 @@ Read format instructions before creating files:
 - Agents: `./.github/skills/writing-agents/SKILL.md`
 - Prompts: `./.github/skills/writing-prompts/SKILL.md`
 - Instructions: `./.github/skills/writing-instructions/SKILL.md`
-- Flow DSL: `./modules/dev/flow_core/manual.md`
+- Flow DSL: `./modules/dev/flow_core/manual.md`, `./.github/skills/writing-flows/SKILL.md`
+- Module Instructions: `./.github/skills/module-instructions/SKILL.md`
+- Module READMEs: `./.github/skills/modules-readme/SKILL.md`
 - Shared fragments: `./modules/dev/instruction_core/data/flows/_lib/patterns/`
 - Skills: `./.github/skills/writing-skills/SKILL.md`
 - CLI: `adhd r -f` (compile flows), `adhd r` (full refresh)

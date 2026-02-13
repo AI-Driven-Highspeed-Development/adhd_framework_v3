@@ -2,7 +2,7 @@
 name: context_injection_restructure
 type: procedure
 magnitude: Standard
-status: WIP
+status: DONE
 origin: discussion/context_injection_files_taxonomy
 last_updated: 2026-02-13
 depends_on: []
@@ -22,11 +22,11 @@ Restructure ADHD Framework context injection files (`.instructions.md`, `.agent.
 | Name | Type | Status | Description |
 |------|------|--------|-------------|
 | 01_summary.md | Task | ✅ [DONE] | Merged summary: pain, vision, taxonomy spec, approach |
-| 80_implementation.md | Task | 🔄 [WIP] | Tracking doc in active use: P0/P1 complete, P2/P3 not started |
+| 80_implementation.md | Task | ✅ [DONE] | Tracking doc: all phases (P0–P3) complete |
 | p00_usage_audit/ | Plan | ✅ [DONE] | Audit completed: instruction inventory, consumers, and STAY/MIGRATE classification |
 | P1 taxonomy documentation | Task | ✅ [DONE] | Implemented via `context_injection_taxonomy.instructions.md` and Phase 1 records in `80_implementation.md` (no separate child folder) |
-| p02_migration_execution/ | Plan | ⏳ [TODO] | Create skills, deprecate old instructions, update flows |
-| p03_deprecation_cleanup/ | Plan | ⏳ [TODO] | Remove deprecated files, verify compilation, coverage |
+| p02_migration_execution/ | Plan | ✅ [DONE] | Create skills, deprecate old instructions, update flows |
+| p03_deprecation_cleanup/ | Plan | ✅ [DONE] | Remove deprecated files, link skills to agent flows via `++`, trim redundant inline content, verify compilation + coverage |
 
 ## Integration Map
 

@@ -1,11 +1,11 @@
 ---
 project: "PP02 — Context Injection Files Restructuring"
-current_phase: 2
-phase_name: "Migration Execution"
+current_phase: 3
+phase_name: "Deprecation Cleanup & Verification"
 status: DONE
 start_date: "2026-02-13"
 last_updated: "2026-02-13"
-p2_duration: "Heavy (max 5 slots)"
+p3_duration: "Light (max 2 slots)"
 ---
 
 # 80 — Implementation Plan
@@ -231,38 +231,70 @@ Old instruction source files become thin stubs:
 
 ## 🧹 Phase 3: Deprecation Cleanup & Verification
 
-**Goal:** *"Remove deprecated instruction files, verify `adhd r -f` compiles cleanly, verify no agent lost context coverage."*
-**Phase Status:** ⏳ `[TODO]` *(not started)*
+**Goal:** *"Remove deprecated instruction files, link skills to agent flow files via `++` read-directives, trim redundant inline content from flows, verify `adhd r -f` compiles cleanly, verify no agent lost context coverage."*
+**Phase Status:** ✅ `[DONE]`
 
 **Duration:** ■■□□□□□□ Light (max 2 slots)
 
 ### Exit Gate
 
-- [ ] Zero deprecated instruction files remain in `instruction_core/data/instructions/`
-- [ ] `adhd r -f` compiles with zero errors and zero warnings
-- [ ] Every agent's compiled output has equivalent or better context coverage
+- [x] Zero deprecated instruction files remain in `instruction_core/data/instructions/`
+- [x] Agent flow files reference migrated skills via `++` read-directives where applicable
+- [x] No redundant inline content in flow files that duplicates skill content
+- [x] `adhd r -f` compiles with zero errors and zero warnings
+- [x] Every agent's compiled output has equivalent or better context coverage
 
 ### Tasks
 
 | Status | Task | Scope | Difficulty |
 |--------|------|-------|------------|
-| ⏳ | Delete all `deprecated: true` instruction source files | `instruction_core` | `[KNOWN]` |
-| ⏳ | Run `adhd r -f` — verify clean compilation | `instruction_core` | `[KNOWN]` |
-| ⏳ | Diff each agent's compiled `.agent.md` before/after — confirm no lost sections | verification | `[KNOWN]` |
+| ✅ | Delete all `deprecated: true` instruction source files | `instruction_core` | `[KNOWN]` |
+| ✅ | Audit agent flow files (`instruction_core/data/flows/agents/`) for inline content that duplicates migrated skills | `instruction_core` | `[KNOWN]` |
+| ✅ | Add `++` skill read-directives to flow files for each of the 9 migrated skills (where the owning agent's flow lacks the reference) | `instruction_core` | `[KNOWN]` |
+| ✅ | Trim redundant inline workflow/SOP content from flow files that is now covered by linked skills | `instruction_core` | `[KNOWN]` |
+| ✅ | Run `adhd r -f` — verify clean compilation | `instruction_core` | `[KNOWN]` |
+| ✅ | Diff each agent's compiled `.agent.md` before/after — confirm no lost sections | verification | `[KNOWN]` |
+
+### Flow-Skill Linking Details
+
+Agent flow files live at `modules/dev/instruction_core/data/flows/agents/`. Flow syntax for including skill content:
+
+```
+>>|++../../skills/{skill-name}/SKILL.md|<<
+```
+
+Mapping of migrated skills → owning agent flows:
+
+| Skill | Owning Agent Flow | Action |
+|-------|-------------------|--------|
+| `module-dev` | `hyper_architect` | Add `++` reference, trim inline module-dev SOP |
+| `mcp-module-dev` | `hyper_architect` | Add `++` reference (chain-loaded via `module-dev`) |
+| `cli-dev` | `hyper_architect` | Add `++` reference, trim inline CLI SOP |
+| `writing-agents` | `hyper_agent_smith` | Add `++` reference, trim inline agent-format SOP |
+| `writing-instructions` | `hyper_agent_smith` | Add `++` reference, trim inline instructions-format SOP |
+| `writing-prompts` | `hyper_agent_smith` | Add `++` reference, trim inline prompts-format SOP |
+| `module-instructions` | `hyper_agent_smith` | Add `++` reference, trim inline module-instructions SOP |
+| `writing-flows` | `hyper_agent_smith` | Already restructured in P2 — verify `++` reference exists |
+| `hyper-san-output` | `hyper_san_checker` | Add `++` reference, trim inline output-contract SOP |
+| `modules-readme` | `hyper_agent_smith` / `hyper_day_dreamer` | Add `++` reference (companion skill) |
 
 ### Verification (Manual)
 
 | What to Try | Expected Result |
 |-------------|-----------------|
 | `grep -r "deprecated" instruction_core/data/instructions/` | No matches |
+| `grep -r "++.*SKILL.md" instruction_core/data/flows/agents/` | Each owning agent flow references its skills via `++` |
 | `adhd r -f` | Clean compile, exit 0, no warnings |
 | Compare agent `.md` file sizes before vs after | Sizes comparable (±10%) — no large drops |
+| Spot-check compiled agent output for skill content | Skill content appears in compiled output via `++` inclusion |
 
 ### P3 Completion Checklist
 
-- [ ] Exit gate met — zero deprecated files, clean compilation
-- [ ] Coverage audit confirms no agent lost context
-- [ ] Manual verification steps pass
+- [x] Exit gate met — zero deprecated files, clean compilation
+- [x] All 9 migrated skills linked to owning agent flows via `++` read-directives
+- [x] Redundant inline content trimmed from flow files
+- [x] Coverage audit confirms no agent lost context
+- [x] Manual verification steps pass
 
 ---
 

@@ -60,7 +60,7 @@ Read the ADHD framework's core philosophy and project structure in `.github/inst
 <execution_guidance>
 **Execution Standards**:
 - **When invoked by HyperOrch**: Execution standards (coding patterns, phase structure, test patterns) are passed in the delegation prompt. Follow those standards exactly.
-- **When invoked directly** (standalone): Use general best practices from `adhd_framework_context.instructions.md` and `module-development` skill.
+- **When invoked directly** (standalone): Use general best practices from `adhd_framework_context.instructions.md` and `module-dev` skill.
 
 > **Source of Truth**: The `orch-implementation` and `orch-testing` skills define the canonical standards. HyperOrch embeds these in your invocation context.
 </execution_guidance>
@@ -73,8 +73,9 @@ Before starting any task, say out loud: "I am NOW HyperArch, the Expert Develope
 -   **Goal Alignment**: Don't assume user is right. Challenge bad practices or "XY problems".
 
 ### 2. Discovery
--   **MANDATORY READING**: `./.github/instructions/adhd_framework_context.instructions.md` (overview), `./.github/skills/module-development/SKILL.md` (modules). Also: `logger_util`, `config_manager`, `exceptions` instructions.
--   **If related to MCP modules**: `./.github/skills/mcp-development/SKILL.md`
+-   **MANDATORY READING**: `./.github/instructions/adhd_framework_context.instructions.md` (overview), `./.github/skills/module-dev/SKILL.md` (modules). Also: `logger_util`, `config_manager`, `exceptions` instructions.
+-   **If related to MCP modules**: `./.github/skills/mcp-module-dev/SKILL.md`
+-   **If related to CLI commands**: `./.github/skills/cli-dev/SKILL.md`
 -   **Search & Read**: Find existing modules. **DO NOT** re-invent the wheel or hallucinate usages.
 -   **Documentation**: Check `.agent_plan/day_dream/` for blueprints and kanbn tasks for context.
 -   **Discovery Checklist**: Check existing tests, HyperRed findings, and playground. See `testing` skill for folder locations.
@@ -82,8 +83,8 @@ Before starting any task, say out loud: "I am NOW HyperArch, the Expert Develope
 ### 3. Execute Task (Single Pass)
 Execute the requested task following the appropriate guidance:
 
-- **Implementation**: Follow coding standards from `./.github/instructions/implementation_workflow.instructions.md`
-- **Testing**: Follow test patterns from `./.github/instructions/testing_workflow.instructions.md`
+- **Implementation**: Follow coding standards passed by HyperOrch (see `orch-implementation` skill)
+- **Testing**: Follow test patterns passed by HyperOrch (see `orch-testing` skill)
 - **Analysis/Discussion**: Gather context, analyze, provide recommendations (read-only)
 
 ### 4. Report Results

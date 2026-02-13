@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "compiled_at": "2026-02-13T09:36:07.729691+00:00",
+  "compiled_at": "2026-02-13T09:54:06.489296+00:00",
   "entries": {
     "instruction_sync_overview.md": {
       "source": "instruction_sync_overview.flow",
@@ -16,10 +16,10 @@
     "agents/hyper_architect.adhd.agent.md": {
       "source": "agents/hyper_architect.flow",
       "type": "compiled",
-      "sha256": "6b1b011b96784a76d2ea0276c642c383f8c0374fa1bb9deaf0cae2f00961352c",
-      "source_sha256": "b566d1fa04268dbceda83a5ada12ec315f845e84136b8abd1d95dcc7fac0b455",
-      "size": 8026,
-      "transitive_sha256": "4744f180fe9a45a8e1bb07b811aab6e6ee6bc08f07618b1b40e529f8db503440",
+      "sha256": "8d3186d94518bbe6f831423ae1795886273bd0cf9bb0b8b1b94cc6991c314af8",
+      "source_sha256": "e87c380c12e8bc7a6066a3cd1f068b56a92e054a6b30d179a313b53b7b9d07e5",
+      "size": 8049,
+      "transitive_sha256": "20c9899b665fba01aa1b2666e1e9fa0fcb286f06eb5271a3f728bcf2e7d81374",
       "transitive_files": [
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/adhd/framework_info.flow",
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/core_philosophy.flow",
@@ -77,10 +77,10 @@
     "agents/hyper_day_dreamer.adhd.agent.md": {
       "source": "agents/hyper_day_dreamer.flow",
       "type": "compiled",
-      "sha256": "782adff85b4a0da8bd011be98dd26931fe9c81c6a3476ba1e0b0001076198353",
-      "source_sha256": "3f25b7becf1f366515883cc4580910fad7a89b89c2c9de88d636a4effc7f1c0d",
-      "size": 9443,
-      "transitive_sha256": "1fc9b337fbd06b115e399ad06273899e05dbb820891cfa9e93295f99086f9f4a",
+      "sha256": "c1adc607ca322d17382fbb49c4397eee187f1824fa6cdf94ff0ecb052d137201",
+      "source_sha256": "056316e26b4578c2bf053c5779f50ceb373d4d68cd9526909bbaed980644a38f",
+      "size": 9530,
+      "transitive_sha256": "1d80dea11e739bbc66aef660dc7e60845b1985d31f2ca8b93c1112eebad5b72d",
       "transitive_files": [
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/core_philosophy.flow",
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/stopping_rules_base.flow",
@@ -118,10 +118,10 @@
     "agents/hyper_agent_smith.adhd.agent.md": {
       "source": "agents/hyper_agent_smith.flow",
       "type": "compiled",
-      "sha256": "dfab8515df8fd435ef065ddacf94d11e62b1aff22604bddef2146dc1b9f32757",
-      "source_sha256": "86174282748a938e9fc5ccad65417d036a9fdd350c3cda77c2041e33fbe660eb",
-      "size": 8707,
-      "transitive_sha256": "714bf7d26fb61fe428a97887fae8110b82abe0a98b9e927a0eb8a2300fed2516",
+      "sha256": "e8be0c3ec0514043adcdcad151d17c48e896f136cfba9182999fc42dc86a6dc8",
+      "source_sha256": "a197a534d27b712a721341d9f379e1cd42574aa95bde4559d3d908f2d3537f1a",
+      "size": 8882,
+      "transitive_sha256": "9717222739095efe5fec61302ee01d9c4329d4fd33abe9545fa3be2e4f820c29",
       "transitive_files": [
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/core_philosophy.flow",
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/stopping_rules_base.flow",
