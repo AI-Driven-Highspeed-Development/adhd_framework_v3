@@ -30,6 +30,56 @@ FILE_TYPE_CONFIGS = (
     ("*.prompt.md", "prompts", "prompt"),
 )
 
+# ADHD-MANAGED header template for clone outputs
+# Injected at the TOP of markdown files to indicate they should not be edited directly
+_ADHD_MANAGED_HEADER_TEMPLATE = """\
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: {source_path}
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
+"""
+
+# File extensions that receive ADHD-MANAGED headers
+_MANAGED_EXTENSIONS = {".md"}
+
+# Marker to detect if header is already injected
+_ADHD_HEADER_MARKER = "ADHD-MANAGED — DO NOT EDIT DIRECTLY"
+
+
+def _inject_adhd_header(content: str, source_rel_path: str) -> str:
+    """Inject ADHD-MANAGED header at the top of content.
+    
+    For files with YAML frontmatter (---), injects AFTER the closing ---.
+    For other files, injects at the very beginning.
+    Skips injection if header marker already exists.
+    
+    Args:
+        content: Original file content.
+        source_rel_path: Relative path to source file (used in header).
+        
+    Returns:
+        Content with ADHD-MANAGED header injected (or unchanged if already present).
+    """
+    # Skip if already has the header
+    if _ADHD_HEADER_MARKER in content:
+        return content
+    
+    header = _ADHD_MANAGED_HEADER_TEMPLATE.format(source_path=source_rel_path)
+    
+    # Check for YAML frontmatter: starts with --- and has closing ---
+    if content.startswith("---\n"):
+        # Find the closing ---
+        closing_match = re.search(r"\n---\n", content[4:])
+        if closing_match:
+            # Insert header after the closing ---
+            insert_pos = 4 + closing_match.end()
+            return content[:insert_pos] + header + content[insert_pos:]
+    
+    # No frontmatter or malformed: prepend header
+    return header + content
+
 
 class InstructionController:
     """
@@ -89,6 +139,52 @@ class InstructionController:
             self.logger.info(f"Ensured target structure exists at {target_path}")
         except OSError as e:
             raise ADHDError(f"Failed to create target structure at {target_path}: {e}") from e
+
+    def _get_source_rel_path(self, source_path: Path) -> str:
+        """Compute relative path from workspace root for ADHD-MANAGED header.
+        
+        Args:
+            source_path: Absolute path to source file.
+            
+        Returns:
+            Relative path string suitable for header display.
+        """
+        try:
+            return str(source_path.relative_to(self.root_path))
+        except ValueError:
+            # Source is outside workspace (e.g., in site-packages); use module-relative path
+            try:
+                return str(source_path.relative_to(self.official_source_path.parent))
+            except ValueError:
+                return source_path.name
+
+    def _copy_with_adhd_header(self, src: Path | str, dst: Path | str) -> None:
+        """Copy a markdown file to destination with ADHD-MANAGED header injection.
+        
+        Non-markdown files are copied verbatim using shutil.copy2.
+        Compatible with shutil.copytree's copy_function parameter (accepts strings).
+        
+        Args:
+            src: Source file path (Path or str).
+            dst: Destination file path (Path or str).
+            
+        Raises:
+            OSError: If copy fails.
+        """
+        # Convert to Path objects for consistent handling
+        src_path = Path(src)
+        dst_path = Path(dst)
+        
+        if src_path.suffix not in _MANAGED_EXTENSIONS:
+            shutil.copy2(src_path, dst_path)
+            return
+        
+        content = src_path.read_text(encoding="utf-8")
+        source_rel_path = self._get_source_rel_path(src_path)
+        injected_content = _inject_adhd_header(content, source_rel_path)
+        dst_path.write_text(injected_content, encoding="utf-8")
+        # Preserve metadata like shutil.copy2
+        shutil.copystat(src_path, dst_path)
 
     def _load_mcp_permissions(self) -> dict[str, list[str]]:
         """Load MCP permission injection configuration from JSON file."""
@@ -263,7 +359,7 @@ class InstructionController:
             try:
                 hasher.update(file_path.read_bytes())
             except OSError:
-                # Include path as bytes to force cache miss if file disappears
+                # FALLBACK: file disappeared mid-hash permanent — encoding path forces cache miss
                 hasher.update(str(file_path).encode("utf-8"))
         return hasher.hexdigest()
 
@@ -527,6 +623,7 @@ class InstructionController:
         Write compiled Markdown files to data/compiled/.
 
         Handles subdirectories (e.g., ``compiled/agents/``) automatically.
+        Injects ADHD-MANAGED header for markdown files.
 
         Args:
             compiled: Dict mapping output relative path to compiled Markdown content.
@@ -537,11 +634,22 @@ class InstructionController:
         compiled_dir = self.official_source_path / "compiled"
         compiled_dir.mkdir(parents=True, exist_ok=True)
 
+        source_map: dict[str, Path] = getattr(self, "_source_map", {})
+
         written: list[Path] = []
         for output_rel, content in compiled.items():
             out_path = compiled_dir / output_rel
             out_path.parent.mkdir(parents=True, exist_ok=True)
             try:
+                # Inject ADHD-MANAGED header for managed files
+                if out_path.suffix in _MANAGED_EXTENSIONS:
+                    source_file = source_map.get(output_rel)
+                    if source_file:
+                        source_rel_path = self._get_source_rel_path(source_file)
+                    else:
+                        source_rel_path = f"<compiled>/{output_rel}"
+                    content = _inject_adhd_header(content, source_rel_path)
+                
                 out_path.write_text(content, encoding="utf-8")
                 written.append(out_path)
                 self.logger.info(f"Wrote compiled output: {output_rel}")
@@ -590,7 +698,7 @@ class InstructionController:
                 try:
                     source_sha256 = hashlib.sha256(source_file.read_bytes()).hexdigest()
                 except OSError:
-                    pass
+                    pass  # FALLBACK: file unreadable (deleted/locked) permanent — hash remains empty, triggering recompile on next run
 
             entry_data: dict = {
                 "source": source_rel,
@@ -838,7 +946,7 @@ class InstructionController:
         Sync skill directories from data/skills/ to each official target's sibling skills/ directory.
 
         Skills go to {target}/../skills/ (e.g., .github/skills/, not .github/instructions/skills/).
-        Uses shutil.copytree with dirs_exist_ok=True for each skill subdirectory.
+        Uses shutil.copytree with custom copy_function to inject ADHD-MANAGED headers.
         """
         skills_source = self.official_source_path / "skills"
         if not skills_source.exists():
@@ -857,7 +965,10 @@ class InstructionController:
             for skill_dir in skill_dirs:
                 dst = skills_target / skill_dir.name
                 try:
-                    shutil.copytree(skill_dir, dst, dirs_exist_ok=True)
+                    shutil.copytree(
+                        skill_dir, dst, dirs_exist_ok=True,
+                        copy_function=self._copy_with_adhd_header
+                    )
                     self.logger.info(f"Synced skill: {skill_dir.name} -> {dst}")
                 except OSError as e:
                     self.logger.error(f"Failed to sync skill {skill_dir.name}: {e}")
@@ -886,7 +997,7 @@ class InstructionController:
                 try:
                     # Flatten: all files go to target_dir/subdir/ regardless of source nesting
                     dest_path = target_dir / subdir / file_path.name
-                    shutil.copy2(file_path, dest_path)
+                    self._copy_with_adhd_header(file_path, dest_path)
                     self.logger.info(f"Synced {subdir[:-1]} ({label}): {file_path.name}")
                 except OSError as e:
                     self.logger.error(f"Failed to sync {file_path.name} to {subdir}: {e}")
@@ -930,6 +1041,7 @@ class InstructionController:
                         sync_subdir.mkdir(parents=True, exist_ok=True)
                         try:
                             dest = sync_subdir / Path(compiled_rel).name
+                            # Compiled files already have headers from _write_compiled_output
                             shutil.copy2(compiled_path, dest)
                             self.logger.info(f"Synced compiled file: {compiled_rel}")
                         except OSError as e:
@@ -968,7 +1080,7 @@ class InstructionController:
                 try:
                     # Ensure parent directory exists
                     target_file.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(source_file, target_file)
+                    self._copy_with_adhd_header(source_file, target_file)
                     self.logger.info(f"Synced .agent_plan: {relative_path}")
                 except OSError as e:
                     self.logger.error(f"Failed to sync .agent_plan file {relative_path}: {e}")
@@ -993,7 +1105,7 @@ class InstructionController:
                 for file_path in files:
                     try:
                         dest_path = target_path / subdir / file_path.name
-                        shutil.copy2(file_path, dest_path)
+                        self._copy_with_adhd_header(file_path, dest_path)
                         self.logger.info(f"Synced module {file_type}: {module.name} -> {dest_path.name}")
                     except OSError as e:
                         self.logger.error(f"Failed to sync {file_type} {file_path.name} for module {module.name}: {e}")

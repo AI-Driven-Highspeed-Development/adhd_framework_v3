@@ -1,3 +1,9 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/examples/free_zone_philosophical_tensions.example.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 # FREE ZONE Example: Philosophical Tensions
 
 > This example shows how to document the contradictions and tradeoffs you're actively navigating in a feature design. These aren't "problems to solve" — they're tensions to *manage*.

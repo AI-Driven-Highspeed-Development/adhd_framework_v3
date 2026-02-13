@@ -1,3 +1,9 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/examples/simple_example.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 # 🎯 Indicators Util
 
 > *Calculate technical indicators without fighting pandas indexes*

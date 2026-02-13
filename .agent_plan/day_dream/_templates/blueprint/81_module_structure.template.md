@@ -1,3 +1,9 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/81_module_structure.template.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 # 81 - Module Structure
 
 > Part of [{Project Name} Blueprint](./00_index.md)

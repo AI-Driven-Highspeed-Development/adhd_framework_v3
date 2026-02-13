@@ -1,3 +1,9 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/examples/deep_dive_algorithm_proof.example.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 ## 🔬 Deep Dive
 
 ### Algorithm Analysis: LRU Cache with TTL Support

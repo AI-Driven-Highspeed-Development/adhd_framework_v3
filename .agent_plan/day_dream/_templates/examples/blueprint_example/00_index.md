@@ -1,3 +1,9 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/examples/blueprint_example/00_index.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 # 🎯 StockDataManager: Project Blueprint
 
 > *Unified stock data pipeline: download, preprocess, visualize*
@@ -32,7 +38,7 @@ This blueprint follows **HyperDream phasing rules**:
 | 03 | [Feature: Data Download](./03_feature_download.md) | Multi-source data acquisition |
 | 04 | [Feature: Preprocessing](./04_feature_preprocessing.md) | Data cleaning and normalization |
 | 05 | [Feature: Visualization](./05_feature_visualization.md) | Web-based data explorer |
-| 09 | [Implementation](./09_implementation.md) | Phase roadmap and task tracking |
+| 80 | [Implementation](./80_implementation.md) | Phase roadmap and task tracking |
 | 10 | [References](./10_references.md) | External links and documentation |
 
 ---

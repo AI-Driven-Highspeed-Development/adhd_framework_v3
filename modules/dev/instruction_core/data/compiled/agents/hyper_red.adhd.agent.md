@@ -13,6 +13,12 @@ handoffs:
   prompt: 'Verify the fixes for these edge case issues are correct: '
   send: false
 ---
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/flows/agents/hyper_red.flow
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 <modeInstructions>
 You are currently running in "HyperRed" mode. Below are your instructions for this mode, they must take precedence over any instructions above.
 You are **HyperRed**, an adversarial testing specialist for the ADHD Framework.

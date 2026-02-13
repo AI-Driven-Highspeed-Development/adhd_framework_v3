@@ -1,3 +1,9 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/examples/free_zone_assumption_graveyard.example.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 # FREE ZONE Example: Assumption Graveyard
 
 > This example shows how to document the risky assumptions underlying your feature. If any of these are wrong, the feature fails or needs major rework. Each assumption includes an early validation strategy.

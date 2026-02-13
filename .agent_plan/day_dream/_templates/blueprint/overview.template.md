@@ -1,3 +1,24 @@
+---
+# REQUIRED fields (plan is invalid without these)
+name: {plan_name}           # snake_case identifier
+type: system                # system | procedure
+magnitude: Standard         # Trivial | Light | Standard | Heavy | Epic
+status: TODO                # TODO | WIP | DONE | BLOCKED | CUT
+origin: exploration/xxx.md  # Path to triggering doc
+last_updated: YYYY-MM-DD    # Last modification date
+
+# RECOMMENDED fields (omit if not applicable)
+# depends_on: []            # Plans this requires - uncomment if needed
+# blocks: []                # Plans that wait for this - uncomment if needed
+# knowledge_gaps: []        # Missing expertise - uncomment if needed
+---
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/overview.template.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
+
 <!--
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║  ⚠️  SCAFFOLD — This template provides STRUCTURE, not protocol.              ║
@@ -22,13 +43,12 @@ hierarchy rules.
 
 ## Children
 
-| Name | Type | Magnitude | Status | Description |
-|------|------|-----------|--------|-------------|
-| {child-plan/} | Plan | {Standard/Heavy} | ⏳ [TODO] | {What this sub-plan delivers} |
-| {child-task.md} | Task | {Trivial/Light/Standard} | ⏳ [TODO] | {What this task produces} |
+| Name | Type | Status | Description |
+|------|------|--------|-------------|
+| {child-plan/} | Plan | ⏳ [TODO] | {What this sub-plan delivers} |
+| {child-task.md} | Task | ⏳ [TODO] | {What this task produces} |
 
-<!-- Type: Plan = directory (has its own _overview.md), Task = file (leaf, directly executable) -->
-<!-- Magnitude: Trivial | Light | Standard | Heavy | Epic. See dream-planning skill. -->
+<!-- Type: Plan (directory with _overview.md) or Task (single .md file). NO other values allowed. -->
 
 ## Integration Map
 

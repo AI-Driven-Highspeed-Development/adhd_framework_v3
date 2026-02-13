@@ -143,7 +143,7 @@ flowchart LR
 |-----------|-------|
 | **Purpose** | Passive rendering scaffolds — provide structure for plan/task documents |
 | **Boundary** | Owns: section layout, placeholder text. Does NOT own: any protocol rules or authoring decisions |
-| **Implemented By** | `instruction_core/data/.agent_plan/day_dream/templates/` |
+| **Implemented By** | `instruction_core/data/.agent_plan/day_dream/_templates/` |
 | **Depends On** | `day-dream` skill for authoring rules |
 | **Exposes** | Template files (simple, blueprint, asset) |
 
@@ -230,7 +230,7 @@ How children connect and depend on each other.
 │   └── SKILL.md
 │
 modules/dev/instruction_core/data/
-└── .agent_plan/day_dream/templates/  (P1 — REFRESHED)
+└── .agent_plan/day_dream/_templates/  (P1 — REFRESHED)
     ├── simple.template.md
     └── blueprint/
         ├── overview.template.md             ← NEW: template for _overview.md

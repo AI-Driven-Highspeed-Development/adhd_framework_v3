@@ -4,26 +4,52 @@
 
 ---
 
-## Purpose
+## Current Sprint
 
-Central index for all vision, blueprint, and planning documents. Each child is a self-contained plan representing a project or initiative.
+| Plan | Phase | Status | Next Action |
+|------|-------|--------|-------------|
+| SP01_dream_v405_implementation | p03_dream_mcp_skeleton | ⏳ [TODO] | Scaffold `dream_mcp` module at `modules/dev/dream_mcp/` |
+| SP01_dream_v405_implementation | p04_parsing_and_simple_commands | ⏳ [TODO] | Build shared parsing infra + `dream tree` + `dream stale` |
+| SP01_dream_v405_implementation | p05_status_and_validate | ⏳ [TODO] | Implement `dream status` + `dream validate` (completes P0) |
+| PP02_context_injection_restructure | p00_usage_audit | ⏳ [TODO] | Audit 17 instruction files, classify STAY/MIGRATE |
+| PP03_dream_sop_skills | p00_skill_inventory_design | ⏳ [TODO] | Review existing dream skills + archived iterations, design dispatch table |
 
-## Children
+## Plans
 
-| Name | Type | Status | Description |
-|------|------|--------|-------------|
-| [dream-upgrade/](./dream-upgrade/_overview.md) | Plan | ✅ [DONE] | Evolved the planning system from linear blueprints to DREAM decomposition protocol |
-| [module-lifecycle/](./module-lifecycle/_overview.md) | Plan | ⏳ [TODO] | Module remove & update commands for the ADHD CLI |
+| Name | Type | Status | Priority | Description |
+|------|------|--------|----------|-------------|
+| [SP01_dream_v405_implementation/](./SP01_dream_v405_implementation/_overview.md) | System | 🔄 [WIP] | normal | Align ecosystem with DREAM v4.05 — skills, templates, agents, dream_mcp skeleton |
+| [module-lifecycle/](./module-lifecycle/_overview.md) | Plan | ⏳ [TODO] | normal | Module remove & update commands for the ADHD CLI |
+| [PP02_context_injection_restructure/](./PP02_context_injection_restructure/_overview.md) | Procedure | ⏳ [TODO] | normal | Restructure context injection files using 3-axis taxonomy (agent/instruction/skill) |
+| [PP03_dream_sop_skills/](./PP03_dream_sop_skills/_overview.md) | Procedure | ⏳ [TODO] | normal | Transform DREAM into active dispatch system with routing skill + leaf SOPs |
+
+## Module Index
+
+| Module | Origin Plan | Modified By | Spec File | Knowledge Gaps |
+|--------|-------------|-------------|-----------|----------------|
+| dream_mcp | SP01 | SP01 | `SP01_dream_v405_implementation/modules/dream_mcp.md` | — |
+| instruction_core | (pre-existing) | SP01 | `SP01_dream_v405_implementation/modules/instruction_core.md` | Auto-sync behavior unverified |
+
+## State Deltas
+
+### 🔄 SP01_dream_v405_implementation — Feb 2026
+
+- `_templates/`: renamed from `templates/`, PP summary template created, frontmatter schemas updated to v4.05
+- dream-planning SKILL.md: rewritten with 8-slot magnitude, full frontmatter schema, SP/PP types
+- day-dream SKILL.md: rewritten with `_templates/` paths, dependency/invalidation/knowledge-gap rules, Module Index gate
+- writing-templates SKILL.md: all path references updated to `_templates/`
+- instruction_core: flow sources updated (`templates/` → `_templates/`), agents recompiled, synced skills refreshed
+- ⏳ dream_mcp: skeleton not yet created (p03 pending)
 
 ## Legacy References
 
 | Name | Purpose |
 |------|---------|
-| [DREAM_upgrade.md](./DREAM_upgrade.md) | Original discussion notes for the DREAM upgrade |
 | [DREAM_v3.md](./DREAM_v3.md) | DREAM v3 specification reference |
-| [blueprint/](./blueprint/) | Superseded flat blueprint structure (archived — content reorganized into `dream-upgrade/`) |
 
 ## Reading Order
 
-1. **dream-upgrade/** — Completed. Read for context on how the planning system works now.
-2. **module-lifecycle/** — Active. The next project to implement.
+1. **SP01_dream_v405_implementation/** — Active. Aligning ecosystem with DREAM v4.05.
+2. **PP02_context_injection_restructure/** — Ready. Context injection files restructuring with 3-axis taxonomy.
+3. **PP03_dream_sop_skills/** — Blocked on PP02. Transform DREAM into active dispatch with routing + leaf SOPs.
+4. **module-lifecycle/** — Next. Module remove & update commands.

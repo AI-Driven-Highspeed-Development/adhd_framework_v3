@@ -6,6 +6,12 @@ status: TODO
 start_date: "{YYYY-MM-DD}"
 last_updated: "{YYYY-MM-DD}"
 ---
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/80_implementation.template.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 
 # 80 - Implementation Plan
 
@@ -34,6 +40,7 @@ command syntax, and implementation details based on current codebase state.
 | ⏳ | `[TODO]` | Not started |
 | 🔄 | `[WIP]` | In progress |
 | ✅ | `[DONE]` | Complete |
+| ✅ | `[DONE:invalidated-by:XXnn]` | Complete but invalidated |
 | 🚧 | `[BLOCKED:reason]` | Stuck (kebab-case reason) |
 | 🚫 | `[CUT]` | Removed from scope |
 
@@ -43,7 +50,7 @@ command syntax, and implementation details based on current codebase state.
 
 **Goal:** *"{One sentence goal — foundation tasks or integration proof}"*
 
-**Duration:** ■□□□ Light (1 slot)
+**Duration:** ■■□□□□□□ Light (max 2 slots)
 
 <!--
 🦴 Walking Skeleton is CONDITIONAL — include it as P0 only when:
@@ -68,7 +75,7 @@ Otherwise, P0 is foundation tasks (skill updates, config, scaffolding).
 
 - ❌ No `[RESEARCH]` or `[EXPERIMENTAL]` items
 - ❌ Max 5 tasks
-- ❌ Must fit within slot budget (≤1 slot)
+- ❌ Must fit within slot budget (≤5 slots)
 
 ### Target Folder Structure (P0)
 
@@ -98,7 +105,7 @@ Otherwise, P0 is foundation tasks (skill updates, config, scaffolding).
 ## 🏗️ Phase 1: {Phase Name}
 
 **Goal:** *"{One sentence goal}"*  
-**Duration:** ■■□□ Standard (2 slots)
+**Duration:** ■■■□□□□□ Standard (max 3 slots)
 
 ### Exit Gate
 
@@ -137,7 +144,7 @@ Otherwise, P0 is foundation tasks (skill updates, config, scaffolding).
 ## 📡 Phase 2+: {Phase Name}
 
 **Goal:** *"{One sentence goal}"*  
-**Duration:** ■■■□ Heavy (3 slots)
+**Duration:** ■■■■■□□□ Heavy (max 5 slots)
 
 ### Tasks
 
@@ -198,7 +205,12 @@ NOTES:
 1. Update YAML frontmatter when changing phases
 2. Status flow: ⏳ → 🔄 → ✅
 3. Target Folder Structure: NEW/MODIFIED files per phase only
-4. Task size: completable in 1-3 slots. Epic tasks (4+ slots) must decompose.
-5. Duration format: ■□□□ Light (1 slot), ■■□□ Standard (2 slots), ■■■□ Heavy (3 slots), ■■■■ Epic (4+ slots → must decompose)
+4. Task size: completable in 1-5 slots. Epic tasks (8 slots max) must decompose.
+5. Duration format (8-bar DREAM v4.05):
+   ■□□□□□□□  Trivial   (max 1 slot)
+   ■■□□□□□□  Light     (max 2 slots)
+   ■■■□□□□□  Standard  (max 3 slots)
+   ■■■■■□□□  Heavy     (max 5 slots)
+   ■■■■■■■■  Epic      (max 8 slots → must decompose)
 6. Walking skeleton is CONDITIONAL — only for cross-boundary integration risk. Otherwise P0 = foundation.
 -->

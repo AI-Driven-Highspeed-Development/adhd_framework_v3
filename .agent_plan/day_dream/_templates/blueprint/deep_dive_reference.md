@@ -1,3 +1,9 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/deep_dive_reference.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 # Deep Dive Section Reference
 
 > Reference documentation for the `## 🔬 Deep Dive` section in feature templates.

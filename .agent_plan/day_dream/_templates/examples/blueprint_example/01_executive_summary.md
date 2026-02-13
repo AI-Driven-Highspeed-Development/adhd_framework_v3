@@ -1,3 +1,9 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/examples/blueprint_example/01_executive_summary.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 # 01 - Executive Summary
 
 > Part of [StockDataManager Blueprint](./00_index.md)

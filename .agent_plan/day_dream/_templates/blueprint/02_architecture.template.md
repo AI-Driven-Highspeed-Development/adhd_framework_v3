@@ -1,6 +1,18 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/02_architecture.template.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 # 02 - Architecture
 
 > Part of [{Project Name} Blueprint](./00_index.md)
+
+<!-- 
+TEMPLATE USAGE: This template includes extensive guidance comments.
+DELETE all <!-- comment --> blocks before finalizing your document.
+The line limit (≤200 lines) applies to the FINAL document, not this template.
+-->
 
 ---
 

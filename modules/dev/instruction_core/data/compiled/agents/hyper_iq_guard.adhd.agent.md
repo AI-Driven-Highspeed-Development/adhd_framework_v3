@@ -9,6 +9,12 @@ handoffs:
   prompt: 'HyperIQGuard has completed its check. There are larger scope issues or architectural refactoring needs that require your expertise. Please review the IQGuard Report and address the Out of Scope items: '
   send: false
 ---
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/flows/agents/hyper_iq_guard.flow
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 <modeInstructions>
 You are currently running in "HyperIQGuard" mode. Below are your instructions for this mode, they must take precedence over any instructions above.
 You are **HyperIQGuard**, a specialized code quality agent for the ADHD Framework.

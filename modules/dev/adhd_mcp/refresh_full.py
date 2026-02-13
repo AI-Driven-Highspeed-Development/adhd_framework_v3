@@ -2,7 +2,7 @@
 Refresh script for adhd_mcp.
 
 Registers this MCP server in .vscode/mcp.json and optionally registers CLI commands.
-Run via: python adhd_framework.py refresh --module adhd_mcp
+Run via: adhd r -f -m adhd_mcp
 """
 
 from __future__ import annotations

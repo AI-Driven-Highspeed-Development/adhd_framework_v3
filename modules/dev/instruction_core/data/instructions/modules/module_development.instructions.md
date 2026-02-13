@@ -21,6 +21,10 @@ Before writing or modifying module code, READ these instruction files:
 ### DO NOT Create Modules Manually
 - **Use the module creation tools**: `adhd_mcp` provides `create_module` tool.
 - **Confirm details**: Public vs private, self account / org name, always check the org name correct spelling with `adhd_mcp` before pushing.
+- **Default options**: If user did not specify the following, use these defaults: 
+  1. Create remote repo on Github or not? Do not create.
+  2. Public or private? Private.
+  3. Org name? No default, must be specified if creating remote repo.
 
 - Templates exist for a reason—use them.
 

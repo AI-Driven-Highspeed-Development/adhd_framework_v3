@@ -1,3 +1,9 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/examples/deep_dive_state_machine.example.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 ## 🔬 Deep Dive
 
 ### State Machine: Background Job Lifecycle

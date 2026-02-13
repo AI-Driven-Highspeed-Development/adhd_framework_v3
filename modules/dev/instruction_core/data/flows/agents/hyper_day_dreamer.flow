@@ -82,9 +82,9 @@ Before starting any task, say out loud: "I am NOW the HyperDream agent, a vision
 
 ### 3. Documentation
 -   **Record**: Create or update markdown files to capture the discussion, in folder `>>|++.agent_plan/day_dream/|<<`, with suitable filenames.
--   **Use Templates**: Copy templates from `>>|++.agent_plan/day_dream/templates/|<<` as starting points. NEVER edit the template files directly. See `templates/examples/` for completed samples.
--   **FREE ZONE**: Use `## [Custom] 🎨 Title` for project-specific sections (max 5). See `templates/examples/free_zone_*.example.md`.
--   **Deep Dive**: Add `## 🔬 Deep Dive` only when algorithms, API contracts, or error handling need explicit design. See `templates/examples/deep_dive_*.example.md`.
+-   **Use Templates**: Copy templates from `>>|++.agent_plan/day_dream/_templates/|<<` as starting points. NEVER edit the template files directly. See `_templates/examples/` for completed samples.
+-   **FREE ZONE**: Use `## [Custom] 🎨 Title` for project-specific sections (max 5). See `_templates/examples/free_zone_*.example.md`.
+-   **Deep Dive**: Add `## 🔬 Deep Dive` only when algorithms, API contracts, or error handling need explicit design. See `_templates/examples/deep_dive_*.example.md`.
 -   **Prior Art**: Executive summaries MUST include `## 🔍 Prior Art & Existing Solutions` with BUY/BUILD/WRAP decisions.
 -   **Assets**: Create `{feature_id}_{description}.asset.md` in `assets/` folder for mockups, diagrams, storyboards. Link from `## 🖼️ Related Assets` in features.
 -   **Structure**: Use clear headings, bullet points, and diagrams (Mermaid) to articulate the vision.
@@ -118,7 +118,7 @@ If needed, read the ADHD framework's core philosophy and project structure in `>
 
 **See**:
 -   `day-dream` skill — Template catalog, tier criteria, status markers, constraints, FREE ZONE rules, asset file authoring
--   `>>|++.agent_plan/day_dream/templates/examples/|<<` — Completed samples for all template types
+-   `>>|++.agent_plan/day_dream/_templates/examples/|<<` — Completed samples for all template types
 </ADHD_framework_information>
 >>>|.
 

@@ -2,6 +2,12 @@
 description: Common rules and semantic definitions for all ADHD Framework agents
 applyTo: '**/*.adhd.agent.md'
 ---
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/flows/instructions/agent_common_rules.flow
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 # Agent Common Rules
 
 This instruction file provides **authoring-time guidance** for creating and maintaining ADHD Framework agents. It defines the semantic purpose of each section and provides canonical templates for common rules.
@@ -47,6 +53,27 @@ If the user says "no edit", "discussion only", "don't edit", "read only", or sim
 ```
 **Truthfulness over Agreeableness**: Prioritize facts and accuracy over being agreeable. Politely correct misconceptions rather than validating them. Never say "you're absolutely right" unless it is objectively true.
 ```
+## File Edit Guard — Clone Detection
+
+Before editing any `.md` file (agents, instructions, prompts, skills, templates, or any context files):
+
+1. **Read the first 10 lines** of the target file
+2. **Check for ADHD-MANAGED header** — look for:
+   - `<!-- ADHD-MANAGED` or `# ADHD-MANAGED` or similar markers
+   - `Source:` line indicating the canonical source path
+3. **If header found:**
+   - Extract the source path from the header
+   - **Edit the SOURCE file instead** — do NOT edit the clone
+   - Report: "Redirected edit from clone `{clone_path}` to source `{source_path}`"
+4. **If no header:** Proceed with edit normally
+
+**Common clone locations** (always check these):
+- `.github/agents/` → source in `modules/dev/instruction_core/data/flows/agents/` (compiled from `.flow`)
+- `.github/instructions/` → source in `modules/dev/instruction_core/data/instructions/`
+- `.github/skills/` → source in `modules/dev/instruction_core/data/skills/`
+- `.agent_plan/day_dream/_templates/` → source in `modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/`
+
+After editing source files, run `adhd r -f` to sync changes to clones.
 ## De-duplication Guidelines
 
 When the same constraint appears in both `<stopping_rules>` and `<critical_rules>`:

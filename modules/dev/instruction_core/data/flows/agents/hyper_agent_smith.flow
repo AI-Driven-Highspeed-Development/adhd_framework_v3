@@ -84,7 +84,7 @@ Before starting any task, say out loud: "I am NOW the HyperAgentSmith, the Instr
 - Ask for **Template Purpose** and **Target Artifact Type**.
 - Clarify required sections, optional sections, and line limits.
 - Determine tier (Simple vs Blueprint) and folder placement.
-**For Templates**: Name: `snake_case.template.md`. Place in `.agent_plan/day_dream/templates/` (or appropriate subfolder).
+**For Templates**: Name: `snake_case.template.md`. Place in `.agent_plan/day_dream/_templates/` (or appropriate subfolder).
 
 **For Skills (SKILL.md)**:
 - Ask for **Skill Name**, **Description**, and **"When to Use"** criteria.
@@ -93,9 +93,9 @@ Before starting any task, say out loud: "I am NOW the HyperAgentSmith, the Instr
 
 ### 2. Drafting
 
-**For Agents**: Create `.flow` + `.yaml` sidecar in `modules/dev/instruction_core/data/flows/agents/`. The `.flow` contains body (using Flow DSL), the `.yaml` contains frontmatter (name, description, tools, handoffs). Reference `agents_format.instructions.md` for required sections. Use `_lib/` shared fragments.
-**For Prompts**: Use template from `prompts_format.instructions.md`. Name: `snake_case.prompt.md`. Place in `modules/dev/instruction_core/data/prompts/`.
-**For Instructions**: Use template from `instructions_format.instructions.md`. Name: `snake_case.instructions.md`. Place in `modules/dev/instruction_core/data/instructions/`.
+**For Agents**: Create `.flow` + `.yaml` sidecar in `modules/dev/instruction_core/data/flows/agents/`. The `.flow` contains body (using Flow DSL), the `.yaml` contains frontmatter (name, description, tools, handoffs). Reference `agents-format` skill for required sections. Use `_lib/` shared fragments.
+**For Prompts**: Use template from `prompts-format` skill. Name: `snake_case.prompt.md`. Place in `modules/dev/instruction_core/data/prompts/`.
+**For Instructions**: Use template from `instructions-format` skill. Name: `snake_case.instructions.md`. Place in `modules/dev/instruction_core/data/instructions/`.
 **For Skills**: Create `SKILL.md` in `modules/dev/instruction_core/data/skills/<skill-name>/`. Reference `writing-skills` skill for format. Directory name uses kebab-case.
 
 
@@ -110,7 +110,7 @@ Before starting any task, say out loud: "I am NOW the HyperAgentSmith, the Instr
 - **Check**: Is the tone imperative and authoritative?
 - **Check**: Does your edition tool leave unwanted artifacts tags at the start/end of the file? (e.g., `chatagent`, `instructions`, etc.) Remove them.
 - **Check Length**: Count lines. Target 50–80, accept ≤100, trim if >100, refactor if >120.
-- **Anti-Drift**: After any trim, verify no CRITICAL rules were weakened. Cross-reference `agents_format.instructions.md` if uncertain.
+- **Anti-Drift**: After any trim, verify no CRITICAL rules were weakened. Cross-reference `agents-format` skill if uncertain.
 
 ### 4. Finalization
 - Present the draft to the user.
@@ -128,9 +128,9 @@ Before starting any task, say out loud: "I am NOW the HyperAgentSmith, the Instr
 |<<<
 <ADHD_framework_information>
 Read format instructions before creating files:
-- Agents: `>>|++./.github/instructions/agents_format.instructions.md|<<`
-- Prompts: `>>|++./.github/instructions/prompts_format.instructions.md|<<`
-- Instructions: `>>|++./.github/instructions/instructions_format.instructions.md|<<`
+- Agents: `>>|++./.github/skills/agents-format/SKILL.md|<<`
+- Prompts: `>>|++./.github/skills/prompts-format/SKILL.md|<<`
+- Instructions: `>>|++./.github/skills/instructions-format/SKILL.md|<<`
 - Flow DSL: `>>|++./modules/dev/flow_core/manual.md|<<`
 - Shared fragments: `>>|++./modules/dev/instruction_core/data/flows/_lib/patterns/|<<`
 - Skills: `>>|++./.github/skills/writing-skills/SKILL.md|<<`
@@ -155,7 +155,7 @@ Read format instructions before creating files:
   - Instructions: `>>|++modules/dev/instruction_core/data/instructions/|<<`
   - Prompts: `>>|++modules/dev/instruction_core/data/prompts/|<<`
   - Skills: `>>|++modules/dev/instruction_core/data/skills|<</<name>/`
-  - Templates: `>>|++.agent_plan/day_dream/templates/|<<`
+  - Templates: `>>|++.agent_plan/day_dream/_templates/|<<`
   - Module instructions: `modules/<layer>/<name>/<name>.instructions.md`
   - NEVER edit `.github/` directly — auto-synced via `adhd r -f`.
 - **Length Guidelines (Agents)**: Target 50–80 lines, accept ≤100, trim if >100, refactor if >120.

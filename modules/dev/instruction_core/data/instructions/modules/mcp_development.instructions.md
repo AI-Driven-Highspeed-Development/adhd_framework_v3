@@ -18,7 +18,7 @@ modules/<layer>/<module_name>/
 ├── pyproject.toml        # Module metadata (UV workspace member)
 ├── <name>_mcp.py         # FastMCP server: tool decorators ONLY
 ├── <name>_controller.py  # Business logic: all implementation here
-├── refresh.py            # Optional: module refresh logic
+├── refresh_full.py       # Module refresh logic for creating entry into .vscode/mcp.json
 ├── tests/                # Unit tests (optional)
 └── playground/           # Interactive exploration (optional)
 ```
@@ -54,15 +54,16 @@ build-backend = "hatchling.build"
 MCPs MUST be invoked as modules via UV for proper import resolution:
 ```bash
 # Correct invocation pattern:
-uv run python -m modules.runtime.adhd_mcp.adhd_mcp
+uv run python -m adhd_mcp.adhd_mcp # module_name.mcp_server_file_name
 
 # For Claude Desktop / MCP Client configuration:
 {
   "mcpServers": {
     "adhd": {
+      "type": "stdio",
       "command": "uv",
-      "args": ["run", "python", "-m", "modules.runtime.adhd_mcp.adhd_mcp"],
-      "cwd": "/path/to/adhd_framework_v3"
+      "args": ["run", "python", "-m", "adhd_mcp.adhd_mcp"],
+      "cwd": "./"
     }
   }
 }

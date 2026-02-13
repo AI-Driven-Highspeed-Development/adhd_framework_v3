@@ -1,6 +1,18 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/simple.template.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 # 🎯 {Project Name}
 
 > *{One emotional hook sentence — why this matters}*
+
+<!-- 
+TEMPLATE USAGE: This template includes extensive guidance comments.
+DELETE all <!-- comment --> blocks before finalizing your document.
+The line limit (≤200 lines) applies to the FINAL document, not this template.
+-->
 
 **Version:** 1.0 | **Status:** 📐 Draft | ✅ Ready | 🔒 Frozen
 

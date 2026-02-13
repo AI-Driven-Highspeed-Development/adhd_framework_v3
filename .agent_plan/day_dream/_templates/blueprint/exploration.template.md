@@ -5,6 +5,12 @@ created: "{YYYY-MM-DD}"
 expires: "{YYYY-MM-DD}"
 synthesized_to: null
 ---
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/exploration.template.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 
 # 🔬 {Topic} Exploration
 

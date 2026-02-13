@@ -1,3 +1,9 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/task.template.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 <!--
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║  ⚠️  SCAFFOLD — This template provides STRUCTURE, not protocol.              ║

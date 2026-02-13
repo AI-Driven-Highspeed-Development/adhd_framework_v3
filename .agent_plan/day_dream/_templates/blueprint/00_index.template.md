@@ -1,3 +1,9 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/00_index.template.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 # 🎯 {Project Name}: Project Blueprint
 
 > *{Vision statement — one emotional sentence capturing the project's soul}*
@@ -21,10 +27,12 @@
 
 | Icon | Meaning |
 |------|---------|
-| ⏳ | TODO |
-| 🔄 | WIP |
-| ✅ | DONE |
-| 🚫 | CUT |
+| ⏳ | `[TODO]` |
+| 🔄 | `[WIP]` |
+| ✅ | `[DONE]` |
+| ✅ | `[DONE:invalidated-by:XXnn]` |
+| 🚧 | `[BLOCKED:reason]` |
+| 🚫 | `[CUT]` |
 
 ---
 
@@ -34,7 +42,7 @@ This blueprint follows **HyperDream phasing rules**:
 
 | Principle | Meaning |
 |-----------|---------|
-| **Slot-Based Estimation** | 4 slots/day budget. Magnitude maps to slots: Trivial=≪1, Light=1, Standard=2, Heavy=3, Epic=4+ (must decompose) |
+| **Slot-Based Estimation** | 8 slots/day budget. Magnitude maps to slots: Trivial=1, Light=2, Standard=3, Heavy=5, Epic=8 (must decompose) |
 | **Conditional Walking Skeleton** | Walking skeleton P0 only when cross-boundary integration risk exists. Otherwise P0 is foundation tasks |
 | **Difficulty Honesty** | Each item labeled `[KNOWN]`, `[EXPERIMENTAL]`, or `[RESEARCH]` |
 | **Research ≠ Foundation** | `[RESEARCH]` items never in Phase 0 |

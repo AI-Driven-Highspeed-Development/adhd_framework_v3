@@ -1,3 +1,9 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADHD-MANAGED — DO NOT EDIT DIRECTLY
+     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/examples/free_zone_metaphor_map.example.md
+     Refresh: adhd r -f
+═══════════════════════════════════════════════════════════════════ -->
+
 # FREE ZONE Example: Metaphor Map
 
 > This example shows how to use analogies to explain complex systems to different audiences. Good metaphors accelerate understanding; bad ones create confusion. Document both.

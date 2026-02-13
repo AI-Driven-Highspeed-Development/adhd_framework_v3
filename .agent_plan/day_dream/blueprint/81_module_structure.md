@@ -61,12 +61,12 @@ N/A — No new project-specific modules either.
 |-----------|------|---------|-------|
 | Skill (NEW) | `.github/skills/dream-planning/SKILL.md` | Decomposition protocol | P1 |
 | Skill (UPDATE) | `.github/skills/day-dream/SKILL.md` | Authoring rules fixes | P0 + P1 |
-| Template (UPDATE) | `instruction_core/data/.agent_plan/day_dream/templates/blueprint/00_index.template.md` | Planning standards | P1 |
-| Template (UPDATE) | `instruction_core/data/.agent_plan/day_dream/templates/blueprint/80_implementation.template.md` | Duration + skeleton | P1 |
-| Template (UPDATE) | `instruction_core/data/.agent_plan/day_dream/templates/blueprint/NN_feature.template.md` | Terminology | P1 |
-| Template (UPDATE) | `instruction_core/data/.agent_plan/day_dream/templates/blueprint/NN_feature_simple.template.md` | Terminology | P1 |
-| Template (NEW) | `instruction_core/data/.agent_plan/day_dream/templates/blueprint/overview.template.md` | `_overview.md` scaffold for plan directories | P1 |
-| Template (NEW) | `instruction_core/data/.agent_plan/day_dream/templates/blueprint/task.template.md` | Leaf task file scaffold | P1 |
+| Template (UPDATE) | `instruction_core/data/.agent_plan/day_dream/_templates/blueprint/00_index.template.md` | Planning standards | P1 |
+| Template (UPDATE) | `instruction_core/data/.agent_plan/day_dream/_templates/blueprint/80_implementation.template.md` | Duration + skeleton | P1 |
+| Template (UPDATE) | `instruction_core/data/.agent_plan/day_dream/_templates/blueprint/NN_feature.template.md` | Terminology | P1 |
+| Template (UPDATE) | `instruction_core/data/.agent_plan/day_dream/_templates/blueprint/NN_feature_simple.template.md` | Terminology | P1 |
+| Template (NEW) | `instruction_core/data/.agent_plan/day_dream/_templates/blueprint/overview.template.md` | `_overview.md` scaffold for plan directories | P1 |
+| Template (NEW) | `instruction_core/data/.agent_plan/day_dream/_templates/blueprint/task.template.md` | Leaf task file scaffold | P1 |
 
 ---
 
