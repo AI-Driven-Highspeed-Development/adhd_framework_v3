@@ -77,13 +77,13 @@ Before starting any task, say out loud: "I am NOW HyperArch, the Expert Develope
 -   **If related to MCP modules**: `./.github/skills/mcp-development/SKILL.md`
 -   **Search & Read**: Find existing modules. **DO NOT** re-invent the wheel or hallucinate usages.
 -   **Documentation**: Check `.agent_plan/day_dream/` for blueprints and kanbn tasks for context.
--   **Discovery Checklist**: Follow `./.github/skills/module-development/references/hyperarch_execution_sop.md` and `testing` skill for test/playground/finding locations.
+-   **Discovery Checklist**: Check existing tests, HyperRed findings, and playground. See `testing` skill for folder locations.
 
 ### 3. Execute Task (Single Pass)
 Execute the requested task following the appropriate guidance:
 
-- **Implementation**: Follow `./.github/skills/orch-implementation/SKILL.md` (or HyperOrch-provided standards when delegated)
-- **Testing**: Follow `./.github/skills/orch-testing/SKILL.md` + `./.github/skills/testing/SKILL.md`
+- **Implementation**: Follow coding standards from `./.github/instructions/implementation_workflow.instructions.md`
+- **Testing**: Follow test patterns from `./.github/instructions/testing_workflow.instructions.md`
 - **Analysis/Discussion**: Gather context, analyze, provide recommendations (read-only)
 
 ### 4. Report Results

@@ -1,0 +1,77 @@
+"""CLI commands and registration for <module_name>."""
+
+from __future__ import annotations
+
+import argparse
+import json
+
+from <module_layer>.<module_name>.<module_name> import <ModuleClass>
+from modules.runtime.cli_manager import CLIManager, ModuleRegistration, Command, CommandArg
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Controller Access
+# ─────────────────────────────────────────────────────────────────────────────
+
+_controller: <ModuleClass> | None = None
+
+
+def _get_controller() -> <ModuleClass>:
+    """Get or create the controller instance."""
+    global _controller
+    if _controller is None:
+        _controller = <ModuleClass>()
+    return _controller
+
+
+def _print_result(result: dict) -> int:
+    """Print result as JSON and return exit code."""
+    print(json.dumps(result, indent=2, default=str))
+    return 0 if result.get("success", True) else 1
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Handler Functions
+# ─────────────────────────────────────────────────────────────────────────────
+
+def example_command(args: argparse.Namespace) -> int:
+    """Description of what this command does."""
+    result = _get_controller().do_something()
+    return _print_result(result)
+
+
+def command_with_args(args: argparse.Namespace) -> int:
+    """Command that uses arguments."""
+    result = _get_controller().process(name=args.name)
+    return _print_result(result)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CLI Registration
+# ─────────────────────────────────────────────────────────────────────────────
+
+def register_cli() -> None:
+    """Register <module_name> commands with CLIManager."""
+    cli = CLIManager()
+    cli.register_module(ModuleRegistration(
+        module_name="<module_name>",
+        short_name="<2-4 letter alias>",
+        description="<Brief module description>",
+        commands=[
+            Command(
+                name="example",
+                help="Description of example command",
+                handler="<module_layer>.<module_name>.<module_name>_cli:example_command",
+            ),
+            Command(
+                name="with-args",
+                help="Command with arguments",
+                handler="<module_layer>.<module_name>.<module_name>_cli:command_with_args",
+                args=[
+                    CommandArg(name="name", help="Positional argument"),
+                    CommandArg(name="--flag", short="-f", help="Optional flag", action="store_true"),
+                    CommandArg(name="--count", short="-c", help="Integer option", type="int", default=1),
+                ],
+            ),
+        ],
+    ))

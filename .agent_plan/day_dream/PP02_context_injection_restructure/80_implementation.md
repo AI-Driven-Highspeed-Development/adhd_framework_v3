@@ -2,9 +2,10 @@
 project: "PP02 — Context Injection Files Restructuring"
 current_phase: 2
 phase_name: "Migration Execution"
-status: WIP
+status: DONE
 start_date: "2026-02-13"
 last_updated: "2026-02-13"
+p2_duration: "Heavy (max 5 slots)"
 ---
 
 # 80 — Implementation Plan
@@ -143,51 +144,88 @@ Decision Rule:
 
 ## 🔧 Phase 2: Migration Execution
 
-**Goal:** *"For each MIGRATE-classified file: create skill folder, move content, add deprecated marker to old instruction, update agent flow files to reference the new skill."*
-**Phase Status:** ⏳ `[TODO]` *(not started)*
+**Goal:** *"Create 9 new skill folders using progressive disclosure pattern, restructure 1 existing skill (writing-flows), and deprecate old instruction files with thin stubs that preserve applyTo auto-injection."*
+**Phase Status:** ✅ `[DONE]`
 
-**Duration:** ■■■□□□□□ Standard (max 3 slots)
+**Duration:** ■■■■■□□□ Heavy (max 5 slots)
+
+### Scope
+
+Create 10 skills total (9 new + 1 restructure) organized by owning agent. All skills follow the progressive disclosure pattern:
+
+```
+skill-name/
+├── SKILL.md            ← Principles + SOP + workflow (< 500 lines)
+├── references/         ← Syntax specs, format tables, detailed docs
+└── assets/             ← Templates, examples, pyproject format
+```
+
+**Arch-owned (implementation):**
+1. `module-dev` — from `module_development.instructions.md`. Chain-loads `mcp-module-dev` for MCP work.
+2. `mcp-module-dev` — from `mcp_development.instructions.md`. FastMCP patterns + MCP pyproject template.
+3. `cli-dev` — from module-local `cli_manager.instructions.md`. CLI architecture + decorator patterns.
+
+**Smith-owned (authoring):**
+4. `writing-agents` — from `agents_format.instructions.md`. Format spec in references/, agent template in assets/.
+5. `writing-instructions` — from `instructions_format.instructions.md`. Same pattern.
+6. `writing-prompts` — from `prompts_format.instructions.md`. Same pattern.
+7. `module-instructions` — from `module_instructions.instructions.md`. Same pattern.
+8. `writing-flows` (RESTRUCTURE) — SKILL.md < 500 lines, syntax/format detail to references/, agent flow template to assets/.
+
+**San-owned:**
+9. `hyper-san-output` — from `hyper_san_output.instructions.md`. Output contract + procedure.
+
+**Multi-agent (companion skill):**
+10. `modules-readme` — from `modules_readme.instructions.md`. Serves HyperSmith+HyperDream so instruction STAYS, but SOP/procedure portion extracted into companion skill.
+
+### Deprecation Strategy
+
+Old instruction source files become thin stubs:
+- Add `deprecated: true` + `superseded_by: skill-name` in YAML frontmatter
+- Retain `applyTo` glob so auto-injection still fires
+- Body replaced with one-line directive: `Load skill \`{name}\` for full content`
+- `adhd r -f` still syncs stubs (valid instructions, just minimal)
+- **No dual-content** — full content lives ONLY in the skill
 
 ### Exit Gate
 
-- [ ] All MIGRATE files have corresponding skill folders in `instruction_core/data/skills/`
-- [ ] All old instruction files have `deprecated: true` + `superseded_by:` in YAML frontmatter
-- [ ] `adhd r -f` excludes deprecated files and compiles new skills correctly
+- [x] All 10 skill folders exist with SKILL.md + appropriate `references/` and `assets/`
+- [x] `module-dev` SKILL.md references `mcp-module-dev` for MCP work
+- [x] `writing-flows` restructured (SKILL.md < 500 lines, syntax moved to `references/`)
+- [x] All deprecated instruction files have thin stubs with `applyTo` preserved
+- [x] `adhd r -f` compiles successfully — skills synced, no dual-content
 
 ### Tasks
 
 | Status | Task | Scope | Difficulty |
 |--------|------|-------|------------|
-| ⏳ | For each MIGRATE file: create `instruction_core/data/skills/{name}/SKILL.md` with migrated content | `instruction_core` | `[KNOWN]` |
-| ⏳ | Add YAML frontmatter `deprecated: true` + `superseded_by: {skill-name}` to each old instruction source | `instruction_core` | `[KNOWN]` |
-| ⏳ | Update agent `.flow` files: replace `+./instructions/{file}` with skill imports | `instruction_core` | `[KNOWN]` |
-| ⏳ | Verify `adhd r -f` compiles — deprecated files excluded, new skills synced | `instruction_core` | `[KNOWN]` |
-| ⏳ | Spot-check 2 agents: confirm they receive the new skill content, not the old instruction | verification | `[KNOWN]` |
-
-### Transition Safety Protocol
-
-```
-For each MIGRATE file:
-1. CREATE  .../skills/{name}/SKILL.md  (new home)
-2. ADD     deprecated: true + superseded_by: {name}  (old file frontmatter)
-3. UPDATE  agent .flow files  (reference new skill)
-4. RUN     adhd r -f  (verify no dual-visibility)
-```
+| ✅ | Create `module-dev` skill with progressive disclosure structure | `instruction_core` | `[KNOWN]` |
+| ✅ | Create `mcp-module-dev` skill, chain-loaded by `module-dev` | `instruction_core` | `[KNOWN]` |
+| ✅ | Create `cli-dev` skill from module-local `cli_manager` instruction | `instruction_core` | `[KNOWN]` |
+| ✅ | Create 4 Smith-owned skills (`writing-agents`, `writing-instructions`, `writing-prompts`, `module-instructions`) | `instruction_core` | `[KNOWN]` |
+| ✅ | Restructure `writing-flows` with `references/` and `assets/` subdirs | `instruction_core` | `[KNOWN]` |
+| ✅ | Create `hyper-san-output` skill | `instruction_core` | `[KNOWN]` |
+| ✅ | Create `modules-readme` skill (companion to multi-agent instruction) | `instruction_core` | `[KNOWN]` |
+| ✅ | Deprecate old instruction files with thin stubs (`applyTo` preserved) | `instruction_core` | `[KNOWN]` |
+| ✅ | Run `adhd r -f` and verify: skills synced, stubs compiled, no dual-content | verification | `[KNOWN]` |
 
 ### Verification (Manual)
 
 | What to Try | Expected Result |
 |-------------|-----------------|
-| `adhd r -f` | Clean compile, no warnings about deprecated files |
-| `grep -r "deprecated: true" instruction_core/data/instructions/` | Lists only MIGRATE files |
-| Open compiled agent `.md` — check for skill reference | New skill content present, old instruction absent |
+| `ls modules/dev/instruction_core/data/skills/module-dev/` | SKILL.md, assets/, references/ |
+| `wc -l modules/dev/instruction_core/data/skills/writing-flows/SKILL.md` | < 500 lines |
+| `grep "deprecated: true" modules/dev/instruction_core/data/instructions/modules/module_development.instructions.md` | Match found |
+| `adhd r -f` | Clean compile, exit 0 |
 
 ### P2 Completion Checklist
 
-- [ ] Exit gate met — all skills created, all old files deprecated
-- [ ] No dual-visibility (deprecated files excluded from sync)
-- [ ] Agent flow files updated
-- [ ] Manual verification steps pass
+- [x] Exit gate met — all skills created, `writing-flows` restructured
+- [x] All deprecated files have thin stubs with `applyTo`
+- [x] No dual-content (content in skill only, not instruction)
+- [x] `module-dev` → `mcp-module-dev` chain working
+- [x] Manual verification steps pass
+- [x] Refresh verification note (2026-02-13): `adhd r -f` succeeded — 21 skills synced, 9 deprecated stubs compiled, `writing-flows/SKILL.md` = 165 lines
 
 ---
 

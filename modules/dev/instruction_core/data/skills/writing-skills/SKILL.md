@@ -163,8 +163,8 @@ my-skill/
 my-skill/
 ├── SKILL.md              # Main instructions
 ├── scripts/              # Executable code
-│   ├── setup.sh
-│   └── validate.py
+│   ├── setup.sh.template   # Adding .template to make the IDE stop screaming.
+│   └── validate.py.template
 ├── references/           # Additional documentation
 │   ├── REFERENCE.md
 │   └── api-spec.md
@@ -240,8 +240,10 @@ source .venv/bin/activate && pytest tests/
 
 ## Naming Conventions
 
-### Folder and Name Matching
-The `name` field MUST match the parent directory:
+### Format Rules
+- **`kebab-case` only**: lowercase letters and hyphens. No underscores, no camelCase, no spaces.
+- The `name` field MUST match the parent directory name exactly.
+
 ```
 .github/skills/
 ├── orch-testing/          # name: orch-testing ✓
@@ -252,11 +254,23 @@ The `name` field MUST match the parent directory:
     └── SKILL.md
 ```
 
-### Choosing Good Names
-- Use kebab-case (lowercase with hyphens)
-- Be descriptive but concise
-- Group related skills with prefixes: `orch-testing`, `orch-routing`, `orch-discussion`
-- Avoid generic names: prefer `webapp-testing` over `testing`
+### Prefix/Suffix Patterns
+
+| Pattern | Purpose | Examples |
+|---------|---------|----------|
+| `writing-*` | Authoring/format skills — teach how to author or format a specific file type | `writing-flows`, `writing-agents`, `writing-instructions`, `writing-prompts`, `writing-skills`, `writing-templates` |
+| `*-dev` | Development workflow skills — teach how to develop/implement a specific type of module or component | `module-dev`, `mcp-module-dev`, `cli-dev` |
+| `orch-*` | Orchestrator presets — define orchestration workflow presets | `orch-implementation`, `orch-testing`, `orch-discussion`, `orch-routing` |
+| *(none)* | Domain-specific skills — descriptive kebab-case without a required prefix/suffix | `hyper-san-output`, `day-dream`, `dream-planning`, `expedition`, `testing` |
+
+### Naming Anti-Patterns
+
+| Avoid | Use Instead | Reason |
+|-------|-------------|--------|
+| `xxx-format` | `writing-xxx` | `writing-*` is the canonical prefix for authoring skills |
+| `utils`, `helpers` | Descriptive domain name | Too generic for agent matching |
+| `my_skill` | `my-skill` | Underscores violate kebab-case |
+| `MySkill` | `my-skill` | camelCase/PascalCase not allowed |
 
 ---
 

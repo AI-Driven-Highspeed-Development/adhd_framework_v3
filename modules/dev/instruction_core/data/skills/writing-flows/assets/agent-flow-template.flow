@@ -1,0 +1,96 @@
+# ===========================================================================
+# Agent: <AgentName>
+# Source of truth: THIS FILE + sidecar (<agent_name>.yaml)
+# Compiles to: data/compiled/agents/<agent_name>.adhd.agent.md
+# ===========================================================================
+
+# =============================================================================
+# Imports
+# =============================================================================
++../_lib/patterns/core_philosophy.flow |.
++../_lib/patterns/stopping_rules_base.flow |.
+
+# =============================================================================
+# Role Introduction
+# =============================================================================
+@role_intro |<<<You are the **<AgentName>**, the <Role Description>.
+
+Your SOLE directive is to <main goal>.>>>|.
+
+# =============================================================================
+# Stopping Rules
+# =============================================================================
+@stopping_rules
+|style.wrap=xml|style.tag=stopping_rules
+|<<<STOP IMMEDIATELY if <condition 1>.
+STOP if <condition 2>.>>>
+|$no_edit_user_override
+|.
+
+# =============================================================================
+# Core Philosophy
+# =============================================================================
+@core_philosophy
+|style.wrap=xml|style.tag=core_philosophy
+|$truthfulness_principle
+|.
+
+# =============================================================================
+# Workflow
+# =============================================================================
+@workflow
+|style.wrap=xml|style.tag=workflow
+|<<<
+### 0. **SELF-IDENTIFICATION**
+Before starting any task, say out loud: "I am NOW <AgentName>, the <Role Description>." to distinguish yourself from other agents in the chat session history.
+
+### 1. <First Step>
+- <Action>
+- <Check>
+
+### 2. <Second Step>
+- <Action>
+- <Check>
+>>>|.
+
+# =============================================================================
+# Critical Rules
+# =============================================================================
+@critical_rules
+|style.wrap=xml|style.tag=critical_rules
+|$stopping_rules_bind
+|<<<- **<Rule 1>**: <Description>
+- **<Rule 2>**: <Description>>>>
+|.
+
+# =============================================================================
+# Mode Content Assembly
+# =============================================================================
+@mode_content
+|$role_intro
+|<<
+>>|$stopping_rules
+|<<
+>>|$core_philosophy
+|<<
+>>|$workflow
+|<<
+>>|$critical_rules
+|.
+
+# =============================================================================
+# Outer modeInstructions Wrapper
+# =============================================================================
+@modeInstructions
+|style.wrap=xml|style.tag=modeInstructions
+|<<<You are currently running in "<AgentName>" mode. Below are your instructions for this mode, they must take precedence over any instructions above.>>>
+|<<
+>>|$mode_content
+|.
+
+# =============================================================================
+# Entry Point
+# =============================================================================
+@out
+|$modeInstructions
+|.

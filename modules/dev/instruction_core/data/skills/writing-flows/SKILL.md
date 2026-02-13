@@ -15,224 +15,50 @@ A guide for creating `.flow` source files using the FLOW DSL (Flexible Language 
 
 ---
 
-## What is a Flow File?
+## Core Principles
 
-A `.flow` file is the **source of truth** for agent body content. It compiles to `.agent.md` output. Flow files use a pipe-based DSL that enables modular, reusable agent instructions.
-
-**Key principle:** NEVER edit compiled `.agent.md` files — edit the `.flow` source + `.yaml` sidecar.
-
----
-
-## Basic Syntax
-
-### Node Definition
-
-```flow
-@node_id |param=value| <<<Content goes here.>>>|.
-```
-
-- `@` — Defines a node with an identifier
-- `|` — Pipe separator for parameters
-- `<<<>>>` — Content block (trim mode: strips leading/trailing newlines)
-- `<<>>` — Content block (preserve mode: keeps whitespace)
-- `|.` — End of node definition
-
-### Minimum File
-
-```flow
-@out 
-|<<<
-Hello, World!
->>>|.
-```
-
-Only `@out` is required — it's the entry point for compilation.
+1. **Source of Truth**: `.flow` + `.yaml` sidecar are the source files. NEVER edit compiled `.agent.md` output.
+2. **One Entry Point**: Every `.flow` file must have exactly one `@out` node — the compilation entry point.
+3. **Modular Composition**: Break content into small, named nodes. Compose them via variable references (`$name`, `^name`).
+4. **Reuse via Imports**: Extract common patterns to `_lib/` fragments. Import them — don't copy-paste.
+5. **No Circular Dependencies**: `$a → $b → $a` causes a compilation error. Design your node graph as a DAG.
 
 ---
 
-## Content Blocks
+## Flow Authoring SOP
 
-| Opener | Closer | Behavior |
-|--------|--------|----------|
-| `<<<` | `>>>` | Trim leading AND trailing newlines |
-| `<<` | `>>` | Preserve leading AND trailing whitespace |
-| `<<<` | `>>` | Trim leading, preserve trailing |
-| `<<` | `>>>` | Preserve leading, trim trailing |
+### Step 1: Plan the Structure
+- Determine the purpose: agent, shared fragment, or standalone
+- For agents: follow the standard section structure (role, stopping rules, philosophy, workflow, critical rules)
+- Identify which `_lib/` fragments to import
 
----
+### Step 2: Create the Files
+- **Agent flows**: Create `<agent_name>.flow` + `<agent_name>.yaml` in `data/flows/agents/`
+- **Shared fragments**: Create in `data/flows/_lib/patterns/`
+- Use the [agent-flow-template.flow](assets/agent-flow-template.flow) as a starting point
 
-## Variable References
+### Step 3: Write Node Definitions
+- Define nodes with `@node_id |<<<content>>>|.`
+- Use `style.wrap=xml` and `style.tag=tagname` to wrap sections in XML tags
+- See [flow-syntax.md](references/flow-syntax.md) for full syntax reference
 
-| Symbol | Direction | Usage |
-|--------|-----------|-------|
-| `$name` | Backward | Node defined ABOVE current position |
-| `^name` | Forward | Node defined BELOW current position |
+### Step 4: Compose with Variables
+- Reference earlier nodes with `$name` (backward) or `^name` (forward)
+- Insert references mid-content by closing and reopening content blocks
+- See [variable-system.md](references/variable-system.md) for scoping rules
 
+### Step 5: Import Shared Fragments
 ```flow
-@greeting |<<<Hello!>>>|.
-
-@out |$greeting|.
-```
-
-Inside content blocks, `$name` is literal text. To insert a reference mid-content:
-
-```flow
-@out |<<<Welcome! >>|$greeting|<< How are you?>>>|.
-```
-
----
-
-## Style Parameters
-
-| Parameter | Effect |
-|-----------|--------|
-| `style.title=<<Title>>` | Adds `# Title` header |
-| `style.wrap=xml` | Wraps content in XML tags |
-| `style.tag=tagname` | Tag name for XML wrapping |
-
-```flow
-@rules
-|style.wrap=xml|style.tag=critical_rules
-|<<<
-- Rule one
-- Rule two
->>>|.
-```
-
-Compiles to:
-
-```xml
-<critical_rules>
-- Rule one
-- Rule two
-</critical_rules>
-```
-
----
-
-## Imports
-
-Import nodes from other `.flow` files:
-
-```flow
-# Import all exported nodes
-+../_lib/patterns/core_philosophy.flow |.
-
-# Import specific nodes
-+./shared.flow |$node_a|$node_b|.
-```
-
-The `@out` node from imported files is always ignored.
-
-### File References (Non-Import)
-
-Use `++` to reference files without importing:
-
-```flow
-@workflow |<<<See instructions in >>|++./path/to/file.md|<<>>>|.
-```
-
----
-
-## Agent `.flow` Structure
-
-Standard agent structure:
-
-```flow
-# Header comment block
-# Source of truth: THIS FILE + sidecar (agent_name.yaml)
-# Compiles to: data/compiled/agents/agent_name.adhd.agent.md
-
-# =============================================================================
-# Imports
-# =============================================================================
 +../_lib/patterns/core_philosophy.flow |.
 +../_lib/patterns/stopping_rules_base.flow |.
-
-# =============================================================================
-# Role Introduction
-# =============================================================================
-@role_intro |<<<You are the **AgentName**, the Role Description.>>>|.
-
-# =============================================================================
-# Stopping Rules
-# =============================================================================
-@stopping_rules
-|style.wrap=xml|style.tag=stopping_rules
-|<<<STOP IMMEDIATELY if...>>>
-|$no_edit_user_override
-|.
-
-# =============================================================================
-# Core Philosophy
-# =============================================================================
-@core_philosophy
-|style.wrap=xml|style.tag=core_philosophy
-|<<<1. **Principle**: ...>>>
-|$truthfulness_principle
-|.
-
-# =============================================================================
-# Workflow
-# =============================================================================
-@workflow
-|style.wrap=xml|style.tag=workflow
-|<<<
-### 0. **SELF-IDENTIFICATION**
-...
->>>|.
-
-# =============================================================================
-# Critical Rules
-# =============================================================================
-@critical_rules
-|style.wrap=xml|style.tag=critical_rules
-|$stopping_rules_bind
-|<<<- **Rule**: ...>>>
-|.
-
-# =============================================================================
-# Mode Content Assembly
-# =============================================================================
-@mode_content
-|$role_intro
-|<<
->>|$stopping_rules
-|<<
->>|$core_philosophy
-|<<
->>|$workflow
-|<<
->>|$critical_rules
-|.
-
-# =============================================================================
-# Outer modeInstructions Wrapper
-# =============================================================================
-@modeInstructions
-|style.wrap=xml|style.tag=modeInstructions
-|<<<You are currently running in "AgentName" mode...>>>
-|<<
->>|$mode_content
-|.
-
-# =============================================================================
-# Entry Point
-# =============================================================================
-@out
-|$modeInstructions
-|.
 ```
 
----
+### Step 6: Assemble and Define @out
+- Create a `@mode_content` node that chains all sections
+- Wrap in `@modeInstructions` with XML tag
+- Define `@out` referencing the top-level wrapper
 
-## Sidecar Pattern (`.yaml`)
-
-Every agent `.flow` has a companion `.yaml` file with frontmatter metadata:
-
-**`.flow` contains:** Body content (role, workflow, rules)
-
-**`.yaml` contains:** 
+### Step 7: Write Sidecar YAML
 ```yaml
 name: AgentName
 description: One-line description
@@ -240,7 +66,44 @@ argument-hint: "What user should type"
 tools: ['tool1', 'tool2']
 ```
 
-Place both files in `data/flows/agents/`.
+### Step 8: Compile and Verify
+```bash
+adhd r -f
+```
+This compiles all Flow sources and syncs output to `.github/`.
+
+---
+
+## Agent Flow Structure
+
+Standard agent `.flow` files follow this section order:
+
+| Section | Node Pattern | XML Tag |
+|---------|-------------|---------|
+| Imports | `+../_lib/patterns/*.flow \|.` | — |
+| Role Introduction | `@role_intro` | — |
+| Stopping Rules | `@stopping_rules` | `<stopping_rules>` |
+| Core Philosophy | `@core_philosophy` | `<core_philosophy>` |
+| Workflow | `@workflow` | `<workflow>` |
+| Critical Rules | `@critical_rules` | `<critical_rules>` |
+| Mode Content Assembly | `@mode_content` | — |
+| Mode Instructions Wrapper | `@modeInstructions` | `<modeInstructions>` |
+| Entry Point | `@out` | — |
+
+See [agent-flow-template.flow](assets/agent-flow-template.flow) for a complete starter template.
+
+---
+
+## Sidecar Pattern
+
+Every agent `.flow` has a companion `.yaml` sidecar:
+
+| File | Contains |
+|------|----------|
+| `.flow` | Body content — nodes, workflow, rules |
+| `.yaml` | Frontmatter metadata — name, description, tools, handoffs |
+
+Both files share the same base name and live in `data/flows/agents/`.
 
 ---
 
@@ -248,8 +111,8 @@ Place both files in `data/flows/agents/`.
 
 Reusable patterns live in `data/flows/_lib/patterns/`:
 
-| Fragment | Exported Node | Purpose |
-|----------|---------------|---------|
+| Fragment | Exported Node(s) | Purpose |
+|----------|-------------------|---------|
 | `core_philosophy.flow` | `@truthfulness_principle` | Standard truthfulness rule |
 | `stopping_rules_base.flow` | `@no_edit_user_override`, `@stopping_rules_bind` | Common stopping patterns |
 | `critical_rules_base.flow` | Shared critical rules | Common constraints |
@@ -261,31 +124,36 @@ Import with relative paths:
 
 ---
 
-## Refresh Command
+## Common Mistakes
 
-After editing `.flow` or `.yaml` files:
-
-```bash
-adhd r -f
-```
-
-This compiles all Flow sources and syncs to `.github/`.
+| Mistake | Fix |
+|---------|-----|
+| Editing compiled `.agent.md` | Edit `.flow` + `.yaml` source, then `adhd r -f` |
+| Missing `@out` node | Every `.flow` must have exactly one `@out` |
+| Circular variable references | Design node graph as a DAG — no `$a → $b → $a` |
+| Wrong import paths | Paths are relative to the `.flow` file location |
+| `$name` inside content block | Close content block first: `>>>|$name|<<<` |
+| Forgetting `|.` terminator | Every node definition must end with `|.` |
+| Forgetting sidecar `.yaml` | Agents need both `.flow` and `.yaml` files |
+| Copy-pasting shared content | Extract to `_lib/` and import instead |
 
 ---
 
 ## Critical Rules
 
-| Rule | Violation |
-|------|-----------|
+| Rule | Detail |
+|------|--------|
 | **Source Files Only** | NEVER edit compiled `.agent.md` — edit `.flow` + `.yaml` |
-| **@out Required** | Every `.flow` must have exactly one `@out` node |
-| **No Cycles** | `$a` → `$b` → `$a` causes circular dependency error |
-| **Path Accuracy** | Import paths are relative to the `.flow` file location |
+| **@out Required** | Exactly one per file, serves as compilation entry point |
+| **No Cycles** | Circular references cause compilation errors |
+| **Relative Paths** | Import paths are always relative to the `.flow` file |
 
 ---
 
 ## Reference
 
+- Flow DSL syntax: [flow-syntax.md](references/flow-syntax.md)
+- Variable system: [variable-system.md](references/variable-system.md)
+- Agent template: [agent-flow-template.flow](assets/agent-flow-template.flow)
 - Full DSL manual: `modules/dev/flow_core/manual.md`
 - Real examples: `modules/dev/instruction_core/data/flows/agents/*.flow`
-- Format rules: `flow_format.instructions.md`

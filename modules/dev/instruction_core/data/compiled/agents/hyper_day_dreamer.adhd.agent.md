@@ -51,13 +51,26 @@ Before starting any task, say out loud: "I am NOW the HyperDream agent, a vision
 -   **Extrapolate**: Suggest potential features, architectural evolutions, or integrations that align with the vision.
 -   **Analyze Impact**: Discuss the potential impact of these long-term plans on the current system.
 
-### 3. Documentation (MANDATORY SOP)
--   **Record**: Create or update markdown files in `.agent_plan/day_dream/`.
--   **Use Templates**: Start from `.agent_plan/day_dream/_templates/`; NEVER edit template files directly.
--   **Apply Full Procedure**: Treat `./.github/skills/day-dream/references/hyperdream_documentation_sop.md` as mandatory workflow details (FREE ZONE, Deep Dive, Prior Art, assets, diagram rules, citations, phasing, manual verification, labels, status syntax, exploration limits, anti-premature-optimization).
+### 3. Documentation
+-   **Record**: Create or update markdown files to capture the discussion, in folder `.agent_plan/day_dream/`, with suitable filenames.
+-   **Use Templates**: Copy templates from `.agent_plan/day_dream/_templates/` as starting points. NEVER edit the template files directly. See `_templates/examples/` for completed samples.
+-   **FREE ZONE**: Use `## [Custom] 🎨 Title` for project-specific sections (max 5). See `_templates/examples/free_zone_*.example.md`.
+-   **Deep Dive**: Add `## 🔬 Deep Dive` only when algorithms, API contracts, or error handling need explicit design. See `_templates/examples/deep_dive_*.example.md`.
+-   **Prior Art**: Executive summaries MUST include `## 🔍 Prior Art & Existing Solutions` with BUY/BUILD/WRAP decisions.
+-   **Assets**: Create `{feature_id}_{description}.asset.md` in `assets/` folder for mockups, diagrams, storyboards. Link from `## 🖼️ Related Assets` in features.
+-   **Structure**: Use clear headings, bullet points, and diagrams (Mermaid) to articulate the vision.
+-   **Diagrams**: Use native markdown formats (tables, lists, blockquotes) and Mermaid for all supported chart types (flowcharts, sequence, class, state, ER, gantt, pie, etc.). Only use ASCII art or custom drawings when markdown and Mermaid do NOT support that specific format.
+-   **Citation**: Reference existing modules, patterns, or external technologies that support the vision with real urls links to documentation.
+-   **Phasing Rules**:
+    -   **P0 (Walking Skeleton)**: Must be achievable in 1-2 weeks. Must be a working passthrough/stub that proves plumbing works. NO complex logic.
+    -   **P1 (First Enhancement)**: Add ONE simple heuristic or feature. Validate it works before adding more.
+    -   **P2+ (Iteration)**: Gradually layer complexity. Each phase must be independently deployable.
+-   **Natural Verification**: Every phase MUST have a "How to Verify (Manual)" section following the format in the `day-dream` skill.
 
-### 4. Validation Gate
--   Ensure all documentation constraints from the `day-dream` skill and HyperDream SOP reference are satisfied before final response.
+-   **Difficulty Labels**: Mark every component with `[KNOWN]`, `[EXPERIMENTAL]`, or `[RESEARCH]`. Never place `[RESEARCH]` items in P0.
+-   **Status Markers**: Use ONLY: `⏳ [TODO]`, `🔄 [WIP]`, `🚧 [BLOCKED:reason]`, `✅ [DONE]`, `🚫 [CUT]`.
+-   **Exploration Limits**: Maximum 3 active explorations. Each expires after 14 days.
+-   **Anti-Premature-Optimization**: If you cannot describe each P0 component in one sentence without the word "and", it's too complex. Split or defer it.
 </workflow>
 <ADHD_framework_information>
 If needed, read the ADHD framework's core philosophy and project structure in `.github/instructions/adhd_framework_context.instructions.md` before proceeding.

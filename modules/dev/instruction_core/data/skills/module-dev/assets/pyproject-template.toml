@@ -1,0 +1,44 @@
+# ═══════════════════════════════════════════════════════════════════
+# ADHD Module pyproject.toml Template
+# ═══════════════════════════════════════════════════════════════════
+# Replace all <placeholders> with actual values.
+# Module directory name: snake_case (e.g., my_module_core)
+# Project name: kebab-case (e.g., my-module-core)
+
+[project]
+name = "<module-name>"                              # kebab-case (e.g., "my-module-core")
+version = "0.0.1"
+description = "ADHD Framework <suffix>: <module_name>"  # e.g., "ADHD Framework core: flow_core"
+requires-python = ">=3.11"
+dependencies = [
+    # Workspace dependencies (kebab-case names):
+    # "logger-util",
+    # "config-manager",
+    # "exceptions-core",
+    #
+    # External PyPI packages:
+    # "pyyaml>=6.0",
+]
+
+[project.urls]
+Repository = "https://github.com/<org>/adhd_framework_v3/tree/main/modules/<layer>/<module_name>"
+
+[tool.adhd]
+layer = "<layer>"       # "foundation" | "runtime" | "dev"
+# mcp = true            # Uncomment ONLY for MCP server modules
+
+[tool.uv.sources]
+# Declare each workspace dependency here (kebab-case):
+# logger-util = { workspace = true }
+# config-manager = { workspace = true }
+# exceptions-core = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.hatch.build]
+dev-mode-dirs = [".."]
