@@ -21,8 +21,8 @@ Central dispatch for all DREAM operations. Classifies user intent and routes to 
 
 | User Intent | Target Skill | Example Triggers |
 |-------------|-------------|------------------|
-| Create a new PP (parallel plan) blueprint | `dream-create-pp` | "Create a PP for X", "New blueprint plan", "Procedure plan for Y" |
-| Create a new SP (simple plan) blueprint | `dream-create-sp` | "Create an SP for X", "System plan for Y", "New architecture plan" |
+| Create a new PP (Procedure Plan) blueprint | `dream-create-pp` | "Create a PP for X", "New blueprint plan", "Procedure plan for Y" |
+| Create a new SP (System Plan) blueprint | `dream-create-sp` | "Create an SP for X", "System plan for Y", "New architecture plan" |
 | Update/resurrect an existing plan | `dream-update` | "Update PP{NN}", "Resurrect plan X", "Revise the overview" |
 | Close/complete a plan | `dream-close` | "Close SP{NN}", "Mark plan done", "Finish PP{NN}" |
 | Fix plan validation errors | `dream-fix` | "Fix frontmatter in PP{NN}", "Fix the plan", "Repair validation errors" |
