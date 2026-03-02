@@ -289,7 +289,7 @@ writing-templates SKILL.md:
 |-------|--------|
 | `dream-routing` | Central dispatch for DREAM operations |
 | `dream-create-pp` | SOP for creating PP blueprints |
-| `dream-create-sp` | SOP for creating SP simple plans |
+| `dream-create-sp` | SOP for creating SP (System Plans) |
 | `dream-update` | SOP for updating/resurrecting plans |
 | `dream-close` | SOP for closing/completing plans |
 | `dream-fix` | SOP for fixing plan validation errors |

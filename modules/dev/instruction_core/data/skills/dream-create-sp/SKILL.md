@@ -1,11 +1,11 @@
 ---
 name: dream-create-sp
-description: "Step-by-step SOP for creating an SP (Simple Plan) in the DREAM system. Covers single-file plan creation, frontmatter, content structure, root _overview registration, and validation. Use this skill when creating a focused, single-deliverable plan with fewer than 3 tasks."
+description: "Step-by-step SOP for creating an SP (System Plan) in the DREAM system. Covers single-file plan creation, frontmatter, content structure, root _overview registration, and validation. Use this skill when creating a focused, single-deliverable plan with fewer than 3 tasks."
 ---
 
-# Create a Simple Plan (SP)
+# Create a System Plan (SP)
 
-Step-by-step SOP for creating an SP (Simple Plan) — the single-file, lightweight plan type in the DREAM system.
+Step-by-step SOP for creating an SP (System Plan) — the single-file plan type in the DREAM system.
 
 ## When to Use
 
@@ -67,7 +67,7 @@ SP{NN}_{snake_case_name}.md
 ```yaml
 ---
 name: {snake_case_name}         # Matches file suffix (e.g., {name})
-type: simple                    # Always "simple" for SP
+type: system                    # Always "system" for SP
 magnitude: Light                # Trivial | Light | Standard (max for SP)
 status: TODO                    # TODO | WIP | DONE | BLOCKED:reason | CUT
 origin: {path_or_description}  # What triggered this plan
@@ -78,7 +78,7 @@ last_updated: YYYY-MM-DD       # Today's date
 | Field | Type | Required | Notes |
 |-------|------|----------|-------|
 | `name` | string | ✅ | snake_case, matches filename suffix |
-| `type` | enum | ✅ | Always `simple` for SP |
+| `type` | enum | ✅ | Always `system` for SP |
 | `magnitude` | enum | ✅ | Trivial / Light / Standard — Heavy or Epic → upgrade to PP |
 | `status` | enum | ✅ | TODO / WIP / DONE / BLOCKED:reason / CUT |
 | `origin` | string | ✅ | Path to trigger doc or brief description |
@@ -159,7 +159,7 @@ Update `.agent_plan/day_dream/_overview.md` in two places:
 Add a row to `## Plans`:
 
 ```markdown
-| [SP{NN}_{name}.md](./SP{NN}_{name}.md) | Simple | ⏳ [TODO] | normal | {One-line description} |
+| [SP{NN}_{name}.md](./SP{NN}_{name}.md) | System | ⏳ [TODO] | normal | {One-line description} |
 ```
 
 Note: Link points to the file directly (no `_overview.md` since SP is a single file).
@@ -172,7 +172,7 @@ Add to `## Reading Order` at the appropriate position:
 N. **SP{NN}_{name}.md** — {Brief context note}
 ```
 
-SP plans do NOT need a Current Sprint entry — they are simple enough to track via status alone.
+SP plans do NOT need a Current Sprint entry — they are compact enough to track via status alone.
 
 ---
 
@@ -192,7 +192,7 @@ Also run through the full Validation Checklist below.
 - [ ] Is a single `.md` file (not a directory)
 
 ### Frontmatter
-- [ ] `type: simple` (not `procedure` or `system`)
+- [ ] `type: system` (not `procedure`)
 - [ ] `name` matches filename suffix in snake_case
 - [ ] `magnitude` is Trivial, Light, or Standard (not Heavy or Epic)
 - [ ] `status` is valid enum
@@ -209,7 +209,7 @@ Also run through the full Validation Checklist below.
 - [ ] Scope has both Trigger and End State
 
 ### Registration
-- [ ] Added to root `_overview.md` Plans table with Type = `Simple`
+- [ ] Added to root `_overview.md` Plans table with Type = `System`
 - [ ] Added to root `_overview.md` Reading Order
 
 ---
@@ -219,11 +219,11 @@ Also run through the full Validation Checklist below.
 | Mistake | Why It's Wrong | Do Instead |
 |---------|---------------|------------|
 | Creating a folder instead of a file | SP is single-file, not a directory | Create `SP{NN}_{name}.md` as a flat file |
-| Using `type: system` or `type: procedure` | SP uses `type: simple` | Always `type: simple` |
+| Using `type: procedure` | SP uses `type: system` | Always `type: system` for SP |
 | More than 3 tasks | Too complex for Simple tier | Upgrade to PP (`dream-create-pp`) |
 | Magnitude Heavy or Epic | SP caps at Standard | Upgrade to PP |
 | Adding `depends_on` or `knowledge_gaps` | Those signal PP-level complexity | Upgrade to PP if dependencies exist |
-| Missing Non-Goals | Even simple plans need scope boundaries | Include ≥2 explicit exclusions |
+| Missing Non-Goals | All plans need scope boundaries | Include ≥2 explicit exclusions |
 | Adding phase directories | SP has no phases — it's a single file | If phases are needed, it's a PP |
 | Skipping verification | Every plan needs a completion check | Include ≥1 verifiable action |
 | Reusing a plan number | Numbers are immutable across all types | Increment to next unused number |

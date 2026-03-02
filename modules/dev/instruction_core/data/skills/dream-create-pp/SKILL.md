@@ -1,6 +1,6 @@
 ---
 name: dream-create-pp
-description: "Step-by-step SOP for creating a PP (Parallel Plan) blueprint in the DREAM system. Covers folder scaffolding, _overview.md frontmatter, 01_summary.md, 80_implementation.md, root _overview registration, and validation. Use this skill when creating a new multi-phase blueprint plan."
+description: "Step-by-step SOP for creating a PP (Procedure Plan) blueprint in the DREAM system. Covers folder scaffolding, _overview.md frontmatter, 01_summary.md, 80_implementation.md, root _overview registration, and validation. Use this skill when creating a new multi-phase blueprint plan."
 ---
 
 # Create a Procedure Plan (PP)
@@ -15,7 +15,7 @@ Step-by-step SOP for creating a PP (Procedure Plan) blueprint — the multi-phas
 - Triggered by existing plan AND primary deliverable modifies existing code (PP tiebreaker)
 - Scope qualifies for **Blueprint tier**: ≥3 features OR ≥2 cross-module deps OR external APIs
 
-**Not a PP?** If ≤2 tasks with single deliverable and straightforward scope → use `dream-create-sp` (Simple Plan). If intent is exploratory with no artifact → use `dream-vision`.
+**Not a PP?** If ≤2 tasks with single deliverable and straightforward scope → use `dream-create-sp` (System Plan). If intent is exploratory with no artifact → use `dream-vision`.
 
 ---
 
@@ -306,7 +306,7 @@ Also run through the full Validation Checklist below.
 - [ ] `80_implementation.md` exists with at least Phase 0
 
 ### Frontmatter
-- [ ] `type: procedure` (not `system` or `simple`)
+- [ ] `type: procedure` (not `system`)
 - [ ] `name` matches folder suffix in snake_case
 - [ ] `magnitude` is valid enum (Trivial / Light / Standard / Heavy / Epic)
 - [ ] `status` is valid enum (TODO / WIP / DONE / BLOCKED:reason / CUT)
