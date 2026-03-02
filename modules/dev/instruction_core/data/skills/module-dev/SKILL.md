@@ -73,7 +73,7 @@ Before writing **any** module code, complete these checks:
 
 ### Step 5: Add Tests or Playground
 - Use the decision tree below to choose the right location
-- See the `testing` skill for full conventions
+- See the `attack-testing` skill for HyperRed conventions
 
 ### Step 6: Verify Before Completion
 Run the final verification checklist (below).
@@ -97,19 +97,8 @@ Run the final verification checklist (below).
 
 ## Import Patterns
 
-```python
-# ✅ Correct: package imports via uv editable installs
-from logger_util import Logger
-from config_manager import ConfigManager
-from exceptions_core import ADHDError
-
-# ❌ Wrong: sys.path manipulation
-import sys
-sys.path.insert(0, "../../foundation/logger_util")
-
-# ❌ Wrong: relative imports across module boundaries
-from ..foundation.logger_util import Logger
-```
+Correct vs wrong import approaches:
+→ See [import-patterns-example.md](assets/import-patterns-example.md)
 
 ---
 
@@ -158,5 +147,5 @@ Before marking module work complete:
 
 - **Module anatomy and file roles**: See [references/module-structure.md](references/module-structure.md)
 - **pyproject.toml template**: See [assets/pyproject-template.toml](assets/pyproject-template.toml)
-- **Testing conventions**: Load the `testing` skill
+- **Testing conventions**: Load the `attack-testing` skill for adversarial testing
 - **MCP-specific patterns**: Load the `mcp-module-dev` skill

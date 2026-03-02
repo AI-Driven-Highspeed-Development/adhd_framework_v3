@@ -1,0 +1,37 @@
+# Expedition Scope YAML Schema
+
+Location: `SIDECAR/.agent_plan/expedition/{target}/expedition_scope.yaml`
+
+```yaml
+expedition:
+  id: "exp_YYYYMMDD_project_name"
+  created: "ISO8601"
+  target:
+    path: "/absolute/path"
+    type: "vue3 | react | unity | rust | go | other"
+  
+  artifacts:
+    agents:
+      - source: ".github/agents/xxx.adhd.agent.md"
+        target: ".github/agents/xxx.agent.md"
+        adaptation: transform | copy
+        transformations:
+          - add_framework_prefix
+          - update_cross_refs
+          - inject_header
+    
+    instructions:
+      - source: "path/to/source.instructions.md"
+        target: ".github/instructions/target.instructions.md"
+        adaptation: transform | copy
+    
+    prompts:
+      - source: "path/to/source.prompt.md"
+        target: ".github/prompts/target.prompt.md"
+        adaptation: copy
+  
+  execution:
+    chunk_size: 5
+    total_chunks: N
+    mode: PAUSE | CONTINUOUS
+```

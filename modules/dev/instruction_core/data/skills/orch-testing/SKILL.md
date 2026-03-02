@@ -52,13 +52,8 @@ Phase 4: FINAL
 - State: "Starting testing workflow for: [target]"
 
 ### 2. Phase 1: PLAN
-Invoke HyperSan:
-```yaml
-task: "Review test plan for: [target module]"
-context: "User wants comprehensive testing. Identify test cases, priorities, risks."
-success_criteria: "Approve test plan or identify gaps"
-output_format: "summary"
-```
+Invoke HyperSan to review test plan.
+→ See [testing-delegation-blocks.md](assets/testing-delegation-blocks.md) for PLAN delegation YAML
 
 **Evaluate Response:**
 - If approved → Continue to Phase 2
@@ -67,44 +62,11 @@ output_format: "summary"
 ### 3. Phase 2: SPEC-TEST (Loop)
 **Cycle Counter:** Start at 1, max 3
 
-Invoke HyperArch:
-```yaml
-task: "Execute spec tests for: [target]"
-objective: "[The larger goal this testing serves]"
-context: "Test plan approved. Cycle #[N]. [Prior cycle summary if any]"
-autonomy_guidance: |
-  Your goal is OBJECTIVE COMPLETION, not just running tests.
-  If testing reveals related issues in your domain, fix them.
-  Report all actions taken, including any discovered work.
-success_criteria: "Run tests, fix failures, report results"
-output_format: "summary"
-execution_guidance: |
-  <testing_standards>
-  ## Test Execution
-  - Say: "Starting spec test cycle #[N]" to track progress
-  - Capture output, errors, and unexpected behavior
-  - Document each result clearly
-  - Apply fixes one at a time, keep changes minimal
-  
-  ## Testing Folder Guidelines
-  | Artifact | Location |
-  |----------|----------|
-  | Scratch test scripts | `.temp_agent_work/` (clean up after) |
-  | HyperRed attacks | `.agent_plan/red_team/<module>/` |
-  | Formal unit tests | `<module>/tests/` |
-  | Integration tests | `tests/integration/` |
-  
-  ## Before Creating Test Files
-  1. Check existing tests: `<module>/tests/` and `tests/integration/`
-  2. Check HyperRed findings: `.agent_plan/red_team/<module>/findings/`
-  3. Reuse before creating—do NOT duplicate test coverage
-  
-  ## Bug Fixing Rules
-  - One bug at a time: Fix, verify, then move to next
-  - Minimal fixes only: Do NOT refactor unrelated code
-  - Document what was changed and why
-  </testing_standards>
-```
+Invoke HyperArch with testing standards.
+→ See [testing-delegation-blocks.md](assets/testing-delegation-blocks.md) for SPEC-TEST delegation YAML
+
+Testing standards embedded in `execution_guidance`:
+→ See [testing-standards.md](assets/testing-standards.md)
 
 **Evaluate Response:**
 - If all tests pass → Continue to Phase 3
@@ -114,21 +76,11 @@ execution_guidance: |
   - If cycles >= 3: Report persistent failures, suggest manual intervention
 
 **Housekeeping Trigger:**
-After every 3 cycles, invoke HyperIQGuard:
-```yaml
-task: "Review recent test fixes for code quality"
-context: "[List of files modified during testing]"
-agent: HyperIQGuard
-```
+After every 3 cycles, invoke HyperIQGuard for code quality review.
 
 ### 4. Phase 3: ATTACK
-Invoke HyperRed:
-```yaml
-task: "Attack this module for edge cases: [target]"
-context: "Spec tests passed. Find what they missed."
-success_criteria: "Report findings by severity (BLOCKER/WARNING/INFO)"
-output_format: "summary"
-```
+Invoke HyperRed for edge case attacks.
+→ See [testing-delegation-blocks.md](assets/testing-delegation-blocks.md) for ATTACK delegation YAML
 
 **Evaluate Response:**
 - If no BLOCKERs → Continue to Phase 4
@@ -137,13 +89,8 @@ output_format: "summary"
   - HyperArch fixes, then re-invoke HyperRed (max 2 attack cycles)
 
 ### 5. Phase 4: FINAL
-Invoke HyperSan:
-```yaml
-task: "Final validation of tested implementation"
-context: "Spec tests pass. HyperRed findings addressed. Summary: [attack summary]"
-success_criteria: "Confirm implementation is production-ready"
-output_format: "summary"
-```
+Invoke HyperSan for final validation.
+→ See [testing-delegation-blocks.md](assets/testing-delegation-blocks.md) for FINAL delegation YAML
 
 **Evaluate Response:**
 - If approved → Finalize
@@ -159,50 +106,12 @@ Compile comprehensive summary:
 ## Output Format
 
 ### Success
-```markdown
-## Testing Complete ✅
-
-**Target:** [module/files]
-**Phases Completed:** 4/4
-
-### Summary
-| Phase | Agent | Status |
-|-------|-------|--------|
-| PLAN | HyperSan | ✅ Approved |
-| SPEC-TEST | HyperArch | ✅ All pass (N cycles) |
-| ATTACK | HyperRed | ✅ No blockers |
-| FINAL | HyperSan | ✅ Approved |
-
-### HyperRed Findings
-- **BLOCKER**: 0 (all resolved)
-- **WARNING**: [N] (addressed/deferred)
-- **INFO**: [N] (documented)
-
-### Confidence
-Ready for production: HIGH
-```
+Template for successful test completion reports:
+→ See [testing-success-template.md](assets/testing-success-template.md)
 
 ### Partial
-```markdown
-## Testing Incomplete ⚠️
-
-**Target:** [module/files]
-**Status:** PARTIAL
-**Stopped At:** [phase]
-
-### Issues
-[Description of blocking issues]
-
-### Addressed
-- [Issue 1]: Fixed
-- [Issue 2]: Fixed
-
-### Outstanding
-- [Issue 3]: Requires [action]
-
-### Recommendation
-[Suggested next steps]
-```
+Template for incomplete testing reports:
+→ See [testing-partial-template.md](assets/testing-partial-template.md)
 
 ## Critical Rules
 - **All Phases Mandatory**: Do not skip any phase

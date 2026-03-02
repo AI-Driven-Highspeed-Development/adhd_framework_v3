@@ -13,7 +13,7 @@ Current Reality:
 ┌─────────────────────────────────────────────────────────────────┐
 │  User: "Create a PP blueprint for feature X"                    │
 │                                                                 │
-│  Agent reads day-dream skill (format spec) ──► 423 lines        │
+│  Agent reads dream-vision skill (format spec) ──► 423 lines      │
 │  Agent reads dream-planning skill (decomp) ──► 329 lines        │
 │  Agent reads writing-templates skill ──────► 245 lines          │
 │                                                                 │
@@ -54,21 +54,21 @@ After This Procedure:
 |--------|--------|-------|
 | Routing clarity | ❌ Agent improvises which skill to read | ✅ dream-routing dispatches to exact leaf skill |
 | Blueprint consistency | ❌ Varies by agent context window | ✅ SOPs enforce identical structure |
-| Template discovery | ❌ Agents must find `_templates/` independently | ✅ Templates bundled as `references/` in routing skill |
+| Template discovery | ❌ Agents must find `_templates/` independently | ✅ Templates bundled as `assets/` in routing skill |
 | Onboarding | ❌ Read 3 skills (~1000 lines) to author a plan | ✅ Read 1 leaf skill (<150 lines) for the specific operation |
 
 ---
 
 ## 🌟 TL;DR
 
-Create a `dream-routing` skill that classifies user intent and dispatches to self-contained leaf skills (`dream-create-PP`, `dream-create-SP`, `dream-update`, `dream-close`, etc.). Move templates from `_templates/` to `dream-routing/references/`. Each leaf skill is a complete SOP — no reading siblings required.
+Create a `dream-routing` skill that classifies user intent and dispatches to self-contained leaf skills (`dream-create-PP`, `dream-create-SP`, `dream-update`, `dream-close`, etc.). Move templates from `_templates/` to `dream-routing/assets/`. Each leaf skill is a complete SOP — no reading siblings required.
 
 ---
 
 ## 🎯 Procedure Scope
 
 **Trigger:** Discussion consensus that DREAM lacks active dispatch — agents improvise blueprint operations from passive format specs, producing inconsistent results.
-**End State:** `dream-routing` skill exists with intent classification table. Each core DREAM operation has a self-contained leaf skill. Existing skills (`day-dream`, `dream-planning`) updated to reference the new routing system. Templates relocated to `dream-routing/references/`.
+**End State:** `dream-routing` skill exists with intent classification table. Each core DREAM operation has a self-contained leaf skill. Existing skills (`dream-vision`, `dream-planning`) updated to reference the new routing system. Templates relocated to `dream-routing/assets/`.
 
 ---
 
@@ -76,7 +76,7 @@ Create a `dream-routing` skill that classifies user intent and dispatches to sel
 
 | Approach | What It Does | Decision | Rationale |
 |----------|--------------|----------|-----------|
-| Current 3-skill system (day-dream + dream-planning + writing-templates) | Passive format specs agents read holistically | ADAPT | Keep as reference specs; routing layer dispatches to SOPs |
+| Current 3-skill system (dream-vision + dream-planning + writing-templates) | Passive format specs agents read holistically | ADAPT | Keep as reference specs; routing layer dispatches to SOPs |
 | orch-routing → orch-implementation pattern | Layered skill dispatch for orchestration | ADOPT | Proven pattern; dream-routing follows same architecture |
 | Monolithic "DREAM spec" (archived v3/v4 iterations) | Single giant spec with all rules | REJECT | 12 archived iterations prove this approach fails at scale |
 
@@ -86,7 +86,7 @@ Create a `dream-routing` skill that classifies user intent and dispatches to sel
 
 | Non-Goal | Rationale |
 |----------|-----------|
-| Rewriting day-dream or dream-planning content | Existing specs are stable; we ADD a routing layer, not replace |
+| Rewriting dream-vision or dream-planning content | Existing specs are stable; we ADD a routing layer, not replace |
 | Automating intent classification in code | This is a skill (agent-read SOP), not software |
 | Handling archived iteration migration | P0 reviews archives for learning only; no migration of old plans |
 | Creating skills for non-DREAM operations | Scope is DREAM planning operations exclusively |
@@ -109,14 +109,14 @@ flowchart LR
 
 | Skill | Status | Role |
 |-------|--------|------|
-| `dream-routing/` (+ `references/`) | NEW | Entry point; owns templates (from `_templates/`) |
+| `dream-routing/` (+ `assets/`) | NEW | Entry point; owns templates (from `_templates/`) |
 | `dream-create-PP/` | NEW | Leaf SOP: create PP blueprint |
 | `dream-create-SP/` | NEW | Leaf SOP: create SP blueprint |
 | `dream-update/` | NEW | Leaf SOP: update/resurrect plans |
 | `dream-close/` | NEW | Leaf SOP: plan closure gates |
 | `dream-fix/` | NEW (P3) | Leaf SOP: fix validation errors |
 | `dream-validate/` | NEW (P3) | Leaf SOP: validate plan structure |
-| `day-dream/` | MODIFY | Add routing ref; stays format-only spec |
+| `dream-vision/` | MODIFY | Add routing ref; stays format-only spec |
 | `dream-planning/` | MODIFY | Add routing ref; stays decomposition protocol |
 
 ### Components Affected
@@ -125,14 +125,14 @@ flowchart LR
 |-----------|-------------|-------------|
 | `instruction_core/data/skills/dream-*` | Create | 7 new skill folders (source-of-truth) |
 | `.github/skills/dream-*` | Create (synced) | Synced via `adhd r -f` |
-| `.github/skills/day-dream/`, `dream-planning/` | Modify | Add routing references |
-| `.agent_plan/day_dream/_templates/` | Remove | Replaced with redirect to `dream-routing/references/` |
+| `.github/skills/dream-vision/`, `dream-planning/` | Modify | Add routing references |
+| `.agent_plan/day_dream/_templates/` | Remove | Replaced with redirect to `dream-routing/assets/` |
 
 ### Key Design Decisions
 
 | # | Decision | Rationale |
 |---|----------|-----------|
-| 1 | Routing skill owns templates as `references/` | Templates are reference material for SOPs, not standalone artifacts |
+| 1 | Routing skill owns templates as `assets/` | Templates are reference material for SOPs, not standalone artifacts |
 | 2 | Leaf skills are fully self-contained | No reading siblings — reduces context window, prevents cross-contamination |
 | 3 | Archive review in P0, not ongoing | Learn from 12 archived iterations but don't carry forward their structure |
 | 4 | Follow orch-routing pattern exactly | Proven layered dispatch; consistent framework UX |
@@ -144,7 +144,7 @@ flowchart LR
 | Priority | Step | Difficulty | Description |
 |----------|------|------------|-------------|
 | P0 | Skill Inventory & Design | `[KNOWN]` | Review 3 existing skills + 12 archived iterations, produce dispatch table |
-| P1 | dream-routing Skill | `[KNOWN]` | Create routing skill, relocate templates to references/, write dispatch |
+| P1 | dream-routing Skill | `[KNOWN]` | Create routing skill, relocate templates to assets/, write dispatch |
 | P2 | Core Leaf Skills | `[KNOWN]` | Create dream-create-PP, dream-create-SP, dream-update, dream-close |
 | P3 | Extended Skills & Integration | `[EXPERIMENTAL]` | Remaining leaves, update existing skills, verify full dispatch chain |
 

@@ -1,0 +1,17 @@
+{
+  "module": "module_name",
+  "date": "YYYY-MM-DD",
+  "attack_count": 15,
+  "findings": [
+    {
+      "id": "RED-001",
+      "severity": "high",
+      "category": "boundary",
+      "title": "Short description",
+      "reproduction": "Exact code to reproduce",
+      "expected": "What should happen",
+      "actual": "What actually happened",
+      "evidence_file": "evidence/crash_001.log"
+    }
+  ]
+}

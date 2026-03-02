@@ -1,0 +1,57 @@
+---
+# Scout Report YAML Schema
+# Location: SIDECAR/.agent_plan/expedition/{target}/scout_report.md
+
+expedition_id: "exp_YYYYMMDD_project_name"
+target_path: "/absolute/path/to/target"
+scout_timestamp: "ISO8601"
+
+detected_project:
+  type: known_framework | custom_framework | multi_framework | bare_project | monorepo
+  primary_language: "string"
+  languages_present: ["list"]
+  frameworks:
+    - name: "Vue3"
+      version: "3.x"
+      config_file: "vite.config.ts"
+      confidence: high | medium | low
+  observed_patterns:
+    config_files: [{path, type}]
+    build_system:
+      detected: "npm | pnpm | yarn | cargo | go"
+      lock_file: "string"
+    directory_style: "feature-based | layer-based | hybrid"
+    existing_agent_config: [{path, type}]
+
+structure_health: healthy | degraded | incompatible
+
+blockers:
+  - code: "ERROR_CODE"
+    message: "Human-readable message"
+    severity: critical
+
+warnings:
+  - code: "WARN_CODE"
+    message: "Human-readable message"
+    suggestion: "How to fix"
+
+recommendation: PROCEED | PROCEED_WITH_CAUTION | ABORT
+abort_reason: "Only if recommendation is ABORT"
+
+adaptation_hints:
+  suggested_agent_location: ".github/agents/"
+  suggested_instruction_location: ".github/instructions/"
+  test_command: "npm test"
+  build_command: "npm build"
+---
+
+# Scout Report: {project_name}
+
+## 📁 Project Structure Analysis
+{prose description}
+
+## 🎯 Export Compatibility
+{analysis}
+
+## ⚠️ Concerns
+{list of concerns}

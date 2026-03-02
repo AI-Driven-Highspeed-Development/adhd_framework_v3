@@ -159,82 +159,23 @@ my-skill/
 ```
 
 ### Full Skill with Resources
-```
-my-skill/
-├── SKILL.md              # Main instructions
-├── scripts/              # Executable code
-│   ├── setup.sh.template   # Adding .template to make the IDE stop screaming.
-│   └── validate.py.template
-├── references/           # Additional documentation
-│   ├── REFERENCE.md
-│   └── api-spec.md
-└── assets/               # Static resources
-    ├── template.json
-    └── schema.yaml
-```
 
-### Optional Directories
-
-| Directory | Purpose | Notes |
-|-----------|---------|-------|
-| `scripts/` | Executable code agents can run | Self-contained, document dependencies |
-| `references/` | Additional documentation | Loaded on demand, keep files focused |
-| `assets/` | Templates, schemas, data files | Static resources |
+Complete directory layout with scripts, references, and assets subdirectories:
+→ See [full-skill-directory.md](assets/full-skill-directory.md)
 
 ---
 
 ## Good Skill vs Bad Skill
 
 ### Bad Skill (Stub)
-```yaml
----
-name: testing
-description: "Helps with testing."
----
 
-# Testing
-
-See `testing_preset.instructions.md` for the full testing protocol.
-```
-
-**Problems:**
-- Description is too vague for agent matching
-- Body points to another file instead of containing the actual content
-- Skill provides no actual capability
+Example of a poorly written skill — vague description, body is just a pointer, no actual capability:
+→ See [bad-skill-example.md](assets/bad-skill-example.md)
 
 ### Good Skill (Self-Contained)
-```yaml
----
-name: testing
-description: "Testing and validation workflows — test folder conventions, pytest execution, and CI integration patterns. Use when creating tests, deciding between tests/ and playground/, or running validation."
----
 
-# Testing
-
-## When to Use
-- Creating or running unit tests
-- Setting up test infrastructure
-
-## Folder Decision Tree
-### Step 1: Is this a scratch file?
-- YES → `.temp_agent_work/`
-- NO → Continue...
-
-## Test Execution
-```bash
-source .venv/bin/activate && pytest tests/
-```
-
-## Critical Rules
-- Always activate venv before running Python
-- Check existing tests before creating new ones
-```
-
-**Why this works:**
-- Description is keyword-rich and specific
-- Body IS the actual content, not a pointer
-- Includes actionable steps and examples
-- Self-contained — no external dependencies to understand it
+Example of a well-written skill — keyword-rich description, self-contained content, actionable steps:
+→ See [good-skill-example.md](assets/good-skill-example.md)
 
 ---
 
@@ -248,7 +189,7 @@ source .venv/bin/activate && pytest tests/
 .github/skills/
 ├── orch-testing/          # name: orch-testing ✓
 │   └── SKILL.md
-├── day-dream/             # name: day-dream ✓
+├── dream-vision/          # name: dream-vision ✓
 │   └── SKILL.md
 └── writing-skills/        # name: writing-skills ✓
     └── SKILL.md
@@ -256,12 +197,16 @@ source .venv/bin/activate && pytest tests/
 
 ### Prefix/Suffix Patterns
 
-| Pattern | Purpose | Examples |
-|---------|---------|----------|
-| `writing-*` | Authoring/format skills — teach how to author or format a specific file type | `writing-flows`, `writing-agents`, `writing-instructions`, `writing-prompts`, `writing-skills`, `writing-templates` |
-| `*-dev` | Development workflow skills — teach how to develop/implement a specific type of module or component | `module-dev`, `mcp-module-dev`, `cli-dev` |
-| `orch-*` | Orchestrator presets — define orchestration workflow presets | `orch-implementation`, `orch-testing`, `orch-discussion`, `orch-routing` |
-| *(none)* | Domain-specific skills — descriptive kebab-case without a required prefix/suffix | `hyper-san-output`, `day-dream`, `dream-planning`, `expedition`, `testing` |
+| Pattern | Agent Owner | Purpose | Examples |
+|---------|-------------|---------|----------|
+| `orch-*` | HyperOrch | Orchestrator presets | `orch-implementation`, `orch-testing`, `orch-discussion`, `orch-routing` |
+| `writing-*` | HyperAgentSmith | Authoring/format skills | `writing-flows`, `writing-agents`, `writing-instructions`, `writing-prompts`, `writing-skills`, `writing-module-instructions`, `writing-modules-readme` |
+| `*-dev` | HyperArch | Development workflow skills | `module-dev`, `mcp-module-dev`, `cli-dev` |
+| `dream-*` | HyperDream | Vision and planning skills | `dream-vision`, `dream-planning` |
+| `san-*` | HyperSan | Validation and sanity check skills | `san-output` |
+| `iq-*` | HyperIQGuard | Code quality skills | *(none yet)* |
+| `attack-*` | HyperRed | Adversarial testing skills | `attack-testing` |
+| `exped-*` | HyperExped | Framework export skills | `exped-export` |
 
 ### Naming Anti-Patterns
 
@@ -271,6 +216,11 @@ source .venv/bin/activate && pytest tests/
 | `utils`, `helpers` | Descriptive domain name | Too generic for agent matching |
 | `my_skill` | `my-skill` | Underscores violate kebab-case |
 | `MySkill` | `my-skill` | camelCase/PascalCase not allowed |
+| `hyper-san-output` | `san-output` | Use agent prefix pattern, not full agent name |
+| `testing` | `attack-testing` | Prefix with owning agent's pattern (`attack-*` for HyperRed) |
+| `day-dream` | `dream-vision` | Use agent prefix pattern (`dream-*` for HyperDream) |
+| `expedition` | `exped-export` | Use agent prefix pattern (`exped-*` for HyperExped) |
+| `module-instructions` | `writing-module-instructions` | Authoring skills use `writing-*` prefix |
 
 ---
 

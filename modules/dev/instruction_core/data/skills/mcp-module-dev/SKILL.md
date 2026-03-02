@@ -42,64 +42,16 @@ Load the **`module-dev`** skill first for general module patterns (imports, anti
 - Use `Logger` for all logging — never `print()`
 - Provide a module-level `get_<name>_controller()` singleton function
 
-```python
-from logger_util import Logger
-from config_manager import ConfigManager
-
-log = Logger(name="MyController", verbose=False)
-
-class MyController:
-    def __init__(self, workspace_root: str | Path | None = None) -> None:
-        self._cm = ConfigManager(workspace_root=workspace_root)
-
-    def my_operation(self, arg: str) -> dict[str, Any]:
-        """Perform the operation."""
-        log.info(f"Running operation with {arg}")
-        return {"success": True, "result": "done"}
-
-def get_my_controller() -> MyController:
-    """Module-level singleton accessor."""
-    global _controller
-    if _controller is None:
-        _controller = MyController()
-    return _controller
-
-_controller: MyController | None = None
-```
+Canonical controller template:
+→ See [controller-template.py](assets/controller-template.py)
 
 ### Step 3: Implement the MCP Server (`*_mcp.py`)
 - Import `FastMCP` and the controller
 - Each `@mcp.tool()` function should be **under 10 lines** — delegate to controller
 - Use lazy controller initialization via `_get_controller()`
 
-```python
-from mcp.server.fastmcp import FastMCP
-from my_module.my_controller import MyController
-
-mcp = FastMCP(name="my-module", instructions="Description of this MCP server")
-_controller: MyController | None = None
-
-def _get_controller() -> MyController:
-    global _controller
-    if _controller is None:
-        _controller = MyController()
-    return _controller
-
-@mcp.tool()
-def my_tool(arg: str) -> dict:
-    """Tool description becomes MCP schema description.
-
-    Args:
-        arg: Description of this argument
-    """
-    return _get_controller().my_operation(arg)
-
-def main() -> None:
-    mcp.run(transport="stdio")
-
-if __name__ == "__main__":
-    main()
-```
+Canonical MCP server template:
+→ See [mcp-server-template.py](assets/mcp-server-template.py)
 
 ### Step 4: Configure pyproject.toml
 - Set `mcp = true` in `[tool.adhd]`
@@ -130,18 +82,7 @@ uv run python -m <module_name>.<mcp_file_name>
 ```
 
 For MCP client configuration (Claude Desktop, VS Code, etc.):
-```json
-{
-  "mcpServers": {
-    "my-server": {
-      "type": "stdio",
-      "command": "uv",
-      "args": ["run", "python", "-m", "my_module.my_module_mcp"],
-      "cwd": "./"
-    }
-  }
-}
-```
+→ See [mcp-client-config.json](assets/mcp-client-config.json)
 
 ---
 

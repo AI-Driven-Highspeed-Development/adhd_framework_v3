@@ -14,7 +14,15 @@ Decomposition Rules for Engineering Atomic Modules — how to break work into pa
 - Classifying plan types (System or Procedure)
 - Writing plan `_overview.md` with correct frontmatter
 
-**Scope boundary:** This skill covers *decomposition, routing, and plan metadata*. For document authoring rules (templates, Story/Spec pattern, assets), see the `day-dream` skill.
+**Scope boundary:** This skill covers *decomposition, routing, and plan metadata*. For document authoring rules (templates, Story/Spec pattern, assets), see the `dream-vision` skill.
+
+---
+
+## Operations Dispatch
+
+This skill defines the **decomposition protocol** — how to break work into plans and tasks.
+
+For step-by-step operations on plan artifacts (creating, updating, closing plans), use the `dream-routing` skill.
 
 ---
 
@@ -80,14 +88,8 @@ Assess magnitude FIRST. This gates all decomposition decisions. Values are MAXIM
 
 ## Status Syntax
 
-| Marker | Meaning |
-|--------|---------|
-| ⏳ `[TODO]` | Not started |
-| 🔄 `[WIP]` | In progress |
-| ✅ `[DONE]` | Complete |
-| ✅ `[DONE:invalidated-by:XXnn]` | Complete but assumptions compromised by plan `XXnn` |
-| 🚧 `[BLOCKED:reason]` | Stuck (kebab-case reason) |
-| 🚫 `[CUT]` | Removed from scope |
+Status markers for plan/task tracking (TODO, WIP, DONE, BLOCKED, CUT, invalidated):
+→ See [status-syntax.md](assets/status-syntax.md)
 
 ---
 
@@ -105,108 +107,25 @@ Assess magnitude FIRST. This gates all decomposition decisions. Values are MAXIM
 
 Every plan directory has `_overview.md` with YAML frontmatter. **No separate metadata file** — all plan metadata lives in `_overview.md` frontmatter.
 
-### Required Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `name` | string | Plan identifier (snake_case) |
-| `type` | enum | `system` or `procedure` |
-| `magnitude` | enum | `Trivial` / `Light` / `Standard` / `Heavy` / `Epic` |
-| `status` | enum | `TODO` / `WIP` / `DONE` / `BLOCKED:reason` / `CUT` |
-| `origin` | string | Path to exploration/doc that triggered this plan |
-| `last_updated` | date | `YYYY-MM-DD` (human) or ISO 8601 (machine) |
-
-### Recommended Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `depends_on` | string[] | Plans this plan structurally requires |
-| `blocks` | string[] | Plans that cannot proceed until this completes |
-| `knowledge_gaps` | string[] | Missing expertise or unvalidated assumptions |
-
-### Optional / Conditional Fields
-
-| Field | Type | When |
-|-------|------|------|
-| `start_at` | date | When work began (omit for exploratory) |
-| `priority` | enum | `emergency` only (omit for `normal`) |
-| `emergency_declared_at` | datetime | REQUIRED when `priority: emergency` |
-| `invalidated_by` | string | Plan that caused invalidation (victim plans only) |
-| `invalidation_scope` | string | REQUIRED when `invalidated_by` is set |
-| `invalidation_date` | date | REQUIRED when `invalidated_by` is set |
+Required, recommended, and optional/conditional field tables:
+→ See [overview-frontmatter-schema.md](assets/overview-frontmatter-schema.md)
 
 ### Full Example
 
-```yaml
----
-name: marketplace
-type: system
-magnitude: Heavy
-status: WIP
-origin: exploration/meeting_2026_02_01_marketplace.md
-start_at: 2026-02-03
-last_updated: 2026-02-12
-depends_on:
-  - SP01_core_shop
-blocks:
-  - PP19_perf_optimization
-knowledge_gaps:
-  - "Multi-currency settlement edge cases"
----
-```
+Complete frontmatter YAML with all field categories:
+→ See [overview-frontmatter-example.yaml](assets/overview-frontmatter-example.yaml)
 
 ### Required Content After Frontmatter
 
-```markdown
-# {Plan Name}
-
-## Purpose
-Why this plan exists and what it delivers.
-
-## Children
-
-| Name | Type | Status | Description |
-|------|------|--------|-------------|
-| 01_login_flow.md | Task | ⏳ [TODO] | Login endpoint |
-| auth_tokens/ | Plan | 🔄 [WIP] | Token lifecycle |
-
-⚠️ **Type column:** ONLY `Plan` (directory) or `Task` (file) are valid values. 'Doc', 'Feature', 'Module', etc. are INVALID.
-
-## Integration Map
-How children's outputs combine into the plan's deliverable.
-
-## Reading Order
-1. 01_login_flow.md (independent)
-2. auth_tokens/ (depends on login)
-```
+Purpose, Children table, Integration Map, and Reading Order sections:
+→ See [overview-content-template.md](assets/overview-content-template.md)
 
 ---
 
 ## Directory-Based Hierarchy
 
-Hierarchy is expressed through the filesystem. No level numbers.
-
-```
-SP01_{plan_name}/
-├── _overview.md              # REQUIRED — plan navigator with frontmatter
-├── 01_executive_summary.md   # System Plan only
-├── 02_architecture.md        # System Plan only
-├── 0N_feat_{feature}.md      # feat_ prefix RECOMMENDED
-├── 80_implementation.md
-├── pNN_{phase}/              # Phase directories
-│   ├── _overview.md
-│   └── NN_{task}.md
-├── modules/
-│   └── {module_name}.md
-└── assets/
-```
-
-**Rules:**
-- **Directory = plan** — always has `_overview.md`
-- **File = task** — leaf, directly executable
-- Phase directories: `pNN_name/` — ALWAYS directories, even single-task phases
-- Task numbering starts at `01_` (position `00_` is implicitly `_overview.md`)
-- Nesting ≤3 levels recommended
+Filesystem-based hierarchy example with rules for directories, files, phases, and nesting:
+→ See [directory-hierarchy-example.md](assets/directory-hierarchy-example.md)
 
 ---
 
@@ -237,59 +156,8 @@ When an agent needs to update a file owned by a higher layer, it MUST report to 
 
 ## MANAGER / WORKER Lifecycle
 
-### MANAGER (Processes a Plan)
-
-```
-DECOMPOSE  → Verify/create children with _overview.md
-DELEGATE   → Assign each child to subagent (max 5 parallel), apply sibling firewall
-INTEGRATE  → Collect results, merge outputs, resolve sibling conflicts
-REPORT     → Mark plan ✅ [DONE], satisfy closure gates, notify parent
-```
-
-| Rule | Detail |
-|------|--------|
-| MUST create `_overview.md` | If it does not exist |
-| MUST NOT fulfill children's tasks | Always delegate |
-| MUST integrate | No child output is final until parent accepts |
-| MUST satisfy closure gates | State Delta + Module Index + invalidation report |
-| Max parallel subagents | 5 |
-
-### WORKER (Fulfills a Task)
-
-```
-VALIDATE   → Check magnitude ≠ Epic (refuse + escalate), check dependencies
-IMPLEMENT  → Read task spec, create/modify artifacts
-VERIFY     → Check acceptance criteria
-REPORT     → Mark task ✅ [DONE], notify parent
-```
-
-| Rule | Detail |
-|------|--------|
-| MUST refuse Epic tasks | Escalate to parent for decomposition |
-| MUST NOT modify sibling tasks | Or parent plan content |
-| MUST report completion | Status marker update to parent |
-
-### Plan Closure Gates
-
-| Gate | Detail |
-|------|--------|
-| All children resolved | Every child is ✅ DONE or 🚫 CUT |
-| State Delta appended | Entry in root `_overview.md` |
-| Module Index updated | New modules have BOTH table row AND spec file |
-| `last_updated` updated | In plan's frontmatter |
-| Invalidations reported | List plans this work compromises |
-| Plan archived | Moved to `_completed/YYYY-QN/` |
-| `dream validate` passes | Auto-triggered before closure |
-
-### Decomposition Termination
-
-| Becomes a Task when... | Becomes a Plan when... |
-|------------------------|----------------------|
-| Single agent, single session | Contains ambiguity needing breakdown |
-| No ambiguity about output | ≥2 independent children |
-| Magnitude ≤ Standard | Magnitude Heavy or Epic |
-
-A plan with only 1 child is suspect — SHOULD flatten. Exception: phase directories (`pNN_`) always stay as directories.
+MANAGER (DECOMPOSE → DELEGATE → INTEGRATE → REPORT), WORKER (VALIDATE → IMPLEMENT → VERIFY → REPORT), Plan Closure Gates, and Decomposition Termination rules:
+→ See [manager-worker-lifecycle.md](assets/manager-worker-lifecycle.md)
 
 ---
 
@@ -314,9 +182,9 @@ A plan with only 1 child is suspect — SHOULD flatten. Exception: phase directo
 
 | Topic | Where |
 |-------|-------|
-| Document authoring (templates, Story/Spec) | `day-dream` skill |
-| Estimation defaults (AI-agent time, human_only) | `day-dream` skill |
-| Tier selection (Simple vs Blueprint) | `day-dream` skill |
-| Template catalog and format | `writing-templates` skill |
+| Document authoring (templates, Story/Spec) | `dream-vision` skill |
+| Estimation defaults (AI-agent time, human_only) | `dream-vision` skill |
+| Tier selection (Simple vs Blueprint) | `dream-vision` skill |
+| Template catalog and format | `dream-routing` skill (assets/) |
 | Orchestrator dispatch mechanics | `orch-routing` skill |
 | Implementation quality gates | `orch-implementation` skill |

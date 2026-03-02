@@ -1,0 +1,19 @@
+# `_overview.md` Full Frontmatter Example
+
+```yaml
+---
+name: marketplace
+type: system
+magnitude: Heavy
+status: WIP
+origin: exploration/meeting_2026_02_01_marketplace.md
+start_at: 2026-02-03
+last_updated: 2026-02-12
+depends_on:
+  - SP01_core_shop
+blocks:
+  - PP19_perf_optimization
+knowledge_gaps:
+  - "Multi-currency settlement edge cases"
+---
+```

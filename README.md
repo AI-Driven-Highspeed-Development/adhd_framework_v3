@@ -640,7 +640,6 @@ Skills provide tested, domain-specific workflows that agents can load on demand:
 | `testing` | Test conventions, folder locations, pytest patterns |
 | `writing-flows` | Flow DSL syntax and agent authoring patterns |
 | `writing-skills` | How to write proper SKILL.md files |
-| `writing-templates` | Template file creation for day-dream artifacts |
 
 ### Prompts
 

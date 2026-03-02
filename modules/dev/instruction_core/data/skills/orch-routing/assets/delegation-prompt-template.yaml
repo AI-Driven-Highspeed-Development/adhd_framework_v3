@@ -1,0 +1,16 @@
+# Delegation Prompt Template
+
+```yaml
+task: "[Specific action to perform]"
+objective: "[The larger goal this task serves]"
+context: |
+  [Why this task is needed]
+  [Prior phase outputs if multi-phase]
+  [Related information the agent needs]
+autonomy_guidance: |
+  Your goal is OBJECTIVE COMPLETION, not just task execution.
+  If completing the objective requires additional work in your domain, do it.
+  Report all actions taken, including any discovered work.
+success_criteria: "[What constitutes completion]"
+output_format: "summary"
+```

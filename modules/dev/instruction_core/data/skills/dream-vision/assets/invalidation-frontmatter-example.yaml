@@ -1,0 +1,19 @@
+# Invalidation Protocol — Frontmatter Fields
+
+Written in victim plan's `_overview.md` when a completing plan retroactively compromises assumptions:
+
+```yaml
+invalidated_by: PP08_polyglot_persistence
+invalidation_scope: storage_implementation
+invalidation_date: 2025-09-15
+```
+
+## Rules
+
+| Rule | Detail |
+|------|--------|
+| Only ✅ DONE plans can be invalidated | Cannot invalidate unbuilt work |
+| `invalidation_scope` required | State WHAT is compromised, not just "partially invalidated" |
+| Causing plan reports at closure | Invalidations listed in closure gate |
+| **Parent writes to victim** | Sibling firewall compliance — causing agent NEVER writes to victim plan |
+| Status variant | `✅ [DONE:invalidated-by:XXnn]` for scannable tree-level visibility |

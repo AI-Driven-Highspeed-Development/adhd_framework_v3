@@ -1,0 +1,23 @@
+# Module Spec Frontmatter
+
+Module spec frontmatter for `modules/{module_name}.md`:
+
+```yaml
+---
+module: checkout
+last_updated: 2025-09-15
+modified_by_plans:
+  - PP02_checkout_redesign
+knowledge_gaps:
+  - "Payment retry logic under partial failure"
+---
+```
+
+## Module Index Gate
+
+The Module Index (table in root `_overview.md`) maps every module to its origin plan. A phase introducing a new module CANNOT mark ✅ DONE until:
+
+1. **Table row exists** — module has a row in root Module Index
+2. **Spec file exists** — `.md` spec file on disk at the referenced path
+
+Both conditions are hard gates. Missing either = plan cannot close.

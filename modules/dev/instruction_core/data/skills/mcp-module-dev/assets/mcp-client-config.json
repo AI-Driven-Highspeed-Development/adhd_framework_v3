@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "my-server": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "python", "-m", "my_module.my_module_mcp"],
+      "cwd": "./"
+    }
+  }
+}

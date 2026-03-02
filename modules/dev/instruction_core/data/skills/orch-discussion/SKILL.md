@@ -49,18 +49,8 @@ Round N (max 3):
 - State: "Starting discussion on: [topic] with [participants]"
 
 ### 2. PROPOSE Phase
-For each participant (sequentially):
-```yaml
-task: "State your position on: [topic]"
-objective: "[The larger goal this discussion serves]"
-context: "[Prior round summary if any]"
-autonomy_guidance: |
-  Your goal is OBJECTIVE COMPLETION, not just answering the question.
-  If your expertise reveals related considerations, include them.
-  Report all insights, including any discovered concerns.
-success_criteria: "Provide 1-3 sentence position statement"
-output_format: "summary"
-```
+For each participant (sequentially), delegate position statement.
+→ See [delegation-blocks.md](assets/delegation-blocks.md) for PROPOSE delegation YAML
 
 Collect all positions. Identify agreements and divergences.
 Report summary of positions to user with table.
@@ -70,13 +60,8 @@ Report summary of positions to user with table.
 - Highlight divergent views for next phase.
 
 ### 3. CHALLENGE Phase
-For each participant (sequentially):
-```yaml
-task: "Respond to this divergent position: [most opposing view]"
-context: "[All positions from PROPOSE phase]"
-success_criteria: "Address the specific divergence with reasoning"
-output_format: "summary"
-```
+For each participant (sequentially), delegate response to divergent position.
+→ See [delegation-blocks.md](assets/delegation-blocks.md) for CHALLENGE delegation YAML
 
 Collect all challenges. Note any shifts in position.
 Report summary of challenges to user with table.
@@ -91,13 +76,8 @@ HyperOrch drafts synthesis:
 - Draft consensus statement
 - **If outcome diverges from human's original proposal**: Include an Intent Interpretation block (see Output Format) in the synthesis draft. State what the agents believe the human intended, why they diverged, and list assumptions for the human to validate. This is mandatory — the human cannot catch agent misunderstandings without it.
 
-Present to all participants:
-```yaml
-task: "Do you ACCEPT or REJECT this synthesis: [synthesis]"
-context: "[Key points from prior phases]"
-success_criteria: "Reply with ACCEPT or REJECT with brief reason"
-output_format: "summary"
-```
+Present to all participants for ACCEPT/REJECT vote.
+→ See [delegation-blocks.md](assets/delegation-blocks.md) for SYNTHESIZE delegation YAML
 
 ### 5. Evaluate Exit Condition
 - **All ACCEPT**: Exit with consensus
@@ -107,85 +87,18 @@ output_format: "summary"
 ## Output Format
 
 ### Consensus Reached
-```markdown
-## Discussion Summary
-
-**Topic:** [topic]
-**Participants:** [list]
-**Rounds:** [N]
-**Status:** Consensus ✅
-
-### Final Synthesis
-[Agreed position]
-
-### Key Points
-| Agent | Final Position | Vote |
-|-------|----------------|------|
-| [name] | [position] | ACCEPT |
-
-### Intent Interpretation (include when outcome ≠ human's original proposal)
-**Your stated goal (as we understood it):** [agents' interpretation of the human's intent]
-**Why we diverged:** [specific technical reasoning for rejecting/modifying the proposal]
-**Assumptions we made:**
-- [assumption — e.g., "We assumed production-grade security is required"]
-- [assumption — e.g., "We assumed no existing auth library is in use"]
-**If we misread your intent:** [what the human should clarify to realign]
-```
+Template for presenting discussion consensus with key points and intent interpretation:
+→ See [consensus-output-template.md](assets/consensus-output-template.md)
 
 ### Impasse
-```markdown
-## Discussion Summary
-
-**Topic:** [topic]
-**Participants:** [list]
-**Rounds:** 3 (max reached)
-**Status:** Impasse ⚠️
-
-### Divergent Positions
-| Agent | Final Position |
-|-------|----------------|
-| [name] | [position] |
-
-### Intent Interpretation (include when outcome ≠ human's original proposal)
-**Your stated goal (as we understood it):** [agents' interpretation of the human's intent]
-**Why we diverged:** [specific technical reasoning for rejecting/modifying the proposal]
-**Assumptions we made:**
-- [assumption — e.g., "We assumed enterprise-scale when you may be prototyping"]
-- [assumption — e.g., "We assumed no prior art exists for this problem"]
-**If we misread your intent:** [what the human should clarify to realign]
-
-### Recommendation
-[HyperOrch's suggested path forward]
-```
+Template for presenting discussion impasse when max rounds (3) reached without consensus:
+→ See [impasse-output-template.md](assets/impasse-output-template.md)
 
 ## Post-Discussion Actions
 
 ### Discussion Record Creation
-After the discussion workflow concludes (consensus OR impasse), HyperOrch MUST:
-
-1. **Handoff to HyperDream**: Call HyperDream to create a discussion record file
-2. **Location**: Records are stored in `.agent_plan/discussion/`
-3. **Content**: Pass the complete discussion summary (topic, participants, rounds, outcome, key positions) to HyperDream
-4. **Naming**: HyperDream determines the appropriate filename based on topic and date
-
-```yaml
-handoff_template:
-  to: HyperDream
-  task: "Create a discussion record for the completed discussion"
-  context: "[Full discussion summary from Output Format section]"
-  output_path: ".agent_plan/discussion/"
-  filename_pattern: "[YYYY-MM-DD]_[hh:mm]_[topic_slug]_discussion_record.md"
-  success_criteria: "Discussion record file created with all key information preserved"
-  header_metadata:
-    topic: "[topic]"
-    datetime: "[YYYY-MM-DD hh:mm]"
-    participants: "[list]"
-    rounds: "[N]"
-    status: "[Consensus or Impasse]"
-  header_format: "markdown table"
-```
-
-> **Note**: HyperDream is responsible for writing/creating the actual file. HyperOrch only initiates the handoff.
+After the discussion workflow concludes (consensus OR impasse), HyperOrch MUST hand off to HyperDream to create a discussion record.
+→ See [delegation-blocks.md](assets/delegation-blocks.md) for the post-discussion handoff YAML
 
 ## Critical Rules
 - **Max 3 Rounds**: Hard cap. No exceptions.
