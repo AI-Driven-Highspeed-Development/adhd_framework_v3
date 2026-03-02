@@ -42,16 +42,17 @@ When multiple intents could match, use this priority order:
 
 ## Plan Type Detection
 
-Determine SP vs PP BEFORE routing to a create skill.
+Determine SP vs PP BEFORE routing to a create skill. Plan type is about the NATURE of the work, not scope size.
 
 | Signal | Route To |
 |--------|----------|
-| Single deliverable, <3 tasks | SP (System Plan) |
-| Multi-phase, parallel work, >3 tasks | PP (Procedure Plan) |
-| Building/extending software architecture | SP |
-| Workflow, migration, operational process | PP |
+| Building/extending software architecture | SP (System Plan) |
+| New modules, system design, feature systems | SP |
+| Workflow, migration, operational process | PP (Procedure Plan) |
 | Triggered by existing plan AND modifies existing code | PP (tiebreaker) |
 | Unclear from context | **Ask the user** |
+
+> **Note:** Task count and scope size determine TIER (One-Page vs Blueprint), not plan TYPE (SP vs PP). A small architecture change is still an SP; a large migration is still a PP.
 
 ### Quick Decision
 
@@ -128,7 +129,7 @@ All DREAM document templates are bundled with this skill in `assets/`.
 
 | Template | Purpose |
 |----------|---------|
-| `simple.template.md` | Simple tier — single-file plan |
+| `simple.template.md` | One-Page (OP) tier — single-file plan |
 | `blueprint/overview.template.md` | Blueprint `_overview.md` scaffold |
 | `blueprint/01_executive_summary.template.md` | SP executive summary |
 | `blueprint/01_summary.template.md` | PP merged summary |

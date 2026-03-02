@@ -1,6 +1,6 @@
 ---
 name: dream-vision
-description: "Vision and planning workflows — creating blueprint plans, architecture assets, and day-dream documents for the ADHD Framework. Covers tier selection (Simple vs Blueprint), plan types (SP/PP), document authoring rules, Story/Spec pattern, status syntax, dependency tracking, invalidation protocol, knowledge gaps, Module Index gate, State Deltas, phasing rules, natural verification, and validation checklists. Use this skill when creating visions, roadmaps, blueprints, or planning new features."
+description: "Vision and planning workflows — creating blueprint plans, architecture assets, and day-dream documents for the ADHD Framework. Covers tier selection (One-Page vs Blueprint), plan types (SP/PP), document authoring rules, Story/Spec pattern, status syntax, dependency tracking, invalidation protocol, knowledge gaps, Module Index gate, State Deltas, phasing rules, natural verification, and validation checklists. Use this skill when creating visions, roadmaps, blueprints, or planning new features."
 ---
 
 # Day Dream
@@ -28,7 +28,7 @@ For step-by-step operations (creating, updating, closing, fixing plans), use the
 
 | Tier | Use When | Template |
 |------|----------|----------|
-| **Simple** | ≤2 features, single module, no external APIs | `simple.template.md` |
+| **One-Page (OP)** | ≤2 features, single module, no external APIs | `simple.template.md` |
 | **Blueprint** | ≥3 features OR ≥2 cross-module deps OR external APIs | `blueprint/` folder |
 
 Human override can force tier in either direction.
@@ -39,8 +39,8 @@ After selecting a tier, assess **magnitude** (Trivial → Epic) to determine pla
 
 | Tier + Magnitude | Route |
 |------------------|-------|
-| Simple + Trivial/Light | Execute directly — no planning document needed |
-| Simple + Standard | Single plan file, execute in-session |
+| One-Page + Trivial/Light | Execute directly — no planning document needed |
+| One-Page + Standard | Single plan file, execute in-session |
 | Blueprint + Light/Standard | Blueprint docs, execute sequentially |
 | Blueprint + Heavy | Blueprint docs, decompose into plan/task tree |
 | Blueprint + Epic | Blueprint docs, mandatory decomposition, parallel agents |
@@ -53,7 +53,7 @@ After selecting a tier, assess **magnitude** (Trivial → Epic) to determine pla
 
 All templates bundled with the `dream-routing` skill at: `dream-routing/assets/`
 
-Simple tier, Blueprint tier, and Asset template tables with purposes and line limits:
+One-Page tier, Blueprint tier, and Asset template tables with purposes and line limits:
 → See [template-catalog.md](assets/template-catalog.md)
 
 ---
@@ -258,7 +258,7 @@ Use `dream_mcp` tools to ground vision work in the current plan landscape:
 | Edit frozen documents | Create new version or update implementation |
 | >3 active explorations | Synthesize or abandon oldest |
 | Skip verification sections | Always include manual verification |
-| Simple tier for complex projects | Upgrade to Blueprint when threshold met |
+| One-Page tier for complex projects | Upgrade to Blueprint when threshold met |
 | Orphan assets | Always link to parent feature |
 | Human-time for AI tasks | Default to AI-agent time |
 | `try/catch` fallbacks for old code | Delete old code or folder-separate v1/v2 |

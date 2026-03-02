@@ -39,7 +39,7 @@ DREAM (Decomposition Rules for Engineering Atomic Modules) is a protocol for bre
 | **Status markers** | ⏳`[TODO]` · 🔄`[WIP]` · ✅`[DONE]` · ✅`[DONE:invalidated-by:XXnn]` · 🚧`[BLOCKED:reason]` · 🚫`[CUT]` |
 | **Difficulty labels** | `[KNOWN]` · `[EXPERIMENTAL]` · `[RESEARCH]` (never in P0) |
 | **Magnitudes** | Trivial(1) · Light(2) · Standard(3) · Heavy(5) · Epic(8) — slot MAXIMUMS |
-| **Tiers** | Simple (≤2 features, no APIs) · Blueprint (≥3 features OR cross-module OR external APIs) |
+| **Tiers** | One-Page / OP (≤2 features, no APIs) · Blueprint (≥3 features OR cross-module OR external APIs) |
 | **Plan types** | System Plan (architecture + features) · Procedure Plan (workflow + steps) |
 | **Plan folder prefix** | `SP01_` (System Plan) · `PP01_` (Procedure Plan) — creation-order number, IMMUTABLE |
 | **Sibling firewall** | Siblings NEVER read/write each other's content. Coordinate through parent only |
@@ -110,7 +110,7 @@ Each slot ≈ 1 hour AI-agent time. Values are MAXIMUMS.
 
 | Tier | Use When | Template |
 |------|----------|----------|
-| **Simple** | ≤2 features, single module, no external APIs | `simple.template.md` |
+| **One-Page (OP)** | ≤2 features, single module, no external APIs | `simple.template.md` |
 | **Blueprint** | ≥3 features OR ≥2 cross-module deps OR external APIs | `blueprint/` folder |
 
 Human override can force tier in either direction.
@@ -128,7 +128,7 @@ Human override can force tier in either direction.
 
 ```
 ASSESS     → Classify magnitude
-SELECT     → Pick tier (Simple/Blueprint) and type (SP/PP)
+SELECT     → Pick tier (One-Page/Blueprint) and type (SP/PP)
 AUTHOR     → Create plan artifacts per tier rules
 EXECUTE    → MANAGER decomposes, WORKER implements
 CLOSE      → Satisfy gate conditions (§4, §3), archive to _completed/
@@ -1179,7 +1179,7 @@ All items needed in skills, templates, agents, and modules to bring the ecosyste
 
 All templates at: `.agent_plan/day_dream/_templates/`
 
-### Simple Tier
+### One-Page (OP) Tier
 
 | Template | Purpose | Line Limit |
 |----------|---------|------------|
@@ -1232,7 +1232,7 @@ Located at `_templates/examples/`:
 | Example | Demonstrates |
 |---------|-------------|
 | `blueprint_example/` | Complete blueprint folder structure |
-| `simple_example.md` | Completed simple-tier document |
+| `simple_example.md` | Completed One-Page tier document |
 | `deep_dive_*.example.md` | Algorithm proof, API contract, architecture, state machine |
 | `free_zone_*.example.md` | Assumption graveyard, metaphor map, philosophical tensions |
 

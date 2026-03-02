@@ -196,7 +196,7 @@ Before decomposition, assess the current plan landscape:
 |-------|-------|
 | Document authoring (templates, Story/Spec) | `dream-vision` skill |
 | Estimation defaults (AI-agent time, human_only) | `dream-vision` skill |
-| Tier selection (Simple vs Blueprint) | `dream-vision` skill |
+| Tier selection (One-Page vs Blueprint) | `dream-vision` skill |
 | Template catalog and format | `dream-routing` skill (assets/) |
 | Orchestrator dispatch mechanics | `orch-routing` skill |
 | Implementation quality gates | `orch-implementation` skill |

@@ -2,7 +2,7 @@
 
 All templates at: `.github/skills/dream-routing/assets/` (source: `modules/dev/instruction_core/data/skills/dream-routing/assets/`)
 
-## Simple Tier
+## One-Page (OP) Tier
 
 | Template | Purpose | Line Limit |
 |----------|---------|------------|

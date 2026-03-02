@@ -99,7 +99,7 @@ This is how blueprint projects will be structured after the upgrade. The key cha
 - **File = task** (leaf, executable)
 - **`_overview.md` mandatory** at every plan directory
 
-### Simple Tier (≤2 features, no decomposition)
+### One-Page Tier (≤2 features, no decomposition)
 
 ```text
 .agent_plan/day_dream/

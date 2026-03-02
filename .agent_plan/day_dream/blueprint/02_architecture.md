@@ -32,7 +32,7 @@ After DREAM Upgrade:
 ┌──────────────────────────────────────────────────────────────────┐
 │  dream-planning skill (protocol)                                 │
 │       │                                                          │
-│       ├── Magnitude check → Simple tier OR Blueprint tier        │
+│       ├── Magnitude check → One-Page tier OR Blueprint tier        │
 │       ├── Decomposition rules (plan/task hierarchy)              │
 │       └── Context isolation (sibling firewall)                   │
 │                                                                  │
@@ -66,7 +66,7 @@ flowchart TB
     subgraph "Protocol Layer (NEW)"
         DPS[dream-planning skill]
         DPS --> MAG{Magnitude Check}
-        MAG -->|"Trivial/Light"| SIMPLE[Simple Tier<br/>Single File]
+        MAG -->|"Trivial/Light"| ONEPAGE[One-Page Tier<br/>Single File]
         MAG -->|"Standard+"| BLUEPRINT[Blueprint Tier<br/>Full Decomposition]
     end
 

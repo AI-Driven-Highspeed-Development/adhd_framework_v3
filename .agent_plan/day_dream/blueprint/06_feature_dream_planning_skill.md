@@ -124,7 +124,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     REQ["Planning<br/>Request"] --> MAG["Magnitude<br/>Assessment"]
-    MAG -->|"Trivial/Light"| SIMPLE["Simple Tier<br/>(single file)"]
+    MAG -->|"Trivial/Light"| ONEPAGE["One-Page Tier<br/>(single file)"]
     MAG -->|"Standard+"| DECOMP["Decompose"]
     DECOMP --> TREE["Plan/Task<br/>Tree"]
     TREE --> ISO["Apply<br/>Isolation"]
@@ -204,7 +204,7 @@ Hierarchy is expressed through the filesystem, not level numbers:
 - **_overview.md**: mandatory navigator at every plan directory
 - **plan.yaml** (or inline YAML frontmatter in .md): metadata for plans
 - **.task.md**: specification for leaf tasks
-- Single file for Simple tier; folder with `_overview.md` for Blueprint tier
+- Single file for One-Page tier; folder with `_overview.md` for Blueprint tier
 
 ### 8. Anti-Patterns
 

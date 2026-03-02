@@ -61,7 +61,7 @@ If ANY gate is not met → STOP. Resolve the gap before proceeding.
 
 ### Step 1: Verify ALL Phase Exit Gates
 
-Open `80_implementation.md` (for PP plans) or the plan file itself (for SP plans). For EACH phase, confirm every exit gate checkbox is checked:
+Open `80_implementation.md` (for Blueprint-tier folder plans) or the plan file itself (for One-Page-tier single-file plans). For EACH phase, confirm every exit gate checkbox is checked:
 
 ```markdown
 ### Exit Gate
@@ -145,21 +145,21 @@ Draft a State Delta entry documenting what this plan changed in the codebase. Th
 
 ### Step 5: Update Plan Frontmatter
 
-#### For PP Plans (`_overview.md`)
+#### For Blueprint Plans (`_overview.md`)
 
 ```yaml
 status: DONE
 last_updated: YYYY-MM-DD    # Today's date
 ```
 
-#### For SP Plans (plan file)
+#### For One-Page Plans (plan file)
 
 ```yaml
 status: DONE
 last_updated: YYYY-MM-DD
 ```
 
-#### For `80_implementation.md` (PP Plans)
+#### For `80_implementation.md` (Blueprint Plans)
 
 ```yaml
 status: DONE

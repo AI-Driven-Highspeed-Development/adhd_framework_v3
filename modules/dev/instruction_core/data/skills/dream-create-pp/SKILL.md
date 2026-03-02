@@ -15,7 +15,7 @@ Step-by-step SOP for creating a PP (Procedure Plan) blueprint — the multi-phas
 - Triggered by existing plan AND primary deliverable modifies existing code (PP tiebreaker)
 - Scope qualifies for **Blueprint tier**: ≥3 features OR ≥2 cross-module deps OR external APIs
 
-**Not a PP?** If ≤2 tasks with single deliverable and straightforward scope → use `dream-create-sp` (System Plan). If intent is exploratory with no artifact → use `dream-vision`.
+**Not a PP?** If building/extending software architecture with separate exec summary + architecture docs → use `dream-create-sp` (System Plan). If intent is exploratory with no artifact → use `dream-vision`.
 
 ---
 
