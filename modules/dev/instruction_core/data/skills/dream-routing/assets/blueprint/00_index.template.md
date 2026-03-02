@@ -1,9 +1,3 @@
-<!-- ═══════════════════════════════════════════════════════════════════
-     ADHD-MANAGED — DO NOT EDIT DIRECTLY
-     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/00_index.template.md
-     Refresh: adhd r -f
-═══════════════════════════════════════════════════════════════════ -->
-
 # 🎯 {Project Name}: Project Blueprint
 
 > *{Vision statement — one emotional sentence capturing the project's soul}*

@@ -1,9 +1,3 @@
-<!-- ═══════════════════════════════════════════════════════════════════
-     ADHD-MANAGED — DO NOT EDIT DIRECTLY
-     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/01_executive_summary.template.md
-     Refresh: adhd r -f
-═══════════════════════════════════════════════════════════════════ -->
-
 # 01 - Executive Summary
 
 > Part of [{Project Name} Blueprint](./00_index.md)

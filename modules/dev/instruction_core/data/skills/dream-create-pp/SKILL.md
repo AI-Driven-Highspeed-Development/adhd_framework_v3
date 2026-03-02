@@ -40,7 +40,9 @@ ls -d .agent_plan/day_dream/SP* .agent_plan/day_dream/PP* 2>/dev/null | sort
 
 Next plan number = `max_existing + 1`. Numbers are **immutable creation-order** — gaps allowed, reuse forbidden.
 
-**Example:** If SP01, PP02, PP03 exist → next is `XX04` regardless of type.
+**Example:** If `SP{NN}`, `PP{NN}`, `PP{NN}` exist → next is `XX{NN+1}` regardless of type.
+
+**Naming conflict check:** Call `dream_tree` to view the annotated plan hierarchy and confirm no naming conflicts with existing plans.
 
 ---
 
@@ -53,7 +55,7 @@ PP{NN}_{snake_case_name}/
 - `{NN}` — zero-padded two digits (e.g., `04`)
 - `{snake_case_name}` — descriptive, lowercase with underscores
 
-**Example:** `PP04_api_migration/`
+**Example:** `PP{NN}_{name}/`
 
 ---
 
@@ -66,7 +68,7 @@ The mandatory plan navigator. Every agent entering the directory reads this firs
 ```yaml
 ---
 # ── REQUIRED ──
-name: {snake_case_name}         # Matches folder suffix (e.g., api_migration)
+name: {snake_case_name}         # Matches folder suffix (e.g., {name})
 type: procedure                 # Always "procedure" for PP
 magnitude: Standard             # Trivial | Light | Standard | Heavy | Epic
 status: TODO                    # TODO | WIP | DONE | BLOCKED:reason | CUT
@@ -75,9 +77,9 @@ last_updated: YYYY-MM-DD       # Today's date
 
 # ── RECOMMENDED (include when applicable) ──
 depends_on:                     # Plans this structurally requires
-  - PP02_context_injection_restructure
+  - PP{NN}_{dependency}
 blocks:                         # Plans that wait on this
-  - SP05_next_feature
+  - SP{NN}_{blocked_plan}
 knowledge_gaps:                 # Missing expertise or unvalidated assumptions
   - "Description of unknown"
 
@@ -289,7 +291,9 @@ Add to `## Reading Order` at the appropriate position with a brief context note.
 
 ### Step 7: Validate
 
-Run through the full Validation Checklist below.
+Call `dream_validate` targeting the new PP folder to verify frontmatter, status syntax, and structural compliance. Fix any FAIL issues before proceeding.
+
+Also run through the full Validation Checklist below.
 
 ---
 

@@ -12,12 +12,6 @@ last_updated: YYYY-MM-DD    # Last modification date
 # blocks: []                # Plans that wait for this - uncomment if needed
 # knowledge_gaps: []        # Missing expertise - uncomment if needed
 ---
-<!-- ═══════════════════════════════════════════════════════════════════
-     ADHD-MANAGED — DO NOT EDIT DIRECTLY
-     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/overview.template.md
-     Refresh: adhd r -f
-═══════════════════════════════════════════════════════════════════ -->
-
 
 <!--
 ╔═══════════════════════════════════════════════════════════════════════════════╗

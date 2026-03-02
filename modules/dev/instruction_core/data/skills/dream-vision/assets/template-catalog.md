@@ -1,6 +1,6 @@
 # Template Catalog
 
-All templates at: `.agent_plan/day_dream/_templates/`
+All templates at: `.github/skills/dream-routing/assets/` (source: `modules/dev/instruction_core/data/skills/dream-routing/assets/`)
 
 ## Simple Tier
 

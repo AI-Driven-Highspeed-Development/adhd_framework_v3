@@ -161,6 +161,18 @@ MANAGER (DECOMPOSE → DELEGATE → INTEGRATE → REPORT), WORKER (VALIDATE → 
 
 ---
 
+## MCP Tool Integration
+
+Before decomposition, assess the current plan landscape:
+
+| When | Tool | Purpose |
+|------|------|---------|
+| Before decomposition | `dream_status` | Sprint dashboard — understand active, blocked, and pending plans |
+| Before decomposition | `dream_tree` | Annotated hierarchy — see existing plan structure and numbering |
+| Before modifying plans with dependents | `dream_impact` | DAG walk — identify direct + transitive dependents |
+
+---
+
 ## Anti-Patterns
 
 | Don't | Do Instead |

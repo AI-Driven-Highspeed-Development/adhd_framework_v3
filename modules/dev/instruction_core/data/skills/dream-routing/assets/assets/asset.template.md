@@ -5,12 +5,6 @@ related_feature: "NN_feature_{id}.md"
 created: YYYY-MM-DD
 status: draft | review | approved | frozen
 ---
-<!-- ═══════════════════════════════════════════════════════════════════
-     ADHD-MANAGED — DO NOT EDIT DIRECTLY
-     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/assets/asset.template.md
-     Refresh: adhd r -f
-═══════════════════════════════════════════════════════════════════ -->
-
 
 <!-- 
 TEMPLATE USAGE: This template includes extensive guidance comments.

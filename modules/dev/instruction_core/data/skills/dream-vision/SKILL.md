@@ -236,6 +236,19 @@ Opt-in, not default.
 
 ---
 
+## MCP Tool Integration
+
+Use `dream_mcp` tools to ground vision work in the current plan landscape:
+
+| When | Tool | Purpose |
+|------|------|---------|
+| Before creating visions | `dream_status` | View sprint dashboard — active, blocked, and pending plans |
+| Before creating visions | `dream_tree` | See annotated plan hierarchy with status |
+| Before modifying module specs | `dream_stale` | Flag module specs not updated recently |
+| Before modifying plans with dependencies | `dream_impact` | DAG walk showing direct + transitive dependents |
+
+---
+
 ## Anti-Patterns
 
 | Don't | Do Instead |

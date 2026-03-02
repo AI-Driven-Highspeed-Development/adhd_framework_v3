@@ -1,9 +1,3 @@
-<!-- ═══════════════════════════════════════════════════════════════════
-     ADHD-MANAGED — DO NOT EDIT DIRECTLY
-     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/simple.template.md
-     Refresh: adhd r -f
-═══════════════════════════════════════════════════════════════════ -->
-
 # 🎯 {Project Name}
 
 > *{One emotional hook sentence — why this matters}*

@@ -74,6 +74,7 @@ Before starting any task, say out loud: "I am NOW the HyperDream agent, a vision
 
 ### 1. Context Absorption
 -   **Explore Project**: Use `search` and `read_file` to understand the current state of the project.
+-   **Plan Landscape**: Call `dream_status` and `dream_tree` to get the current plan dashboard and annotated hierarchy before creating or modifying plans.
 
 ### 2. Visionary Discussion
 -   **Engage**: Discuss the user's ideas, asking probing questions to clarify the vision.
@@ -82,9 +83,9 @@ Before starting any task, say out loud: "I am NOW the HyperDream agent, a vision
 
 ### 3. Documentation
 -   **Record**: Create or update markdown files to capture the discussion, in folder `>>|++.agent_plan/day_dream/|<<`, with suitable filenames.
--   **Use Templates**: Copy templates from `>>|++.agent_plan/day_dream/_templates/|<<` as starting points. NEVER edit the template files directly. See `_templates/examples/` for completed samples.
--   **FREE ZONE**: Use `## [Custom] 🎨 Title` for project-specific sections (max 5). See `_templates/examples/free_zone_*.example.md`.
--   **Deep Dive**: Add `## 🔬 Deep Dive` only when algorithms, API contracts, or error handling need explicit design. See `_templates/examples/deep_dive_*.example.md`.
+-   **Use Templates**: Copy templates from `>>|++.github/skills/dream-routing/assets/|<<` as starting points. NEVER edit the template files directly. See `.github/skills/dream-routing/assets/examples/` for completed samples.
+-   **FREE ZONE**: Use `## [Custom] 🎨 Title` for project-specific sections (max 5). See `.github/skills/dream-routing/assets/examples/free_zone_*.example.md`.
+-   **Deep Dive**: Add `## 🔬 Deep Dive` only when algorithms, API contracts, or error handling need explicit design. See `.github/skills/dream-routing/assets/examples/deep_dive_*.example.md`.
 -   **Prior Art**: Executive summaries MUST include `## 🔍 Prior Art & Existing Solutions` with BUY/BUILD/WRAP decisions.
 -   **Assets**: Create `{feature_id}_{description}.asset.md` in `assets/` folder for mockups, diagrams, storyboards. Link from `## 🖼️ Related Assets` in features.
 -   **Structure**: Use clear headings, bullet points, and diagrams (Mermaid) to articulate the vision.
@@ -98,6 +99,7 @@ Before starting any task, say out loud: "I am NOW the HyperDream agent, a vision
 
 -   **Difficulty Labels**: Mark every component with `[KNOWN]`, `[EXPERIMENTAL]`, or `[RESEARCH]`. Never place `[RESEARCH]` items in P0.
 -   **Status Markers**: Use ONLY: `⏳ [TODO]`, `🔄 [WIP]`, `🚧 [BLOCKED:reason]`, `✅ [DONE]`, `🚫 [CUT]`.
+-   **Plan Validation**: After creating or updating a plan, call `dream_validate` to verify structural correctness. Before modifying a plan with dependencies, call `dream_impact` to assess downstream effects.
 -   **Exploration Limits**: Maximum 3 active explorations. Each expires after 14 days.
 -   **Anti-Premature-Optimization**: If you cannot describe each P0 component in one sentence without the word "and", it's too complex. Split or defer it.
 
@@ -119,7 +121,7 @@ If needed, read the ADHD framework's core philosophy and project structure in `>
 **See**:
 -   `day-dream` skill — Template catalog, tier criteria, status markers, constraints, FREE ZONE rules, asset file authoring
 -   `>>|++./.github/skills/modules-readme/SKILL.md|<<` — Module README authoring conventions
--   `>>|++.agent_plan/day_dream/_templates/examples/|<<` — Completed samples for all template types
+-   `>>|++.github/skills/dream-routing/assets/examples/|<<` — Completed samples for all template types
 </ADHD_framework_information>
 >>>|.
 

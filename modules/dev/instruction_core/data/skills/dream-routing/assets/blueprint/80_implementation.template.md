@@ -6,12 +6,6 @@ status: TODO
 start_date: "{YYYY-MM-DD}"
 last_updated: "{YYYY-MM-DD}"
 ---
-<!-- ═══════════════════════════════════════════════════════════════════
-     ADHD-MANAGED — DO NOT EDIT DIRECTLY
-     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/80_implementation.template.md
-     Refresh: adhd r -f
-═══════════════════════════════════════════════════════════════════ -->
-
 
 # 80 - Implementation Plan
 

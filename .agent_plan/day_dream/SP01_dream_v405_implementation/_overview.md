@@ -29,9 +29,9 @@ Bring the ADHD Framework ecosystem — skills, templates, agents, instructions, 
 | p01_skill_updates/ | Plan | ✅ [DONE] | Rewrite dream-planning, day-dream, writing-templates skills to v4.05 |
 | p02_agent_instruction_updates/ | Plan | ✅ [DONE] | Fix 27+ stale path references across agents, flows, synced skills, docs |
 | p03_dream_mcp_skeleton/ | Plan | ✅ [DONE] | Create `dream_mcp` module skeleton with command specs |
-| p04_parsing_and_simple_commands/ | Plan | ⏳ [TODO] | Shared parsing infra + `dream tree` + `dream stale` |
-| p05_status_and_validate/ | Plan | ⏳ [TODO] | `dream status` dashboard + `dream validate` engine |
-| p06_advanced_workflows/ | Plan | ⏳ [TODO] | `dream impact`, `history`, `emergency`, `archive` |
+| p04_parsing_and_simple_commands/ | Plan | ✅ [DONE] | Shared parsing infra + `dream tree` + `dream stale` |
+| p05_status_and_validate/ | Plan | ✅ [DONE] | `dream status` dashboard + `dream validate` engine |
+| p06_advanced_workflows/ | Plan | ✅ [DONE] | `dream impact`, `history`, `emergency`, `archive` |
 | p07_intelligence_layer/ | Plan | ⏳ [TODO] | Hypothetical impact + proactive gap detection |
 | modules/ | — | — | ADHD module specs (dream_mcp, instruction_core) |
 

@@ -39,7 +39,9 @@ ls .agent_plan/day_dream/SP* .agent_plan/day_dream/PP* 2>/dev/null | sort
 
 Next plan number = `max_existing + 1`. Numbers are **immutable creation-order** — gaps allowed, reuse forbidden.
 
-**Example:** If SP01, PP02, PP03 exist → next is `XX04`.
+**Example:** If `SP{NN}`, `PP{NN}`, `PP{NN}` exist → next is `XX{NN+1}`.
+
+**Naming conflict check:** Call `dream_tree` to view the annotated plan hierarchy and confirm no naming conflicts with existing plans.
 
 ---
 
@@ -54,7 +56,7 @@ SP{NN}_{snake_case_name}.md
 - `{NN}` — zero-padded two digits (e.g., `04`)
 - `{snake_case_name}` — descriptive, lowercase with underscores
 
-**Example:** `SP04_update_cli_help.md`
+**Example:** `SP{NN}_{name}.md`
 
 ---
 
@@ -64,7 +66,7 @@ SP{NN}_{snake_case_name}.md
 
 ```yaml
 ---
-name: {snake_case_name}         # Matches file suffix (e.g., update_cli_help)
+name: {snake_case_name}         # Matches file suffix (e.g., {name})
 type: simple                    # Always "simple" for SP
 magnitude: Light                # Trivial | Light | Standard (max for SP)
 status: TODO                    # TODO | WIP | DONE | BLOCKED:reason | CUT
@@ -176,7 +178,9 @@ SP plans do NOT need a Current Sprint entry — they are simple enough to track 
 
 ### Step 5: Validate
 
-Run through the full Validation Checklist below.
+Call `dream_validate` targeting the new SP file to verify frontmatter, status syntax, and structural compliance. Fix any FAIL issues before proceeding.
+
+Also run through the full Validation Checklist below.
 
 ---
 

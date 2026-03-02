@@ -71,9 +71,10 @@ Before editing any `.md` file (agents, instructions, prompts, skills, templates,
 - `.github/agents/` → source in `modules/dev/instruction_core/data/flows/agents/` (compiled from `.flow`)
 - `.github/instructions/` → source in `modules/dev/instruction_core/data/instructions/`
 - `.github/skills/` → source in `modules/dev/instruction_core/data/skills/`
-- `.agent_plan/day_dream/_templates/` → source in `modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/`
 
 After editing source files, run `adhd r -f` to sync changes to clones.
+
+**Note:** DREAM templates live in `.github/skills/dream-routing/assets/` (source: `modules/dev/instruction_core/data/skills/dream-routing/assets/`).
 ## De-duplication Guidelines
 
 When the same constraint appears in both `<stopping_rules>` and `<critical_rules>`:

@@ -58,14 +58,14 @@ def dream_validate(plan: str | None = None) -> str:
     ...
 ```
 
-### P1 — Extended Tools (Spec Only)
+### P1 — Extended Tools (Implemented)
 
 | Command | Description |
 |---------|-------------|
-| `dream_impact` | Analyze impact of changes on dependent plans |
-| `dream_history` | Show history of plan state changes |
-| `dream_emergency` | List/manage emergency escalation plans |
-| `dream_archive` | Archive completed or abandoned plans |
+| `dream_impact` | BFS-based DAG walk showing transitive dependents + affected modules |
+| `dream_history` | Module-indexed change history from State Delta entries |
+| `dream_emergency` | Declare emergency priority on a plan (atomic write-then-rename) |
+| `dream_archive` | Move DONE/CUT plans to `_completed/YYYY-QN/` |
 
 ### P2 — Aspirational Features
 
@@ -79,14 +79,15 @@ def dream_validate(plan: str | None = None) -> str:
 
 | Priority | Commands | Status |
 |----------|----------|--------|
-| **P0** | `status`, `tree`, `stale`, `validate` | Stub signatures |
-| **P1** | `impact`, `history`, `emergency`, `archive` | Spec only |
+| **P0** | `status`, `tree`, `stale`, `validate` | Implemented |
+| **P1** | `impact`, `history`, `emergency`, `archive` | Implemented |
 | **P2** | `--hypothetical impact`, `gaps --proactive`, watch mode | Aspirational |
 
 ## Notes
 - The server uses `FastMCP` from the `mcp` package with stdio transport.
-- P0 tools have stub implementations that raise `NotImplementedError`.
-- Implementation of actual functionality is tracked as a separate plan.
+- P0 and P1 tools are fully implemented via `dream_controller.py` (business logic) with `dream_mcp.py` as thin MCP wrapper.
+- Supporting modules: `frontmatter_parser.py`, `tree_scanner.py`, `output_formatter.py`.
+- P2 intelligence layer is aspirational and not yet implemented.
 
 ## Requirements & Prerequisites
 - `logger-util` — Logging framework

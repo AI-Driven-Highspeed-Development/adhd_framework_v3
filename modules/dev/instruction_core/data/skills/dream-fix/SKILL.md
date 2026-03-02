@@ -23,7 +23,7 @@ Step-by-step SOPs for repairing broken DREAM plan documents — frontmatter issu
 ## Prerequisites
 
 - Target plan identified — know which plan and which document has errors
-- Know what is broken — either from `dream validate` output, manual inspection, or error report
+- Know what is broken — call `dream_validate` to identify issues, or use manual inspection / error reports
 - Plan exists in `.agent_plan/day_dream/` (or `_archive/` / `_completed/`)
 
 ---
@@ -120,7 +120,7 @@ Repair malformed or inconsistent status markers.
 | Wrong emoji for status | Match emoji to status code |
 | `BLOCKED` without reason | Add kebab-case reason: `BLOCKED:awaiting-api` |
 | `BLOCKED` reason with spaces | Convert to kebab-case: `awaiting api` → `awaiting-api` |
-| `invalidated-by` without plan ID | Add plan prefix: `DONE:invalidated-by:PP03` |
+| `invalidated-by` without plan ID | Add plan prefix: `DONE:invalidated-by:{XX}{nn}` |
 | Bare text status (no brackets) | Wrap in brackets: `DONE` → `[DONE]` |
 | Frontmatter uses emoji | Frontmatter `status` is bare enum only: `WIP` not `🔄 [WIP]` |
 
@@ -259,7 +259,7 @@ Repair broken links between plan documents.
 
 ## Validation Checklist
 
-After applying fixes, verify:
+After applying fixes, call `dream_validate` to confirm all issues are resolved. Then verify manually:
 
 ### Frontmatter
 - [ ] All required fields present with valid types

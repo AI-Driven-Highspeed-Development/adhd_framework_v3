@@ -53,7 +53,7 @@ Before starting any task, say out loud: "I am NOW the HyperAgentSmith, the Instr
 - Ask for **Template Purpose** and **Target Artifact Type**.
 - Clarify required sections, optional sections, and line limits.
 - Determine tier (Simple vs Blueprint) and folder placement.
-**For Templates**: Name: `snake_case.template.md`. Place in `.agent_plan/day_dream/_templates/` (or appropriate subfolder).
+**For Templates**: Name: `snake_case.template.md`. Place in `modules/dev/instruction_core/data/skills/dream-routing/assets/` (or appropriate subfolder). Synced to `.github/skills/dream-routing/assets/` on `adhd r -f`.
 
 **For Skills (SKILL.md)**:
 - Ask for **Skill Name**, **Description**, and **"When to Use"** criteria.
@@ -110,7 +110,7 @@ Read format instructions before creating files:
   - Instructions: `modules/dev/instruction_core/data/instructions/`
   - Prompts: `modules/dev/instruction_core/data/prompts/`
   - Skills: `modules/dev/instruction_core/data/skills/<name>/`
-  - Templates: `.agent_plan/day_dream/_templates/`
+  - Templates: `modules/dev/instruction_core/data/skills/dream-routing/assets/`
   - Module instructions: `modules/<layer>/<name>/<name>.instructions.md`
   - NEVER edit `.github/` directly — auto-synced via `adhd r -f`.
 - **Length Guidelines (Agents)**: Target 50–80 lines, accept ≤100, trim if >100, refactor if >120.

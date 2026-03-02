@@ -5,9 +5,9 @@ Append-only entries in root `_overview.md` logging codebase changes when a plan 
 ```markdown
 ## State Deltas
 
-### ✅ PP02_checkout_redesign — Sep 2025
-- checkout: linear flow → reservation-based state machine
-- inventory_sync: new module, pessimistic locking + TTL
+### ✅ PP{NN}_{name} — {Mon YYYY}
+- {module}: {what changed}
+- {new_module}: new module, {purpose}
 ```
 
 | Rule | Detail |

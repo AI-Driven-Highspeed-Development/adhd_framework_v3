@@ -3,7 +3,7 @@
 Hierarchy is expressed through the filesystem. No level numbers.
 
 ```
-SP01_{plan_name}/
+SP{NN}_{plan_name}/
 ├── _overview.md              # REQUIRED — plan navigator with frontmatter
 ├── 01_executive_summary.md   # System Plan only
 ├── 02_architecture.md        # System Plan only

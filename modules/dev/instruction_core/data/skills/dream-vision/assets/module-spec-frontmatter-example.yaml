@@ -4,10 +4,10 @@ Module spec frontmatter for `modules/{module_name}.md`:
 
 ```yaml
 ---
-module: checkout
-last_updated: 2025-09-15
+module: {module_name}
+last_updated: YYYY-MM-DD
 modified_by_plans:
-  - PP02_checkout_redesign
+  - PP{NN}_{name}
 knowledge_gaps:
   - "Payment retry logic under partial failure"
 ---

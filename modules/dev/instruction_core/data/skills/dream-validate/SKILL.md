@@ -17,7 +17,7 @@ Step-by-step SOP for auditing DREAM plans — checking frontmatter, status consi
 
 **Not a validate?** If actively fixing errors found during validation → use `dream-fix`. If closing a plan → use `dream-close`.
 
-> **Future automation:** A `dream validate` MCP command may be available in the future. The manual protocol below is the primary SOP and remains authoritative even when tooling exists.
+> **MCP tool available:** Call `dream_validate` for automated validation — covers frontmatter, status syntax, line limits, and DAG cycle detection. The manual protocol below details each check for when deeper inspection or custom auditing is needed.
 
 ---
 
@@ -79,10 +79,10 @@ Verify `_overview.md` frontmatter has all required fields with valid values.
 
 | Check | PASS | FAIL |
 |-------|------|------|
-| `name` matches folder suffix | `PP03_dream_sop_skills` → `name: dream_sop_skills` | Mismatch |
+| `name` matches folder suffix | `PP{NN}_{name}` → `name: {name}` | Mismatch |
 | `type` is valid enum | `system` or `procedure` | Any other value |
 | `status` is bare enum | `WIP` (no emoji, no brackets) | `🔄 [WIP]` in frontmatter |
-| `last_updated` is valid date | `2026-02-16` | `Feb 16`, `16/02/2026` |
+| `last_updated` is valid date | `YYYY-MM-DD` | `Feb 16`, `16/02/2026` |
 | `magnitude` is valid enum | Exact case: `Standard` | `standard`, `STANDARD`, `Med` |
 
 ---
@@ -240,7 +240,7 @@ Result: PASS | WARN | FAIL
 [FAIL] Check 1 — Frontmatter: `status` field missing in _overview.md
 [FAIL] Check 3 — Structure: `## Purpose` section missing in _overview.md
 [WARN] Check 2 — Status: CUT task "Feature X" not in Cut List
-[WARN] Check 4 — Cross-Ref: PP02 has depends_on: PP01, but PP01 missing blocks: PP02
+[WARN] Check 4 — Cross-Ref: {PlanA} has depends_on: {PlanB}, but {PlanB} missing blocks: {PlanA}
 [PASS] Check 5 — Line Limits: All documents within limits
 [PASS] Check 6 — Content: All quality checks passed
 ```
@@ -262,7 +262,7 @@ To validate ALL active plans at once:
 ### Step 1: List All Plans
 
 ```bash
-ls -d .agent_plan/day_dream/[A-Z]*/ | grep -v _archive | grep -v _completed | grep -v _templates
+ls -d .agent_plan/day_dream/[A-Z]*/ | grep -v _archive | grep -v _completed
 ```
 
 ### Step 2: Run Protocol Per Plan

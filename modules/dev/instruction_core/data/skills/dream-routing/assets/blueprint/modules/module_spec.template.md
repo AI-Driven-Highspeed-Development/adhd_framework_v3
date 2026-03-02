@@ -4,12 +4,6 @@ last_updated: "{YYYY-MM-DD}"
 modified_by_plans: []
 knowledge_gaps: []
 ---
-<!-- ═══════════════════════════════════════════════════════════════════
-     ADHD-MANAGED — DO NOT EDIT DIRECTLY
-     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/modules/module_spec.template.md
-     Refresh: adhd r -f
-═══════════════════════════════════════════════════════════════════ -->
-
 
 # Module Specification: {Module Name}
 

@@ -23,10 +23,10 @@ Central dispatch for all DREAM operations. Classifies user intent and routes to 
 |-------------|-------------|------------------|
 | Create a new PP (parallel plan) blueprint | `dream-create-pp` | "Create a PP for X", "New blueprint plan", "Procedure plan for Y" |
 | Create a new SP (simple plan) blueprint | `dream-create-sp` | "Create an SP for X", "System plan for Y", "New architecture plan" |
-| Update/resurrect an existing plan | `dream-update` | "Update PP02", "Resurrect plan X", "Revise the overview" |
-| Close/complete a plan | `dream-close` | "Close SP01", "Mark plan done", "Finish PP03" |
-| Fix plan validation errors | `dream-fix` | "Fix frontmatter in PP02", "Fix the plan", "Repair validation errors" |
-| Validate plan structure | `dream-validate` | "Validate all plans", "Check PP03", "Run dream validate" |
+| Update/resurrect an existing plan | `dream-update` | "Update PP{NN}", "Resurrect plan X", "Revise the overview" |
+| Close/complete a plan | `dream-close` | "Close SP{NN}", "Mark plan done", "Finish PP{NN}" |
+| Fix plan validation errors | `dream-fix` | "Fix frontmatter in PP{NN}", "Fix the plan", "Repair validation errors" |
+| Validate plan structure | `dream-validate` | "Validate all plans", "Check PP{NN}", "Run dream validate" |
 | Explore/discuss (no artifact) | `dream-vision` | "Let's think about feature X", "Vision for Y", "Explore an idea" |
 | Decompose work into task tree | `dream-planning` | "Break this into subtasks", "Plan the phases", "Decompose this work" |
 
@@ -34,7 +34,7 @@ Central dispatch for all DREAM operations. Classifies user intent and routes to 
 
 When multiple intents could match, use this priority order:
 1. **Explicit skill name** — user says "use dream-close" → route directly
-2. **Explicit plan ID** — "Fix PP02" → resolve plan, then route by verb
+2. **Explicit plan ID** — "Fix PP{NN}" → resolve plan, then route by verb
 3. **Action verb** — "Create", "Close", "Fix" → match dispatch table
 4. **Fallback** — ambiguous → disambiguate (see rules below)
 
@@ -72,7 +72,7 @@ When user intent is ambiguous, resolve before routing.
 | Ambiguous Request | Resolution |
 |-------------------|------------|
 | "Create a plan" (no type) | Ask: "System Plan (SP) for new architecture, or Procedure Plan (PP) for workflow/migration?" |
-| "Fix the plan" (no target) | Ask: "Which plan? List active plans or provide plan ID (e.g., PP03, SP01)" |
+| "Fix the plan" (no target) | Ask: "Which plan? List active plans or provide plan ID (e.g., PP{NN}, SP{NN})" |
 | "Update" (content vs status) | Check context — if discussing content changes → `dream-update`; if marking done → `dream-close` |
 | "Plan for X" (create vs discuss) | If X is concrete and scoped → route to create; if X is exploratory → `dream-vision` |
 | "Check the plan" (validate vs review) | If asking about structural correctness → `dream-validate`; if reviewing content → `dream-update` |

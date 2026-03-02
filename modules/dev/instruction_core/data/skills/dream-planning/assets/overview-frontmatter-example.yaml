@@ -2,17 +2,17 @@
 
 ```yaml
 ---
-name: marketplace
+name: {name}
 type: system
 magnitude: Heavy
 status: WIP
-origin: exploration/meeting_2026_02_01_marketplace.md
-start_at: 2026-02-03
-last_updated: 2026-02-12
+origin: exploration/{origin_document}.md
+start_at: YYYY-MM-DD
+last_updated: YYYY-MM-DD
 depends_on:
-  - SP01_core_shop
+  - SP{NN}_{dependency}
 blocks:
-  - PP19_perf_optimization
+  - PP{NN}_{blocked_plan}
 knowledge_gaps:
   - "Multi-currency settlement edge cases"
 ---

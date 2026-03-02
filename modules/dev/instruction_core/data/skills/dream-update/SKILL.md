@@ -24,6 +24,8 @@ Step-by-step SOPs for modifying, progressing, or resurrecting DREAM plans — st
 - Target plan exists in `.agent_plan/day_dream/` (or in `_archive/` for resurrection)
 - Root `.agent_plan/day_dream/_overview.md` exists
 - You know which operation type you are performing (status, phase, scope, or resurrection)
+- **Before modifying:** Call `dream_impact` to assess downstream effects on dependent plans
+- **After any update:** Call `dream_validate` to verify structural correctness
 
 ---
 
@@ -41,7 +43,7 @@ Step-by-step SOPs for modifying, progressing, or resurrecting DREAM plans — st
 **Rules:**
 - Status markers use emoji prefix + bracketed code in task tables
 - `BLOCKED:reason` uses kebab-case (e.g., `BLOCKED:awaiting-api-access`)
-- `invalidated-by` uses the plan folder prefix (e.g., `SP01`, `PP03`)
+- `invalidated-by` uses the plan folder prefix (e.g., `SP{NN}`, `PP{NN}`)
 - Frontmatter `status` field uses bare enum: `TODO` / `WIP` / `DONE` / `BLOCKED:reason` / `CUT`
 
 ---
@@ -56,6 +58,9 @@ Step-by-step SOPs for modifying, progressing, or resurrecting DREAM plans — st
 | **Plan Resurrection** | `status`, `last_updated`, `knowledge_gaps` (if applicable) |
 | **Dependency Change** | `depends_on`, `blocks`, `last_updated` |
 | **Knowledge Gap Update** | `knowledge_gaps`, `last_updated` |
+| **Emergency Declaration** | `priority`, `emergency_declared_at`, `last_updated` |
+
+**Emergency Declaration:** Call `dream_emergency` to set a plan's priority to emergency with an automatic timestamp. This is preferable to manually editing priority fields.
 
 ### `_overview.md` Frontmatter (Plan-Level)
 
@@ -110,7 +115,7 @@ In the plan's `_overview.md`, update:
 
 ```yaml
 status: WIP          # New status
-last_updated: 2026-02-16  # Today's date
+last_updated: YYYY-MM-DD  # Today's date
 ```
 
 ### Step 4: Update Task Rows (If Task-Level)
@@ -175,9 +180,9 @@ Mark all items in the phase's completion checklist:
 
 ```yaml
 current_phase: 2              # Increment to next phase number
-phase_name: "Core Leaf Skills" # Name of the new phase
+phase_name: "{Next Phase Name}" # Name of the new phase
 status: WIP                    # Reset to WIP for new phase
-last_updated: 2026-02-16      # Today's date
+last_updated: YYYY-MM-DD      # Today's date
 ```
 
 ### Step 5: Update Plan `_overview.md`
@@ -189,7 +194,7 @@ Update `last_updated` in the plan's `_overview.md` frontmatter.
 Update the Current Sprint table with the new phase and next action:
 
 ```markdown
-| PP03_dream_sop_skills | p02_core_leaf_skills | 🔄 [WIP] | Create dream-update SKILL.md |
+| PP{NN}_{name} | p{NN}_{phase_name} | 🔄 [WIP] | {Next action description} |
 ```
 
 ---
@@ -234,7 +239,7 @@ Add to the Cut List at the bottom of `80_implementation.md`:
 
 | Feature | Cut Date | Reason |
 |---------|----------|--------|
-| Task description | 2026-02-16 | Reason for cutting |
+| {Task description} | YYYY-MM-DD | {Reason for cutting} |
 ```
 
 ### Step 4: Update Decisions Log
@@ -246,7 +251,7 @@ Record scope changes in the Decisions Log:
 
 | Date | Decision | Rationale | Decided By |
 |------|----------|-----------|------------|
-| 2026-02-16 | Added phase P4 for integration testing | Discovered cross-module risk | Agent analysis |
+| YYYY-MM-DD | Added phase P4 for integration testing | Discovered cross-module risk | Agent analysis |
 ```
 
 ### Step 5: Update Children Table
@@ -254,7 +259,7 @@ Record scope changes in the Decisions Log:
 If adding/removing phases (directories), update the Children table in `_overview.md`:
 
 ```markdown
-| p04_integration_testing/ | Plan | ⏳ [TODO] | Cross-module integration verification |
+| p{NN}_{phase_name}/ | Plan | ⏳ [TODO] | {Phase description} |
 ```
 
 ### Step 6: Update Magnitude (If Changed)
@@ -281,7 +286,7 @@ Bring back a CUT or archived plan to active status.
 Move the plan folder from `_archive/` or `_completed/` back to `.agent_plan/day_dream/`:
 
 ```bash
-mv .agent_plan/day_dream/_archive/PP04_old_plan/ .agent_plan/day_dream/PP04_old_plan/
+mv .agent_plan/day_dream/_archive/PP{NN}_{name}/ .agent_plan/day_dream/PP{NN}_{name}/
 ```
 
 **Keep the original plan number.** Do NOT reassign a new number.
@@ -292,7 +297,7 @@ Update the plan's `_overview.md` frontmatter:
 
 ```yaml
 status: TODO           # or WIP if resuming immediately
-last_updated: 2026-02-16
+last_updated: YYYY-MM-DD
 ```
 
 ### Step 4: Review and Update Content
@@ -318,6 +323,7 @@ If the resurrected plan `blocks` other plans, verify those plans' `depends_on` a
 ## Validation Checklist
 
 ### After Any Update
+- [ ] `dream_validate` passes on all modified plans
 - [ ] `last_updated` is today's date in ALL modified frontmatter files
 - [ ] Status markers use correct emoji prefix + bracketed code
 - [ ] Root `_overview.md` Plans table reflects current plan status

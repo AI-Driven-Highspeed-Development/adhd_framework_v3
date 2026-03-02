@@ -134,11 +134,11 @@ Draft a State Delta entry documenting what this plan changed in the codebase. Th
 **Example:**
 
 ```markdown
-### ✅ PP03_dream_sop_skills — Feb 2026
+### ✅ {PlanFolder} — {Mon YYYY}
 
-- instruction_core: added dream-routing skill with assets/ (templates relocated from _templates/)
-- instruction_core: added dream-create-pp, dream-create-sp, dream-update, dream-close leaf skills
-- _templates/: gutted, replaced with redirect notice to dream-routing/assets/
+- {module}: {what changed}
+- {module}: {what changed}
+- {new_module}: new module, {purpose}
 ```
 
 ---
@@ -149,21 +149,21 @@ Draft a State Delta entry documenting what this plan changed in the codebase. Th
 
 ```yaml
 status: DONE
-last_updated: 2026-02-16    # Today's date
+last_updated: YYYY-MM-DD    # Today's date
 ```
 
 #### For SP Plans (plan file)
 
 ```yaml
 status: DONE
-last_updated: 2026-02-16
+last_updated: YYYY-MM-DD
 ```
 
 #### For `80_implementation.md` (PP Plans)
 
 ```yaml
 status: DONE
-last_updated: 2026-02-16
+last_updated: YYYY-MM-DD
 ```
 
 ---
@@ -191,7 +191,7 @@ Update `.agent_plan/day_dream/_overview.md` in four places:
 Change the plan's Status column to DONE:
 
 ```markdown
-| [PP03_dream_sop_skills/](./PP03_dream_sop_skills/_overview.md) | Procedure | ✅ [DONE] | normal | Transform DREAM into active dispatch system |
+| [PP{NN}_{name}/](./PP{NN}_{name}/_overview.md) | Procedure | ✅ [DONE] | normal | {One-line description} |
 ```
 
 #### 7b. Current Sprint Table
@@ -205,10 +205,10 @@ Append the State Delta entry drafted in Step 4:
 ```markdown
 ## State Deltas
 
-### ✅ PP03_dream_sop_skills — Feb 2026
+### ✅ {PlanFolder} — {Mon YYYY}
 
-- instruction_core: added dream-routing skill with assets/
-- instruction_core: added 4 leaf SOP skills (create-pp, create-sp, update, close)
+- {module}: {what changed}
+- {module}: {what changed}
 ```
 
 If there are already 20 entries, move the oldest entry to `_state_deltas_archive.md` before appending.
@@ -231,15 +231,15 @@ Review whether this plan's changes compromise assumptions of any previously-DONE
 If invalidations exist, update the **victim plan's** `_overview.md` frontmatter:
 
 ```yaml
-invalidated_by: PP03
-invalidation_scope: "Template paths changed from _templates/ to dream-routing/assets/"
-invalidation_date: 2026-02-16
+invalidated_by: {XX}{nn}
+invalidation_scope: "{what is compromised}"
+invalidation_date: YYYY-MM-DD
 ```
 
 And update the victim's status in root `_overview.md` Plans table:
 
 ```markdown
-| [SP01_feature/](./SP01_feature/_overview.md) | System | ✅ [DONE:invalidated-by:PP03] | normal | ... |
+| [SP{NN}_{name}/](./SP{NN}_{name}/_overview.md) | System | ✅ [DONE:invalidated-by:{XX}{nn}] | normal | ... |
 ```
 
 **Sibling firewall note:** The CLOSING agent writes to the victim plan (authorized exception for invalidation reporting).
@@ -251,15 +251,15 @@ And update the victim's status in root `_overview.md` Plans table:
 Move the completed plan to the archive directory if keeping the active directory clean:
 
 ```bash
-mv .agent_plan/day_dream/PP03_dream_sop_skills/ .agent_plan/day_dream/_completed/2026-Q1/PP03_dream_sop_skills/
+mv .agent_plan/day_dream/PP{NN}_{name}/ .agent_plan/day_dream/_completed/YYYY-QN/PP{NN}_{name}/
 ```
 
 #### Archival Rules
 
 | Rule | Detail |
 |------|--------|
-| Archive directory | `_completed/YYYY-QN/` (e.g., `_completed/2026-Q1/`) |
-| Create directory if needed | `mkdir -p .agent_plan/day_dream/_completed/2026-Q1/` |
+| Archive directory | `_completed/YYYY-QN/` (e.g., `_completed/YYYY-QN/`) |
+| Create directory if needed | `mkdir -p .agent_plan/day_dream/_completed/YYYY-QN/` |
 | Links still work | Root `_overview.md` links update to `_completed/` path |
 | Alternative | Plans CAN stay in place — archival is optional for clean navigation |
 | When to archive | When active directory has >10 plans, or plan is >3 months old |

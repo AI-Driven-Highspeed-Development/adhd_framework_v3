@@ -6,7 +6,7 @@
 ├── _tree.md                        ← Generated folder tree (NEVER hand-edit)
 ├── _state_deltas_archive.md        ← Overflow State Deltas (auto-generated)
 │
-├── SP01_{plan_name}/               ← System Plan
+├── SP{NN}_{plan_name}/               ← System Plan
 │   ├── _overview.md                ← REQUIRED navigator with frontmatter
 │   ├── 01_executive_summary.md
 │   ├── 02_architecture.md
@@ -19,7 +19,7 @@
 │   ├── modules/
 │   └── assets/
 │
-├── PP02_{plan_name}/               ← Procedure Plan
+├── PP{NN}_{plan_name}/               ← Procedure Plan
 │   ├── _overview.md
 │   ├── 01_summary.md               ← Merged exec summary + architecture
 │   ├── 0N_feat_{step_name}.md
@@ -29,7 +29,7 @@
 ├── _completed/                     ← Archive (YYYY-QN/ subdirs)
 ├── exploration/                    ← Research docs (max 3 active, 14-day expiry)
 │   └── _archive/
-└── _templates/                     ← Plan templates (read-only, infrastructure)
+# NOTE: Templates are now in .github/skills/dream-routing/assets/ (not in day_dream/)
 ```
 
 ### Phase Naming

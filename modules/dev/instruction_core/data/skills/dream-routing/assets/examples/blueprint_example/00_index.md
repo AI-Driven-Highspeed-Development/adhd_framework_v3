@@ -1,9 +1,3 @@
-<!-- ═══════════════════════════════════════════════════════════════════
-     ADHD-MANAGED — DO NOT EDIT DIRECTLY
-     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/examples/blueprint_example/00_index.md
-     Refresh: adhd r -f
-═══════════════════════════════════════════════════════════════════ -->
-
 # 🎯 StockDataManager: Project Blueprint
 
 > *Unified stock data pipeline: download, preprocess, visualize*

@@ -3,9 +3,9 @@
 Written in victim plan's `_overview.md` when a completing plan retroactively compromises assumptions:
 
 ```yaml
-invalidated_by: PP08_polyglot_persistence
-invalidation_scope: storage_implementation
-invalidation_date: 2025-09-15
+invalidated_by: PP{NN}_{name}
+invalidation_scope: {what_is_compromised}
+invalidation_date: YYYY-MM-DD
 ```
 
 ## Rules

@@ -1,9 +1,3 @@
-<!-- ═══════════════════════════════════════════════════════════════════
-     ADHD-MANAGED — DO NOT EDIT DIRECTLY
-     Source: modules/dev/instruction_core/data/.agent_plan/day_dream/_templates/blueprint/NN_feature.template.md
-     Refresh: adhd r -f
-═══════════════════════════════════════════════════════════════════ -->
-
 <!-- 
 TEMPLATE USAGE: This template includes extensive guidance comments.
 DELETE all <!-- comment --> blocks before finalizing your document.
