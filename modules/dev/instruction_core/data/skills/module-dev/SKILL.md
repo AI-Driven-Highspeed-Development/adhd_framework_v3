@@ -61,7 +61,7 @@ Before writing **any** module code, complete these checks:
   from config_manager import ConfigManager
   from exceptions_core import ADHDError
   ```
-- Use `Logger` — **never** `print()` (especially in MCP servers)
+- Use `Logger` — **never** `print()` for logging
 - Use `ConfigManager` for all path and config access — **never** hardcode paths
 - Use `ADHDError` for operational errors
 - Add **type hints** on all functions
@@ -109,7 +109,7 @@ Correct vs wrong import approaches:
 | **NEVER invent imports** | Search codebase first with `grep_search` or `semantic_search` |
 | **NEVER guess API signatures** | Read the source file of the module you're calling |
 | **NEVER create utilities that exist** | Check `modules/` directory first |
-| **NEVER use `print()` in MCP servers** | Corrupts JSON-RPC. Use `Logger` from `logger_util` |
+| **NEVER use `print()` for logging** | Use `Logger` from `logger_util`. In MCP servers, `print()` also corrupts JSON-RPC |
 | **NEVER hardcode paths** | Use `ConfigManager` for all path resolution |
 
 ---

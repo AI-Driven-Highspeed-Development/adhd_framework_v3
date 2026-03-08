@@ -13,6 +13,7 @@
 | SP01_dream_v405_implementation | p05_status_and_validate | ⏳ [TODO] | Implement `dream status` + `dream validate` (completes P0) |
 | PP02_context_injection_restructure | p00_usage_audit | ⏳ [TODO] | Audit 17 instruction files, classify STAY/MIGRATE |
 | PP03_dream_sop_skills | p00_skill_inventory_design | ⏳ [TODO] | Review existing dream skills + archived iterations, design dispatch table |
+| PP04_dream_skills_consolidation | p00_canonical_asset_audit | ⏳ [TODO] | Audit all 9 dream-* skills for inline duplicated content |
 
 ## Plans
 
@@ -22,6 +23,7 @@
 | [module-lifecycle/](./module-lifecycle/_overview.md) | Plan | ⏳ [TODO] | normal | Module remove & update commands for the ADHD CLI |
 | [PP02_context_injection_restructure/](./PP02_context_injection_restructure/_overview.md) | Procedure | ⏳ [TODO] | normal | Restructure context injection files using 3-axis taxonomy (agent/instruction/skill) |
 | [PP03_dream_sop_skills/](./PP03_dream_sop_skills/_overview.md) | Procedure | ⏳ [TODO] | normal | Transform DREAM into active dispatch system with routing skill + leaf SOPs |
+| [PP04_dream_skills_consolidation/](./PP04_dream_skills_consolidation/_overview.md) | Procedure | ⏳ [TODO] | normal | Consolidate 9 dream-* skills: extract shared refs + merge create-pp/sp → dream-create |
 
 ## Module Index
 
@@ -52,4 +54,5 @@
 1. **SP01_dream_v405_implementation/** — Active. Aligning ecosystem with DREAM v4.05.
 2. **PP02_context_injection_restructure/** — Ready. Context injection files restructuring with 3-axis taxonomy.
 3. **PP03_dream_sop_skills/** — Blocked on PP02. Transform DREAM into active dispatch with routing + leaf SOPs.
-4. **module-lifecycle/** — Next. Module remove & update commands.
+4. **PP04_dream_skills_consolidation/** — Ready. Consolidate dream-* skills: extract shared refs, merge create skills.
+5. **module-lifecycle/** — Next. Module remove & update commands.

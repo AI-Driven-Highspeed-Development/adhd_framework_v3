@@ -1,5 +1,5 @@
 <!-- GENERATED — run 'dream tree' to refresh -->
-<!-- Generated: 2026-03-02T04:48:34Z -->
+<!-- Generated: 2026-03-02T08:18:52Z -->
 
 # Day Dream — Plan Tree
 
@@ -41,40 +41,6 @@
 │       ├── DREAM_v4.04_stress_test_demo.md
 │       ├── DREAM_v4.04_stress_test_report.md
 │       └── DREAM_v4.md
-├── _templates/
-│   ├── README.md
-│   ├── simple.template.md
-│   ├── assets/
-│   │   └── asset.template.md
-│   ├── blueprint/
-│   │   ├── 00_index.template.md
-│   │   ├── 01_executive_summary.template.md
-│   │   ├── 01_summary.template.md
-│   │   ├── 02_architecture.template.md
-│   │   ├── 80_implementation.template.md
-│   │   ├── 81_module_structure.template.md
-│   │   ├── 82_cli_commands.template.md
-│   │   ├── 99_references.template.md
-│   │   ├── deep_dive_reference.md
-│   │   ├── exploration.template.md
-│   │   ├── NN_feature.template.md
-│   │   ├── NN_feature_simple.template.md
-│   │   ├── overview.template.md
-│   │   ├── task.template.md
-│   │   └── modules/
-│   │       └── module_spec.template.md
-│   └── examples/
-│       ├── deep_dive_algorithm_proof.example.md
-│       ├── deep_dive_api_contract.example.md
-│       ├── deep_dive_architecture.example.md
-│       ├── deep_dive_state_machine.example.md
-│       ├── free_zone_assumption_graveyard.example.md
-│       ├── free_zone_metaphor_map.example.md
-│       ├── free_zone_philosophical_tensions.example.md
-│       ├── simple_example.md
-│       └── blueprint_example/
-│           ├── 00_index.md
-│           └── 01_executive_summary.md
 ├── blueprint/
 │   ├── 00_index.md
 │   ├── 01_executive_summary.md

@@ -6,7 +6,8 @@ status: DONE
 origin: discussion/dream_routing_sop_skills
 last_updated: "2026-02-16"
 depends_on: [PP02_context_injection_restructure]
-blocks: []
+blocks:
+  - PP04_dream_skills_consolidation
 knowledge_gaps:
   - "Full leaf skill list not finalized — P0 reviews archived iterations to inform"
   - "Template relocation UX impact — moving from _templates/ to dream-routing/assets/"
