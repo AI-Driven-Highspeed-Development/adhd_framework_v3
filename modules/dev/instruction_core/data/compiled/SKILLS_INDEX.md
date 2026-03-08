@@ -1,7 +1,7 @@
 # 📚 Skills Index
 
 > Auto-generated during instruction sync. DO NOT EDIT MANUALLY.
-> Last updated: 2026-03-02T08:02:42.141345+00:00
+> Last updated: 2026-03-08T08:37:44.398335+00:00
 
 ## Available Skills
 
@@ -20,7 +20,7 @@
 | [dream-vision](../skills/dream-vision/SKILL.md) | Vision and planning workflows — creating blueprint plans, ar... | Creating a new blueprint (day-dream) plan; Authoring feature specs, architecture docs, or implementation plans | ⚠️ Not documented | ~2563 |
 | [exped-export](../skills/exped-export/SKILL.md) | Framework export workflows — exporting ADHD agents and instr... | Exporting agents/instructions to a Vue3, React, Unity, Rust, Go, or other external project; Running the 8-phase expedition pipeline | ⚠️ Not documented | ~1309 |
 | [mcp-module-dev](../skills/mcp-module-dev/SKILL.md) | MCP server implementation workflow for ADHD modules. Covers ... | Creating a new MCP server module; Adding tools to an existing MCP module | ⚠️ Not documented | ~1316 |
-| [module-dev](../skills/module-dev/SKILL.md) | Module implementation workflow for ADHD Framework Python mod... | Creating a new ADHD module from scratch; Modifying existing module code | ⚠️ Not documented | ~1527 |
+| [module-dev](../skills/module-dev/SKILL.md) | Module implementation workflow for ADHD Framework Python mod... | Creating a new ADHD module from scratch; Modifying existing module code | ⚠️ Not documented | ~1530 |
 | [orch-discussion](../skills/orch-discussion/SKILL.md) | Orchestrator discussion preset — structured multi-agent disc... | See SKILL.md | ⚠️ Not documented | ~1274 |
 | [orch-expedition](../skills/orch-expedition/SKILL.md) | Orchestrator expedition preset — coordinating the 8-phase ex... | See SKILL.md | ⚠️ Not documented | ~933 |
 | [orch-implementation](../skills/orch-implementation/SKILL.md) | Orchestrator implementation preset — coordinating implementa... | See SKILL.md | ⚠️ Not documented | ~1209 |
