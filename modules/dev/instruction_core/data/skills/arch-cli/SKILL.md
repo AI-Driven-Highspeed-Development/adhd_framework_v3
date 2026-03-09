@@ -1,5 +1,5 @@
 ---
-name: cli-dev
+name: arch-cli
 description: "CLI command registration and development patterns for ADHD Framework modules. Covers CLIManager integration, handler function signatures, register_cli() conventions, CommandArg spec, argument naming constraints, user feedback rules, and refresh integration. Use this skill when creating or modifying *_cli.py files, registering CLI commands, or understanding the ADHD CLI architecture."
 ---
 

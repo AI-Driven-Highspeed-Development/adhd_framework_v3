@@ -1,5 +1,5 @@
 ---
-name: writing-modules-readme
+name: smith-modules-readme
 description: "Module README authoring workflow for ADHD Framework modules. Covers required section order, tone and style conventions, import rules for examples, cross-linking guidance, requirements guidance, validation checklist, and a canonical README template. Use this skill when creating or updating module README.md files, reviewing README quality, or understanding ADHD README conventions."
 ---
 

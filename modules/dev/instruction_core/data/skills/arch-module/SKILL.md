@@ -1,5 +1,5 @@
 ---
-name: module-dev
+name: arch-module
 description: "Module implementation workflow for ADHD Framework Python modules. Covers mandatory pre-reads, anti-hallucination constraints, module structure, naming conventions, layer taxonomy, tests vs playground decisions, and verification checklist. Use this skill when creating or modifying module code, scaffolding new modules, or understanding ADHD module architecture."
 ---
 
@@ -14,7 +14,7 @@ A guide for building and modifying ADHD Framework Python modules following estab
 - Understanding module file structure or naming conventions
 - Checking pre-coding verification requirements
 
-> **MCP Modules**: When implementing an MCP module (any module with `mcp = true` in `[tool.adhd]`), load the **`mcp-module-dev`** skill for MCP-specific patterns after reading this skill.
+> **MCP Modules**: When implementing an MCP module (any module with `mcp = true` in `[tool.adhd]`), load the **`arch-mcp`** skill for MCP-specific patterns after reading this skill.
 
 ---
 
@@ -44,8 +44,8 @@ Before writing **any** module code, complete these checks:
 ### Step 1: Plan the Module
 - Determine the module's **single responsibility**
 - Choose the correct **layer**: foundation, runtime, or dev
-- Choose the correct **name suffix** (see [module-structure.md](references/module-structure.md))
-- Decide: Does this need MCP? If yes, also load the `mcp-module-dev` skill
+- Choose the correct **name suffix** (see [module_structure.instructions.md](../../instructions/framework/module_structure.instructions.md))
+- Decide: Does this need MCP? If yes, also load the `arch-mcp` skill
 
 ### Step 2: Scaffold with Tools
 - **Use `adhd_mcp` create_module tool** — never create module files manually
@@ -73,7 +73,7 @@ Before writing **any** module code, complete these checks:
 
 ### Step 5: Add Tests or Playground
 - Use the decision tree below to choose the right location
-- See the `attack-testing` skill for HyperRed conventions
+- See the `red-testing` skill for HyperRed conventions
 
 ### Step 6: Verify Before Completion
 Run the final verification checklist (below).
@@ -145,7 +145,7 @@ Before marking module work complete:
 
 ## Reference Material
 
-- **Module anatomy and file roles**: See [references/module-structure.md](references/module-structure.md)
+- **Module anatomy and file roles**: See [module_structure.instructions.md](../../instructions/framework/module_structure.instructions.md)
 - **pyproject.toml template**: See [assets/pyproject-template.toml](assets/pyproject-template.toml)
-- **Testing conventions**: Load the `attack-testing` skill for adversarial testing
-- **MCP-specific patterns**: Load the `mcp-module-dev` skill
+- **Testing conventions**: Load the `red-testing` skill for adversarial testing
+- **MCP-specific patterns**: Load the `arch-mcp` skill

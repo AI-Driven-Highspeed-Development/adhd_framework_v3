@@ -1,5 +1,5 @@
 ---
-name: writing-instructions
+name: smith-instructions
 description: "Instructions-file authoring workflow for `.instructions.md` files. Defines required structure, `applyTo` patterns, naming conventions, and best practices for concise enforceable rules. Use this skill when creating or updating instruction files."
 ---
 

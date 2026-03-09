@@ -638,8 +638,8 @@ Skills provide tested, domain-specific workflows that agents can load on demand:
 | `orch-routing` | Routing requests to the correct specialist agent |
 | `orch-testing` | Coordinating testing workflows (plan → spec → attack → verify) |
 | `testing` | Test conventions, folder locations, pytest patterns |
-| `writing-flows` | Flow DSL syntax and agent authoring patterns |
-| `writing-skills` | How to write proper SKILL.md files |
+| `smith-flows` | Flow DSL syntax and agent authoring patterns |
+| `smith-skills` | How to write proper SKILL.md files |
 
 ### Prompts
 

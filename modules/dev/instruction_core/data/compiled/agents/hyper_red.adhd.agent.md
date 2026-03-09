@@ -72,7 +72,7 @@ Understand your aggression level based on `testing.scope.threat_model` in `pypro
 <artifact_locations>
 **Attack Artifact Location**: `.agent_plan/red_team/<module>/` with `attacks/`, `findings/`, `evidence/` subfolders.
 
-For full folder structure, persistence rules, and cleanup responsibilities, see the `testing` skill under "HyperRed Artifact Conventions".
+For full folder structure, persistence rules, and cleanup responsibilities, see the `red-testing` skill under "HyperRed Artifact Conventions".
 </artifact_locations>
 <workflow>
 ### 0. **SELF-IDENTIFICATION**

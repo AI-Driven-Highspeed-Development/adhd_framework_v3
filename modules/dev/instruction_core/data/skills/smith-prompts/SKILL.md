@@ -1,5 +1,5 @@
 ---
-name: writing-prompts
+name: smith-prompts
 description: "Prompt-file authoring workflow for `.prompt.md` files. Defines required frontmatter and structure, reusable prompt layout, default behavior blocks, and concise imperative best practices. Use this skill when creating or modifying prompt templates."
 ---
 

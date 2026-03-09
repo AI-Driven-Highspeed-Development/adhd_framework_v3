@@ -1,5 +1,5 @@
 ---
-name: writing-flows
+name: smith-flows
 description: "Flow DSL syntax and agent authoring patterns for the ADHD Framework. Covers node definition (@node_id), pipe operators (|param=value|), content blocks (<<<>>>), variable references ($backward, ^forward), imports (+./path.flow), style parameters, .flow + .yaml sidecar pattern, shared _lib/ fragments, and the adhd r -f refresh command. Use this skill when creating or editing .flow files, building new agents, or understanding Flow compilation."
 ---
 

@@ -81,7 +81,7 @@ If needed, read the ADHD framework's core philosophy and project structure in `.
 
 **See**:
 -   `day-dream` skill — Template catalog, tier criteria, status markers, constraints, FREE ZONE rules, asset file authoring
--   `./.github/skills/modules-readme/SKILL.md` — Module README authoring conventions
+-   `./.github/skills/smith-modules-readme/SKILL.md` — Module README authoring conventions
 -   `.github/skills/dream-routing/assets/examples/` — Completed samples for all template types
 </ADHD_framework_information>
 <critical_rules>

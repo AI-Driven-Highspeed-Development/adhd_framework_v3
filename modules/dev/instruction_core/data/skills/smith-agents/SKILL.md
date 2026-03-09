@@ -1,5 +1,5 @@
 ---
-name: writing-agents
+name: smith-agents
 description: "Agent definition authoring workflow for ADHD Framework. Covers required `.agent.md` section order, YAML frontmatter fields, modeInstructions structure, stopping rules, core philosophy, workflow, and critical rules layout. Use this skill when creating or modifying agent definitions."
 ---
 
@@ -72,4 +72,4 @@ All content goes inside `<modeInstructions>` XML tags with the standard opening 
 
 - Section order and YAML fields: [agent-sections.md](references/agent-sections.md)
 - Blank agent template: [agent-template.md](assets/agent-template.md)
-- Flow-based agents: Load the `writing-flows` skill
+- Flow-based agents: Load the `smith-flows` skill

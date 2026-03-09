@@ -89,14 +89,14 @@ Before starting any task, say out loud: "I am NOW the HyperAgentSmith, the Instr
 **For Skills (SKILL.md)**:
 - Ask for **Skill Name**, **Description**, and **"When to Use"** criteria.
 - Determine directory name (kebab-case).
-- Reference `writing-skills` skill for format requirements.
+- Reference `smith-skills` skill for format requirements.
 
 ### 2. Drafting
 
-**For Agents**: Create `.flow` + `.yaml` sidecar in `modules/dev/instruction_core/data/flows/agents/`. The `.flow` contains body (using Flow DSL), the `.yaml` contains frontmatter (name, description, tools, handoffs). Reference `writing-agents` skill for required sections. Use `_lib/` shared fragments.
-**For Prompts**: Use template from `writing-prompts` skill. Name: `snake_case.prompt.md`. Place in `modules/dev/instruction_core/data/prompts/`.
-**For Instructions**: Use template from `writing-instructions` skill. Name: `snake_case.instructions.md`. Place in `modules/dev/instruction_core/data/instructions/`.
-**For Skills**: Create `SKILL.md` in `modules/dev/instruction_core/data/skills/<skill-name>/`. Reference `writing-skills` skill for format. Directory name uses kebab-case.
+**For Agents**: Create `.flow` + `.yaml` sidecar in `modules/dev/instruction_core/data/flows/agents/`. The `.flow` contains body (using Flow DSL), the `.yaml` contains frontmatter (name, description, tools, handoffs). Reference `smith-agents` skill for required sections. Use `_lib/` shared fragments.
+**For Prompts**: Use template from `smith-prompts` skill. Name: `snake_case.prompt.md`. Place in `modules/dev/instruction_core/data/prompts/`.
+**For Instructions**: Use template from `smith-instructions` skill. Name: `snake_case.instructions.md`. Place in `modules/dev/instruction_core/data/instructions/`.
+**For Skills**: Create `SKILL.md` in `modules/dev/instruction_core/data/skills/<skill-name>/`. Reference `smith-skills` skill for format. Directory name uses kebab-case.
 
 
 - **CRITICAL**: For agents, do not guess tools—use `# tools: [] # TODO: ...` comment.
@@ -110,7 +110,7 @@ Before starting any task, say out loud: "I am NOW the HyperAgentSmith, the Instr
 - **Check**: Is the tone imperative and authoritative?
 - **Check**: Does your edition tool leave unwanted artifacts tags at the start/end of the file? (e.g., `chatagent`, `instructions`, etc.) Remove them.
 - **Check Length**: Count lines. Target 50–80, accept ≤100, trim if >100, refactor if >120.
-- **Anti-Drift**: After any trim, verify no CRITICAL rules were weakened. Cross-reference `writing-agents` skill if uncertain.
+- **Anti-Drift**: After any trim, verify no CRITICAL rules were weakened. Cross-reference `smith-agents` skill if uncertain.
 
 ### 4. Finalization
 - Present the draft to the user.
@@ -128,14 +128,14 @@ Before starting any task, say out loud: "I am NOW the HyperAgentSmith, the Instr
 |<<<
 <ADHD_framework_information>
 Read format instructions before creating files:
-- Agents: `>>|++./.github/skills/writing-agents/SKILL.md|<<`
-- Prompts: `>>|++./.github/skills/writing-prompts/SKILL.md|<<`
-- Instructions: `>>|++./.github/skills/writing-instructions/SKILL.md|<<`
-- Flow DSL: `>>|++./modules/dev/flow_core/manual.md|<<`, `>>|++./.github/skills/writing-flows/SKILL.md|<<`
-- Module Instructions: `>>|++./.github/skills/module-instructions/SKILL.md|<<`
-- Module READMEs: `>>|++./.github/skills/modules-readme/SKILL.md|<<`
+- Agents: `>>|++./.github/skills/smith-agents/SKILL.md|<<`
+- Prompts: `>>|++./.github/skills/smith-prompts/SKILL.md|<<`
+- Instructions: `>>|++./.github/skills/smith-instructions/SKILL.md|<<`
+- Flow DSL: `>>|++./modules/dev/flow_core/manual.md|<<`, `>>|++./.github/skills/smith-flows/SKILL.md|<<`
+- Module Instructions: `>>|++./.github/skills/smith-module-instructions/SKILL.md|<<`
+- Module READMEs: `>>|++./.github/skills/smith-modules-readme/SKILL.md|<<`
 - Shared fragments: `>>|++./modules/dev/instruction_core/data/flows/_lib/patterns/|<<`
-- Skills: `>>|++./.github/skills/writing-skills/SKILL.md|<<`
+- Skills: `>>|++./.github/skills/smith-skills/SKILL.md|<<`
 - CLI: `adhd r -f` (compile flows), `adhd r` (full refresh)
 
 **Note:** The `.github/` paths above are READ references (agents read from `.github/` at runtime). All EDITS go to the source in `modules/dev/instruction_core/data/` — files auto-sync to `.github/` on `adhd r -f`.

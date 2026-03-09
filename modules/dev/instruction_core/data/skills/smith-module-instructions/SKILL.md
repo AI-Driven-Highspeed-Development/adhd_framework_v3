@@ -1,5 +1,5 @@
 ---
-name: writing-module-instructions
+name: smith-module-instructions
 description: "Module instruction authoring workflow for `.instructions.md` files scoped to ADHD modules. Covers required section order, concise AI-targeted style, frontmatter scope rules, and validation checklist. Use this skill when creating or maintaining module-local instruction files."
 ---
 

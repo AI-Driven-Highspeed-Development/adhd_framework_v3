@@ -1,5 +1,5 @@
 ---
-name: attack-testing
+name: red-testing
 description: "HyperRed adversarial testing skill — attack patterns, edge case discovery, boundary testing, stress testing, and breaking code. Covers HyperRed artifact conventions (.agent_plan/red_team/), findings output format, attack script organization, adversarial testing approaches, and pre-attack checklists. Use this skill when running adversarial tests, discovering edge cases, stress-testing modules, or producing Red Team findings."
 ---
 
@@ -82,4 +82,4 @@ Structured JSON format for recording findings per session:
 |-------|-------|
 | Multi-agent testing loops (Orch + Red + Arch) | `orch-testing` skill |
 | Findings output format details | `san-output` skill |
-| Module development and test folder conventions | `module-dev` skill |
+| Module development and test folder conventions | `arch-module` skill |

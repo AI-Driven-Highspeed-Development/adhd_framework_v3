@@ -1,5 +1,5 @@
 ---
-name: mcp-module-dev
+name: arch-mcp
 description: "MCP server implementation workflow for ADHD modules. Covers FastMCP separation of concerns, required file structure, controller patterns, pyproject configuration, UV module invocation, STDIO-safe logging, and tool naming. Use this skill when building or updating MCP server modules (*_mcp.py), implementing MCP tools, or setting up MCP controller patterns."
 ---
 
@@ -15,7 +15,7 @@ A guide for building MCP (Model Context Protocol) server modules within the ADHD
 - Troubleshooting MCP server invocation or import issues
 
 ## Prerequisites
-Load the **`module-dev`** skill first for general module patterns (imports, anti-hallucination rules, layer taxonomy, verification checklist). This skill covers MCP-specific concerns only.
+Load the **`arch-module`** skill first for general module patterns (imports, anti-hallucination rules, layer taxonomy, verification checklist). This skill covers MCP-specific concerns only.
 
 ---
 
@@ -129,5 +129,5 @@ def search_files(pattern: str, max_results: int = 10) -> dict:
 
 - **MCP file structure details**: See [references/mcp-file-structure.md](references/mcp-file-structure.md)
 - **MCP pyproject.toml template**: See [assets/pyproject-mcp-template.toml](assets/pyproject-mcp-template.toml)
-- **General module patterns**: Load the `module-dev` skill
+- **General module patterns**: Load the `arch-module` skill
 - **MCP specification**: https://modelcontextprotocol.io/docs/develop/build-server

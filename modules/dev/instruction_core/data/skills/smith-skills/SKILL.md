@@ -1,5 +1,5 @@
 ---
-name: writing-skills
+name: smith-skills
 description: "Teaches agents how to write proper SKILL.md files following the Agent Skills open standard (agentskills.io). Covers YAML frontmatter structure, body content guidelines, progressive disclosure, directory layout, naming conventions, and examples of good vs bad skills. Use this skill when creating new agent skills, reviewing skill quality, or learning the skills format."
 ---
 
@@ -191,36 +191,40 @@ Example of a well-written skill — keyword-rich description, self-contained con
 │   └── SKILL.md
 ├── dream-vision/          # name: dream-vision ✓
 │   └── SKILL.md
-└── writing-skills/        # name: writing-skills ✓
+└── smith-skills/          # name: smith-skills ✓
     └── SKILL.md
 ```
 
-### Prefix/Suffix Patterns
+### Agent Prefix Convention
 
-| Pattern | Agent Owner | Purpose | Examples |
-|---------|-------------|---------|----------|
-| `orch-*` | HyperOrch | Orchestrator presets | `orch-implementation`, `orch-testing`, `orch-discussion`, `orch-routing` |
-| `writing-*` | HyperAgentSmith | Authoring/format skills | `writing-flows`, `writing-agents`, `writing-instructions`, `writing-prompts`, `writing-skills`, `writing-module-instructions`, `writing-modules-readme` |
-| `*-dev` | HyperArch | Development workflow skills | `module-dev`, `mcp-module-dev`, `cli-dev` |
-| `dream-*` | HyperDream | Vision and planning skills | `dream-vision`, `dream-planning` |
+All skills use an **agent-prefix** naming pattern: the prefix identifies the owning agent.
+
+| Prefix | Agent Owner | Purpose | Examples |
+|--------|-------------|---------|----------|
+| `arch-*` | HyperArch | Development workflow skills | `arch-module`, `arch-mcp`, `arch-cli` |
+| `smith-*` | HyperAgentSmith | Authoring/format skills | `smith-agents`, `smith-flows`, `smith-instructions`, `smith-prompts`, `smith-skills`, `smith-module-instructions`, `smith-modules-readme` |
+| `red-*` | HyperRed | Adversarial testing skills | `red-testing` |
+| `dream-*` | HyperDream | Vision and planning skills | `dream-vision`, `dream-planning`, `dream-close`, `dream-create-pp`, `dream-create-sp`, `dream-fix`, `dream-routing`, `dream-update`, `dream-validate` |
+| `orch-*` | HyperOrch | Orchestrator presets | `orch-implementation`, `orch-testing`, `orch-discussion`, `orch-routing`, `orch-expedition` |
 | `san-*` | HyperSan | Validation and sanity check skills | `san-output` |
 | `iq-*` | HyperIQGuard | Code quality skills | *(none yet)* |
-| `attack-*` | HyperRed | Adversarial testing skills | `attack-testing` |
 | `exped-*` | HyperExped | Framework export skills | `exped-export` |
 
 ### Naming Anti-Patterns
 
 | Avoid | Use Instead | Reason |
 |-------|-------------|--------|
-| `xxx-format` | `writing-xxx` | `writing-*` is the canonical prefix for authoring skills |
+| `module-dev` | `arch-module` | Use agent prefix (`arch-*` for HyperArch) |
+| `writing-flows` | `smith-flows` | Use agent prefix (`smith-*` for HyperAgentSmith) |
+| `attack-testing` | `red-testing` | Use agent prefix (`red-*` for HyperRed) |
+| `mcp-module-dev` | `arch-mcp` | Use agent prefix, not domain prefix |
+| `hyper-san-output` | `san-output` | Use agent prefix pattern, not full agent name |
 | `utils`, `helpers` | Descriptive domain name | Too generic for agent matching |
 | `my_skill` | `my-skill` | Underscores violate kebab-case |
 | `MySkill` | `my-skill` | camelCase/PascalCase not allowed |
-| `hyper-san-output` | `san-output` | Use agent prefix pattern, not full agent name |
-| `testing` | `attack-testing` | Prefix with owning agent's pattern (`attack-*` for HyperRed) |
 | `day-dream` | `dream-vision` | Use agent prefix pattern (`dream-*` for HyperDream) |
 | `expedition` | `exped-export` | Use agent prefix pattern (`exped-*` for HyperExped) |
-| `module-instructions` | `writing-module-instructions` | Authoring skills use `writing-*` prefix |
+| `module-instructions` | `smith-module-instructions` | Authoring skills use `smith-*` prefix |
 
 ---
 
