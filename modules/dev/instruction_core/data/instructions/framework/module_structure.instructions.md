@@ -23,6 +23,8 @@ Every module lives under `modules/<layer>/<module_name>/`:
 | `tests/` | No | Unit tests (pytest). Optional for <200 LOC |
 | `playground/` | No | Interactive exploration. NOT production code |
 
+Note: the file `init.yaml` is no longer used, new modules should not include it. Existing modules should migrate to use `pyproject.toml` for all metadata and configuration and remove `init.yaml`.
+
 ## File Roles
 
 **`__init__.py`** — Exports the module's public interface. Other modules import from here:

@@ -100,7 +100,7 @@ class UVMigratorCore:
                 message=f"Module '{module_name}' not found",
             )
         
-        module_path = self.root_path / module_info.path
+        module_path = module_info.path
         pyproject_path = module_path / "pyproject.toml"
         
         # Check for existing pyproject.toml
@@ -166,11 +166,11 @@ class UVMigratorCore:
         report = MigrationReport()
         
         # Get all modules
-        modules = self._modules_controller.discover_modules()
+        modules_report = self._modules_controller.list_all_modules()
         
-        for module in modules:
-            # Optionally skip cores
-            if not include_cores and module.folder == "cores":
+        for module in modules_report.modules:
+            # Optionally skip core modules (names ending in _core)
+            if not include_cores and module.name.endswith("_core"):
                 continue
             
             result = self.migrate_module(
@@ -184,8 +184,8 @@ class UVMigratorCore:
     
     def _find_module(self, module_name: str) -> Optional[ModuleInfo]:
         """Find a module by name."""
-        modules = self._modules_controller.discover_modules()
-        for module in modules:
+        modules_report = self._modules_controller.list_all_modules()
+        for module in modules_report.modules:
             if module.name == module_name:
                 return module
         return None

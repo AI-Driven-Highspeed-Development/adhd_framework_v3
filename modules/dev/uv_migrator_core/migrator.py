@@ -296,7 +296,6 @@ def generate_pyproject_toml(
         layer=layer,
         dependencies=all_dependencies,
         uv_sources=uv_sources,
-        module_name=module_name,  # Underscored name for wheel sources mapping
         is_mcp=is_mcp,
     )
     

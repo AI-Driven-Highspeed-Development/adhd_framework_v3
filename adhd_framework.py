@@ -151,39 +151,33 @@ class ADHDFramework:
     # ------------------------------------------------------------------
 
     def migrate_modules(self, args) -> None:
-        from modules_controller_core import ModulesController
+        from uv_migrator_core import UVMigratorCore
 
-        controller = ModulesController()
+        migrator = UVMigratorCore()
         dry_run = getattr(args, 'dry_run', False)
-        keep = getattr(args, 'keep', False)
+        no_overwrite = getattr(args, 'no_overwrite', False)
         module_name = getattr(args, 'module', None)
 
         if dry_run:
             self.logger.info("\U0001f50d Dry run mode - no changes will be made")
 
         if module_name:
-            try:
-                module = controller.require_module(module_name)
-            except ADHDError as e:
-                self.logger.error(f"\u274c {e}")
-                sys.exit(1)
-
-            result = controller.migrate_module(module.path, dry_run=dry_run, keep_init_yaml=keep)
+            result = migrator.migrate_module(module_name, dry_run=dry_run, no_overwrite=no_overwrite)
             status = "\u2705" if result.success else "\u274c"
             print(f"  {status} {result.module_name}: {result.message}")
             if not result.success:
                 sys.exit(1)
         else:
-            results = controller.migrate_all_modules(dry_run=dry_run, keep_init_yaml=keep)
-            if not results:
+            report = migrator.migrate_all(dry_run=dry_run, no_overwrite=no_overwrite)
+            if not report.results:
                 self.logger.info("\u2705 No modules need migration")
                 return
 
-            success_count = sum(1 for r in results if r.success)
-            fail_count = len(results) - success_count
+            success_count = len(report.successful)
+            fail_count = len(report.failed)
 
             print(f"\n\U0001f4e6 Migration {'preview' if dry_run else 'results'}:")
-            for result in results:
+            for result in report.results:
                 status = "\u2705" if result.success else "\u274c"
                 print(f"  {status} {result.module_name}: {result.message}")
 
@@ -482,7 +476,7 @@ def setup_parser() -> argparse.ArgumentParser:
     # Migrate command
     migrate_parser = subparsers.add_parser('migrate', aliases=['mg'], help='Migrate init.yaml to pyproject.toml')
     migrate_parser.add_argument('--dry-run', '-n', action='store_true', help='Show what would be migrated without making changes')
-    migrate_parser.add_argument('--keep', '-k', action='store_true', help='Keep init.yaml after migration (for backup)')
+    migrate_parser.add_argument('--no-overwrite', '-k', action='store_true', help='Skip modules that already have pyproject.toml')
     migrate_arg = migrate_parser.add_argument('--module', '-m', help='Migrate specific module only (default: all)')
     if argcomplete:
         migrate_arg.completer = module_completer

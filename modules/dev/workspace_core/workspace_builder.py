@@ -193,6 +193,11 @@ def generate_workspace_file(
                     "python.analysis.extraPaths": [
                         root_path.as_posix(),
                     ],
+                    "python-envs.pythonProjects": [
+                        {
+                            "path": ".",
+                        }
+                    ]
                 },
             },
         )

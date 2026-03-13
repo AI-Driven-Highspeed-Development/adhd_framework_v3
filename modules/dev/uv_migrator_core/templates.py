@@ -35,10 +35,10 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-only-include = ["."]
+packages = ["."]
 
-[tool.hatch.build.targets.wheel.sources]
-"" = "{module_name}"
+[tool.hatch.build]
+dev-mode-dirs = [".."]
 '''
 
 
@@ -72,7 +72,6 @@ def generate_pyproject_content(
     layer: str,
     dependencies: list[str],
     uv_sources: dict[str, dict[str, str]],
-    module_name: str,
     is_mcp: bool = False,
 ) -> str:
     """
@@ -85,7 +84,6 @@ def generate_pyproject_content(
         layer: Layer classification (foundation, runtime, dev)
         dependencies: List of all dependencies (ADHD + PyPI)
         uv_sources: Dict of ADHD packages to their git sources
-        module_name: Module name (underscored) for wheel sources mapping
         is_mcp: Whether this is an MCP server module
         
     Returns:
@@ -123,9 +121,7 @@ def generate_pyproject_content(
             UV_SOURCES_SECTION.format(sources=format_uv_sources(uv_sources))
         )
     
-    # Build system with sources mapping
-    content_parts.append(
-        BUILD_SYSTEM.format(module_name=module_name)
-    )
+    # Build system
+    content_parts.append(BUILD_SYSTEM)
     
     return "".join(content_parts)
