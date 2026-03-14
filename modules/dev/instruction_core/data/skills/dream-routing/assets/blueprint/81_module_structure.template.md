@@ -95,7 +95,7 @@ Examples: project-specific managers, specialized plugins, main app logic.
 
 <!-- 
 skip core modules, they are universal for all ADHD projects.
-No need for standard files like init.yaml or .config_template in this diagram, because those are standard across all ADHD projects.
+No need for standard files like pyproject.toml or .config_template in this diagram, because those are standard across all ADHD projects.
 -->
 
 ```text

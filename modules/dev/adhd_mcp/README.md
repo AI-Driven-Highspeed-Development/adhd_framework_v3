@@ -8,7 +8,7 @@ Minimal, context-efficient MCP server exposing ADHD framework capabilities for A
 - Delegates business logic to specialized controllers (AdhdController, GitController, ContextController)
 
 ## Features
-- **Project introspection** – `get_project_info` returns project metadata from root init.yaml
+- **Project introspection** – `get_project_info` returns project metadata from root pyproject.toml
 - **Module listing** – `list_modules` with optional layer filtering and import scanning
 - **Module deep-dive** – `get_module_info` returns imports, git status, and dependency analysis
 - **Module scaffolding** – `create_module` creates new modules with optional GitHub repo

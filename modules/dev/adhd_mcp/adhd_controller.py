@@ -16,8 +16,6 @@ import difflib
 from pathlib import Path
 from typing import Any
 
-import yaml
-
 from config_manager import ConfigManager
 from logger_util import Logger
 from modules_controller_core import ModulesController, ModuleInfo
@@ -79,23 +77,26 @@ class AdhdController:
     # --- Tool 1: get_project_info ---
 
     def get_project_info(self) -> dict[str, Any]:
-        """Get project-level metadata from root init.yaml.
+        """Get project-level metadata from root pyproject.toml.
 
         Returns:
-            Dict with project name, version, registered modules, and module counts
+            Dict with project name, version, description, and module counts
         """
-        init_path = self.root_path / "init.yaml"
-        if not init_path.exists():
+        pyproject_path = self.root_path / "pyproject.toml"
+        if not pyproject_path.exists():
             return {
                 "success": False,
-                "error": "init_yaml_not_found",
-                "message": f"No init.yaml found at {init_path}",
+                "error": "pyproject_not_found",
+                "message": f"No pyproject.toml found at {pyproject_path}",
             }
 
         try:
-            with open(init_path, 'r', encoding='utf-8') as f:
-                data = yaml.safe_load(f) or {}
-            
+            import tomllib
+            with open(pyproject_path, 'rb') as f:
+                data = tomllib.load(f)
+
+            project_data = data.get("project", {})
+
             # Get module counts from actual scan
             report = self.modules_controller.scan_all_modules()
             counts: dict[str, int] = {}
@@ -105,10 +106,9 @@ class AdhdController:
 
             return {
                 "success": True,
-                "name": data.get("name", self.root_path.name),
-                "version": data.get("version", "0.0.0"),
-                "description": data.get("description", ""),
-                "modules_registered": data.get("modules", []),
+                "name": project_data.get("name", self.root_path.name),
+                "version": project_data.get("version", "0.0.0"),
+                "description": project_data.get("description", ""),
                 "module_counts": counts,
             }
         except Exception as e:
@@ -180,7 +180,7 @@ class AdhdController:
                 "adhd": imports.get("adhd", []),
                 "third_party": imports.get("third_party", []),
             }
-            data["init_yaml_requirements"] = module.requirements
+            data["pyproject_requirements"] = module.requirements
             
             req_path = module.path / "requirements.txt"
             data["requirements_txt"] = parse_requirements_txt(req_path)
@@ -242,7 +242,7 @@ class AdhdController:
                 "git_status": git_status.get("status", "unknown"),
                 "git_branch": git_status.get("branch", "unknown"),
                 "imports": imports,
-                "init_yaml_requirements": module.requirements,
+                "pyproject_requirements": module.requirements,
                 "requirements_txt": requirements_txt,
                 "issues": [
                     {"code": issue.code, "message": issue.message}
@@ -291,7 +291,7 @@ class AdhdController:
             If create_repo=True but owner missing: returns available_owners list
 
         The scaffolding creates:
-            - __init__.py, init.yaml, README.md, .config_template
+            - __init__.py, pyproject.toml, README.md, .config_template
             - For MCPs: also creates <name>_mcp.py and refresh.py
         """
         from modules_controller_core import LAYER_SUBFOLDERS

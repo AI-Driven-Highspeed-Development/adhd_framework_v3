@@ -142,7 +142,7 @@ def register_cli() -> None:
         commands=[
             Command(
                 name="info",
-                help="Get project-level metadata from root init.yaml",
+                help="Get project-level metadata from root pyproject.toml",
                 handler="mcps.adhd_mcp.adhd_cli:project_info_cmd",
             ),
             Command(

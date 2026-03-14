@@ -75,8 +75,7 @@ Otherwise, P0 is foundation tasks (skill updates, config, scaffolding).
 
 ```
 {project_root}/
-├── managers/{manager}/           (NEW)
-└── init.yaml                     (MODIFIED)
+└── managers/{manager}/           (NEW)
 ```
 
 ### Verification (Manual)

@@ -17,18 +17,16 @@ class TestGetProjectInfo:
 
     @pytest.fixture
     def mock_project(self, tmp_path: Path) -> Path:
-        """Create a mock project with init.yaml."""
+        """Create a mock project with pyproject.toml."""
         root = tmp_path / "project"
         root.mkdir()
         
-        # Create init.yaml
-        (root / "init.yaml").write_text("""
-name: test-project
-version: 1.2.3
-description: A test project
-modules:
-  - https://github.com/org/module1
-  - https://github.com/org/module2
+        # Create root pyproject.toml
+        (root / "pyproject.toml").write_text("""
+[project]
+name = "test-project"
+version = "1.2.3"
+description = "A test project"
 """)
         
         # Create a minimal module for counting in new structure
@@ -47,7 +45,7 @@ layer = "runtime"
         return root
 
     def test_get_project_info_success(self, mock_project: Path):
-        """Should return project metadata from init.yaml."""
+        """Should return project metadata from pyproject.toml."""
         controller = AdhdController(root_path=mock_project)
         result = controller.get_project_info()
         
@@ -55,16 +53,15 @@ layer = "runtime"
         assert result["name"] == "test-project"
         assert result["version"] == "1.2.3"
         assert "description" in result
-        assert "modules_registered" in result
         assert "module_counts" in result
 
-    def test_get_project_info_missing_init_yaml(self, tmp_path: Path):
-        """Should return error when init.yaml is missing."""
+    def test_get_project_info_missing_pyproject(self, tmp_path: Path):
+        """Should return error when pyproject.toml is missing."""
         controller = AdhdController(root_path=tmp_path)
         result = controller.get_project_info()
         
         assert result["success"] is False
-        assert result["error"] == "init_yaml_not_found"
+        assert result["error"] == "pyproject_not_found"
 
     def test_get_project_info_counts_modules(self, mock_project: Path):
         """Should include module counts by layer."""

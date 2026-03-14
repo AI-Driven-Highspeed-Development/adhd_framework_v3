@@ -40,13 +40,13 @@ def _get_controller() -> AdhdController:
 
 @mcp.tool()
 def get_project_info() -> dict:
-    """Get project-level metadata from root init.yaml.
+    """Get project-level metadata from root pyproject.toml.
 
-    Returns project name, version, registered module URLs, and counts by type.
+    Returns project name, version, and module counts by layer.
     Use this to understand the overall project structure.
 
     Returns:
-        dict with success, name, version, modules_registered, module_counts
+        dict with success, name, version, module_counts
     """
     return _get_controller().get_project_info()
 
@@ -67,7 +67,7 @@ def list_modules(
 
     Returns:
         dict with count and modules list. Each module has name, layer, version, path, repo_url.
-        If with_imports=True, also includes imports, init_yaml_requirements, requirements_txt.
+        If with_imports=True, also includes imports, pyproject_requirements, requirements_txt.
 
     Examples:
         - list_modules() - Quick overview of all modules
@@ -98,10 +98,10 @@ def get_module_info(module_name: str) -> dict:
         - Basic: name, type, version, path, repo_url, remote_url
         - Git: git_status (clean/dirty/ahead/behind), git_branch, git_changes
         - Imports: stdlib, adhd, third_party, local imports
-        - Requirements: init_yaml_requirements, requirements_txt
+        - Requirements: pyproject_requirements, requirements_txt
         - Issues: Any validation issues
 
-    Use imports.adhd vs init_yaml_requirements to find missing ADHD deps.
+    Use imports.adhd vs pyproject_requirements to find missing ADHD deps.
     Use imports.third_party vs requirements_txt to find missing PyPI packages.
     """
     return _get_controller().get_module_info(module_name=module_name)
@@ -132,7 +132,7 @@ def create_module(
         If create_repo=True but owner missing: returns available_owners list
 
     The scaffolding creates:
-        - __init__.py, init.yaml, README.md, .config_template
+        - __init__.py, pyproject.toml, README.md, .config_template
         - For MCPs: also creates <name>_mcp.py and refresh.py
     """
     return _get_controller().create_module(

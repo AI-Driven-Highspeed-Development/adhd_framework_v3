@@ -60,7 +60,7 @@ Every prompt MUST end with:
 | Mistake | Fix |
 |---------|-----|
 | Missing default behavior block | Always state what's skipped and how to override |
-| Vague steps ("Handle the config") | Use specific actions: "Read `init.yaml` and extract the `version` field" |
+| Vague steps ("Handle the config") | Use specific actions: "Read `pyproject.toml` and extract the `version` field" |
 | Duplicating format rules from instructions | Reference the `.instructions.md` file instead |
 | Missing `description` in frontmatter | Required — it's the VS Code placeholder text |
 | Steps without numbers | Always number steps for deterministic execution |
