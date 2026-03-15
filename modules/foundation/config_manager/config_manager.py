@@ -41,18 +41,8 @@ class ConfigManager:
         self._load_config(self.config_path)
         self.ckg = ConfigKeysGenerator(self.raw_config)
         self.ckg.generate()
-        
-        # Dynamically load the generated config_keys module
-        config_keys_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config_keys.py')
-        spec = importlib.util.spec_from_file_location("config_keys", config_keys_path)
-        if spec and spec.loader:
-            config_keys_module = importlib.util.module_from_spec(spec)
-            sys.modules["config_keys"] = config_keys_module
-            spec.loader.exec_module(config_keys_module)
-            ConfigKeys = config_keys_module.ConfigKeys
-        else:
-            raise ImportError(f"Could not load config_keys from {config_keys_path}")
-        
+
+        from config_manager.config_keys import ConfigKeys
         self.config = ConfigKeys()
 
     @staticmethod
