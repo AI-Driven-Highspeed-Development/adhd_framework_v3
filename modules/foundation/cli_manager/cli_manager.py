@@ -51,12 +51,28 @@ class Command:
 
 
 @dataclass
+class CommandGroup:
+    """Represents a sub-group of commands within a module namespace."""
+    name: str
+    description: str = ""
+    commands: list[Command] = field(default_factory=list)
+
+    def to_dict(self) -> dict:
+        return {
+            "name": self.name,
+            "description": self.description,
+            "commands": [cmd.to_dict() for cmd in self.commands],
+        }
+
+
+@dataclass
 class ModuleRegistration:
     """Represents a module's CLI registration."""
     module_name: str
     short_name: Optional[str] = None
     description: str = ""
     commands: list[Command] = field(default_factory=list)
+    groups: list[CommandGroup] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return {
@@ -64,6 +80,7 @@ class ModuleRegistration:
             "short_name": self.short_name,
             "description": self.description,
             "commands": [cmd.to_dict() for cmd in self.commands],
+            "groups": [g.to_dict() for g in self.groups],
         }
 
 
@@ -132,7 +149,9 @@ class CLIManager:
 
     def register_module(self, registration: ModuleRegistration) -> bool:
         """Register a module's commands. Handles deduplication by module_name.
-        
+
+        Merges sub-groups previously registered via register_subgroup() so
+        refresh ordering does not matter.
         Thread-safe: uses locking to ensure atomic read-modify-write.
         """
         with self._registry_lock:
@@ -151,9 +170,82 @@ class CLIManager:
                         registration.short_name = None
                         break
 
-            registry[module_key] = registration.to_dict()
+            new_data = registration.to_dict()
+
+            # Merge groups: preserve sub-groups registered before this module
+            existing_data = registry.get(module_key, {})
+            existing_groups = existing_data.get("groups", [])
+            new_group_names = {g["name"] for g in new_data.get("groups", [])}
+            # Keep existing groups not overridden by new registration
+            merged_groups = [g for g in existing_groups if g["name"] not in new_group_names]
+            merged_groups.extend(new_data.get("groups", []))
+            new_data["groups"] = merged_groups
+
+            # Validate: command names and group names must not collide
+            cmd_names = {cmd["name"] for cmd in new_data.get("commands", [])}
+            group_names = {g["name"] for g in merged_groups}
+            collision = cmd_names & group_names
+            if collision:
+                self.logger.error(
+                    f"Name collision in module '{module_key}': "
+                    f"{collision} used as both command and sub-group"
+                )
+                return False
+
+            registry[module_key] = new_data
             self._save_registry(registry)
             self.logger.debug(f"Registered module: {module_key}")
+            return True
+
+    def register_subgroup(self, parent_module: str, group: CommandGroup) -> bool:
+        """Register a sub-group of commands under an existing module namespace.
+
+        If the parent module is not yet registered, a placeholder entry is
+        created so that refresh ordering does not matter (lazy-merge).
+        Thread-safe: uses locking to ensure atomic read-modify-write.
+        """
+        with self._registry_lock:
+            registry = self._load_registry()
+
+            if parent_module not in registry:
+                # Create placeholder — register_module() will merge later
+                registry[parent_module] = {
+                    "module_name": parent_module,
+                    "short_name": None,
+                    "description": "",
+                    "commands": [],
+                    "groups": [],
+                }
+
+            module_data = registry[parent_module]
+            existing_groups = module_data.get("groups", [])
+
+            # Validate: group name must not collide with existing commands
+            cmd_names = {cmd["name"] for cmd in module_data.get("commands", [])}
+            if group.name in cmd_names:
+                self.logger.error(
+                    f"Sub-group name '{group.name}' conflicts with existing "
+                    f"command in module '{parent_module}'"
+                )
+                return False
+
+            # Replace or append group (idempotent for repeated refresh)
+            group_dict = group.to_dict()
+            replaced = False
+            for i, g in enumerate(existing_groups):
+                if g["name"] == group.name:
+                    existing_groups[i] = group_dict
+                    replaced = True
+                    break
+            if not replaced:
+                existing_groups.append(group_dict)
+
+            module_data["groups"] = existing_groups
+            registry[parent_module] = module_data
+            self._save_registry(registry)
+            self.logger.debug(
+                f"Registered sub-group '{group.name}' under '{parent_module}'"
+            )
             return True
 
     def unregister_module(self, module_name: str) -> bool:
@@ -235,6 +327,33 @@ class CLIManager:
                 for arg_data in cmd_data.get("args", []):
                     self._add_argument(cmd_parser, arg_data)
 
+            # Add sub-group parsers (3rd argparse level)
+            for group_data in module_data.get("groups", []):
+                group_parser = cmd_subparsers.add_parser(
+                    group_data["name"],
+                    help=group_data.get("description", ""),
+                )
+                group_parser.set_defaults(_cli_group=group_data["name"])
+
+                group_subparsers = group_parser.add_subparsers(
+                    dest="subcommand",
+                    title="commands",
+                    description=f"Available commands in '{group_data['name']}'",
+                    help="Command to run",
+                )
+
+                for subcmd_data in group_data.get("commands", []):
+                    subcmd_parser = group_subparsers.add_parser(
+                        subcmd_data["name"],
+                        help=subcmd_data.get("help", ""),
+                    )
+                    subcmd_parser.set_defaults(
+                        _cli_subcommand=subcmd_data["name"],
+                    )
+
+                    for arg_data in subcmd_data.get("args", []):
+                        self._add_argument(subcmd_parser, arg_data)
+
         return parser
 
     def _add_argument(self, parser: argparse.ArgumentParser, arg_data: dict) -> None:
@@ -292,11 +411,14 @@ class CLIManager:
     def dispatch(self, args: argparse.Namespace) -> int:
         """Dispatch parsed args to the appropriate handler.
 
+        Supports both direct commands and sub-group commands:
+        - Direct:   module -> command
+        - Subgroup: module -> group -> subcommand
+
         Returns exit code (0 for success, non-zero for failure).
         """
         # Use collision-proof attributes with fallback to standard ones
         module_name = getattr(args, '_cli_module', None) or getattr(args, 'module', None)
-        command_name = getattr(args, '_cli_command', None) or getattr(args, 'command', None)
 
         if not module_name:
             return 1
@@ -317,19 +439,63 @@ class CLIManager:
             self.logger.error(f"Module '{module_name}' not found in registry")
             return 1
 
-        if not command_name:
-            return 1
+        # Check if a sub-group was selected
+        group_name = getattr(args, '_cli_group', None)
+        if group_name:
+            subcommand_name = (
+                getattr(args, '_cli_subcommand', None)
+                or getattr(args, 'subcommand', None)
+            )
+            if not subcommand_name:
+                self.logger.error(f"No command specified for group '{group_name}'")
+                return 1
 
-        # Find command
-        cmd_data = None
-        for cmd in module_data.get("commands", []):
-            if cmd["name"] == command_name:
-                cmd_data = cmd
-                break
+            # Find group
+            group_data = None
+            for g in module_data.get("groups", []):
+                if g["name"] == group_name:
+                    group_data = g
+                    break
 
-        if not cmd_data:
-            self.logger.error(f"Command '{command_name}' not found in module '{module_name}'")
-            return 1
+            if not group_data:
+                self.logger.error(
+                    f"Group '{group_name}' not found in module '{module_name}'"
+                )
+                return 1
+
+            # Find command within group
+            cmd_data = None
+            for cmd in group_data.get("commands", []):
+                if cmd["name"] == subcommand_name:
+                    cmd_data = cmd
+                    break
+
+            if not cmd_data:
+                self.logger.error(
+                    f"Command '{subcommand_name}' not found in "
+                    f"group '{group_name}' of module '{module_name}'"
+                )
+                return 1
+        else:
+            command_name = (
+                getattr(args, '_cli_command', None)
+                or getattr(args, 'command', None)
+            )
+            if not command_name:
+                return 1
+
+            # Find direct command
+            cmd_data = None
+            for cmd in module_data.get("commands", []):
+                if cmd["name"] == command_name:
+                    cmd_data = cmd
+                    break
+
+            if not cmd_data:
+                self.logger.error(
+                    f"Command '{command_name}' not found in module '{module_name}'"
+                )
+                return 1
 
         handler = self.resolve_handler(cmd_data["handler"])
         if not handler:
