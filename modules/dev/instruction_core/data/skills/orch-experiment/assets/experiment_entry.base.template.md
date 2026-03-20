@@ -10,6 +10,8 @@ experiment_type: Observational | Interventional
 status: DESIGNED | RUNNING | COMPLETE | ABANDONED
 verdict: PENDING | CONFIRMED | REJECTED | PARTIALLY CONFIRMED | INCONCLUSIVE
 minimum_confirmation_runs: 1
+arm_mode: pre-committed | sequential-gated  # optional, for multi-arm experiments
+estimated_runtime: "~3 min per arm"  # helps determine inline vs monitoring-plan execution
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---
@@ -70,11 +72,11 @@ updated: YYYY-MM-DD
 <!-- Anything not predicted that was observed. Seeds future hypotheses. -->
 
 
-## Safety
+## Execution Guardrails
 
 - **Resource Budget**: N/A <!-- or: "2 GPU-hours max", "500 API calls" -->
 - **Rollback Procedure**: N/A <!-- or: "Revert commit abc123", "Restore backup" -->
-- **Abort Criteria**: N/A <!-- or: "Stop if error rate exceeds 50%" -->
+- **Early-Stop Clauses**: N/A <!-- or: "Terminate arm if dino_loss > 50 for 10 consecutive steps" -->
 
 ## Handoff Notes
 <!-- For next agent: current status, what to do next, where data lives. -->

@@ -47,9 +47,23 @@ All arms MUST share:
 
 ---
 
-## Go/No-Go Gates
+## Arm Execution Modes
 
-Between arms, evaluate whether to continue:
+The experiment spec declares which mode to use. If not specified, default to `pre-committed`.
+
+### `pre-committed`
+
+All arms are declared upfront and run unconditionally in sequence. No inter-arm evaluation by the orchestrator.
+
+**Use for**: factorial ablations, interaction tests, experiments where each arm answers a distinct sub-question, experiments where the designer explicitly pre-registered all arms as READY.
+
+HyperArch runs all arms, collects all data, analysis happens post-hoc.
+
+Optional `early_stop_if` clause (declared in experiment spec) lets HyperArch terminate an arm early if a pre-registered condition is met — recorded as "terminated: [reason]", not as abort.
+
+### `sequential-gated`
+
+Arms run one at a time with evaluation between them:
 
 ```
 Run Arm A (baseline) → Evaluate
@@ -62,6 +76,8 @@ Run Arm A (baseline) → Evaluate
   │
   └── Baseline broken? → FIX baseline first, do not proceed
 ```
+
+**Use for**: parameter sweeps, search-mode experiments, experiments where later arms depend on earlier results.
 
 **Stop early if**:
 - One arm clearly dominates (outside tolerance of all others)
@@ -95,6 +111,7 @@ Use the SAME seed across arms for the SAME run number. This isolates the variabl
 
 **Variable**: database connection pool size
 **Baseline (Arm A)**: pool_size=4
+**arm_mode**: pre-committed
 
 | Arm | pool_size | Avg Response (ms) | P99 (ms) | Error Rate |
 |-----|-----------|-------------------|----------|------------|
@@ -102,9 +119,6 @@ Use the SAME seed across arms for the SAME run number. This isolates the variabl
 | B   | 8         |                   |          |            |
 | C   | 16        |                   |          |            |
 | D   | 32        |                   |          |            |
-
-**Go/No-Go after Arm B**: [continue/stop + reason]
-**Go/No-Go after Arm C**: [continue/stop + reason]
 ```
 
 ---

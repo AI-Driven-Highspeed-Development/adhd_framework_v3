@@ -26,14 +26,14 @@ OBSERVE → HYPOTHESIZE → PREDICT → DESIGN → INSTRUMENT → EXECUTE → AN
 
 ### Orchestration Flow
 ```
-SETUP (HyperArch) → DESIGN-REVIEW (HyperSan) → EXECUTE (HyperArch) → ANALYZE (HyperSan) → RECORD (HyperArch)
+DESIGN-REVIEW (HyperSan, once) → EXECUTE (HyperArch, autonomous) → ANALYZE (HyperSan, post-hoc)
 ```
 
-- **SETUP**: HyperArch creates experiment entry, instruments, prepares config
-- **DESIGN-REVIEW**: HyperSan validates design (predictions written? type classified? one-variable rule met?)
-- **EXECUTE**: HyperArch runs the experiment, collects data
-- **ANALYZE**: HyperSan compares predictions to measurements, proposes verdict
-- **RECORD**: HyperArch updates registry, writes handoff notes
+- **DESIGN-REVIEW**: HyperSan validates the experiment spec upfront — predictions, type, one-variable rule, confirmation runs, guardrails. This is the ONLY gate before execution.
+- **EXECUTE**: HyperArch receives full experiment context and runs all arms end-to-end. No inter-arm returns to HyperOrch. Collects all probe data, compiles measurement table, returns results.
+- **ANALYZE**: HyperSan compares predictions to measurements, proposes verdict. HyperOrch delegates recording/cleanup to HyperArch if needed.
+
+Experiment authoring (Steps 1–5) happens BEFORE orchestration begins — the experiment entry must exist with Steps 1–5 filled before HyperOrch starts.
 
 ## The 8-Step Loop
 
@@ -108,19 +108,11 @@ Update all records and clean up experiment artifacts:
 ### 1b. Resume Gate
 If a completed experiment entry is provided (Steps 1-5 already filled):
 - Verify Steps 1-5 are present and complete
-- Skip directly to Phase 2 (DESIGN-REVIEW) or Phase 3 (EXECUTE) depending on whether design review has already been done
+- If DESIGN-REVIEW was already done (e.g., experiment previously approved), skip directly to Phase 2 (EXECUTE)
+- Otherwise skip to Phase 1 (DESIGN-REVIEW)
 - State: "Resuming experiment [id] from Phase [N]"
 
-### 2. Phase 1: SETUP
-Invoke HyperArch to scaffold experiment:
-```yaml
-task: "Create experiment entry from observation"
-context: "[Observation data, prior experiments if any]"
-agent: HyperArch
-gate: "Experiment entry created with Steps 1-4 filled"
-```
-
-### 3. Phase 2: DESIGN-REVIEW ⛔
+### 2. Phase 1: DESIGN-REVIEW ⛔
 Invoke HyperSan to validate experiment design:
 ```yaml
 task: "Validate experiment design"
@@ -130,22 +122,25 @@ checks:
   - "Experiment type classified? (Observational/Interventional)"
   - "One-variable rule met? (if Interventional)"
   - "minimum_confirmation_runs set?"
-  - "Safety slots addressed? (budget, rollback, abort)"
+  - "Execution guardrails addressed? (infrastructure aborts, early-stop clauses, resource budget)"
 ```
-**If FAILED**: Return to Phase 1 with specific issues. Max 2 revision cycles.
+**If FAILED**: Return to experiment author with specific issues. Max 2 revision cycles.
+**If PASSED**: Proceed to Phase 2 autonomously. No further gates before execution.
 
-### 4. Phase 3: EXECUTE
-⛔ MANDATORY: HyperOrch MUST invoke runSubagent(HyperArch) for this phase. If runSubagent is unavailable or fails, STOP and report the delegation failure to the user. NEVER fall back to manual command output, environment inspection, or execution guidance. Inability to delegate is a blocking failure, not an invitation to improvise.
+### 3. Phase 2: EXECUTE
+HyperOrch MUST invoke `runSubagent(HyperArch)` for this phase. If `runSubagent` is unavailable or fails, report the delegation failure to the user — do not improvise alternative execution.
 
 Invoke HyperArch to run the experiment:
 ```yaml
 task: "Execute experiment and collect measurements"
-context: "[Experiment entry, instrumentation plan]"
+context: "[Full experiment entry, instrumentation plan, execution guardrails]"
 agent: HyperArch
-gate: "Measurements collected, execution log filled"
+delivers: "Measurement table, execution log, any early-stop records"
 ```
 
-### 5. Phase 4: ANALYZE
+HyperArch runs ALL arms end-to-end within a single delegation. No inter-arm returns to HyperOrch. HyperArch evaluates infrastructure aborts and early-stop clauses during execution. See **Execution Guardrails** and **Long-Running Execution Protocol** for behavioral details.
+
+### 4. Phase 3: ANALYZE
 Invoke HyperSan to review measurements against predictions:
 ```yaml
 task: "Compare predictions to measurements, propose verdict"
@@ -153,15 +148,14 @@ agent: HyperSan
 output: "Verdict with justification, prediction-vs-measurement table"
 ```
 
-### 6. Phase 5: RECORD
-Invoke HyperArch to finalize:
+If recording or cleanup is needed, HyperOrch delegates to HyperArch:
 ```yaml
-task: "Record verdict, update registry, write handoff notes"
+task: "Record verdict, update registry, write handoff notes, run cleanup gate"
 agent: HyperArch
 gate: "Experiment entry complete, registry updated"
 ```
 
-### 7. Decision Gate
+### 5. Decision Gate
 - **Verdict = CONFIRMED**: Proceed to fix/implementation (hand off to `orch-implementation`)
 - **Verdict = REJECTED / INCONCLUSIVE**: Loop back to Step 2 with new/refined hypotheses
 - **Hypothesis space exhausted**: Report findings, recommend broader investigation
@@ -171,23 +165,49 @@ gate: "Experiment entry complete, registry updated"
 - **Predictions-before-execution**: Step 3 MUST be complete before Step 6. Violation = invalid experiment.
 - **One-variable rule**: Interventional experiments change exactly ONE variable from baseline. No exceptions.
 
-## Opt-In Safety Slots
-Required sections in template but `N/A` with justification is valid:
-- **Resource budget**: Compute time, API calls, storage
-- **Rollback procedure**: How to undo if experiment damages state
-- **Abort criteria**: When to stop early
+## Execution Guardrails
+
+### Infrastructure Aborts (mandatory)
+True aborts — HyperArch stops the experiment immediately:
+- OOM / out-of-memory
+- NaN loss or numeric divergence
+- Process crash / segfault
+- Wrong config loaded (detected via config hash mismatch)
+- Instrumentation missing (expected probe files not created)
+
+### Early-Stop Clauses (optional, declared in experiment spec)
+Pre-registered conditions evaluated by HyperArch during execution. If triggered, the arm is recorded as `terminated: [reason]` — this is DATA, not an emergency.
+
+Declared in the experiment entry under `early_stop_if`:
+```yaml
+early_stop_if: "any arm dino_loss > 50 for 10 consecutive steps"
+```
+
+Prediction deviations are data for ANALYZE, not abort triggers.
+
+### Resource Budget (optional)
+Compute time, API calls, storage. `N/A` with justification is valid.
 
 ## Multi-Arm Extension
 For experiments testing multiple configurations of one variable:
-→ See [multi_arm_extension.md](assets/multi_arm_extension.md)
+→ See [multi_arm_extension.md](assets/multi_arm_extension.md) for naming, structure, and verdict rules
+
+The experiment spec declares its arm execution mode:
+- **`pre-committed`**: All arms run unconditionally. HyperArch executes every arm regardless of intermediate results.
+- **`sequential-gated`**: Arms run in order with pre-registered stop conditions between them (declared in the experiment spec, NOT added by the orchestrator).
+
+HyperArch respects the declared mode. HyperOrch does NOT inject Go/No-Go gates between arms.
 
 ## Long-Running Execution Protocol
-For experiments involving long-running processes (GPU training, batch jobs, multi-hour computations):
-- HyperArch launches the process and returns a **monitoring plan** rather than blocking until completion
-- The monitoring plan includes: exact command(s) launched, expected output locations, key metrics to watch, abort criteria
-- HyperOrch relays the monitoring plan to the user
-- When results are available (user provides output or points to probe files), HyperOrch resumes the workflow at Phase 4 (ANALYZE)
-- HyperOrch NEVER constructs launch commands herself — this is HyperArch's responsibility even for "simple" commands
+
+HyperArch decides execution strategy based on estimated runtime:
+
+- **Under ~15 minutes**: Execute inline and return results directly. No monitoring plan. No user involvement.
+- **Over ~15 minutes**: Return a **monitoring plan** instead of blocking. The monitoring plan includes: exact command(s) launched, expected output locations, key metrics to watch, estimated completion time. HyperOrch relays the monitoring plan to the user.
+
+When results are available (user provides output or points to probe files), HyperOrch resumes at Phase 3 (ANALYZE).
+
+HyperOrch NEVER constructs launch commands — this is HyperArch's responsibility even for "simple" commands.
 
 ## Anti-Patterns
 
@@ -235,9 +255,10 @@ When context is approaching capacity:
 - **Four Verdicts Only**: CONFIRMED, REJECTED, PARTIALLY CONFIRMED, INCONCLUSIVE
 - **No LIKELY Tier on Verdicts**: Agents misuse it — use INCONCLUSIVE instead
 - **Registry First**: Read existing experiments before creating new hypotheses
-- **No Direct Execution**: HyperOrch NEVER runs experiments itself
+- **No Direct Execution**: HyperOrch delegates ALL execution via `runSubagent` — never runs experiments itself
 - **Max 2 Design Revisions**: If DESIGN-REVIEW fails twice, halt and report
 - **Handoff Before Context Loss**: Always update registry before context boundary
+- **DESIGN-REVIEW is the Only Gate**: Once passed, execution proceeds autonomously — no orchestrator-injected checkpoints
 
 ## Template
 Base experiment entry template:
