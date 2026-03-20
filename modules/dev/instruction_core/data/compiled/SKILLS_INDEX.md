@@ -1,7 +1,7 @@
 # 📚 Skills Index
 
 > Auto-generated during instruction sync. DO NOT EDIT MANUALLY.
-> Last updated: 2026-03-20T02:47:23.338764+00:00
+> Last updated: 2026-03-20T03:46:51.392112+00:00
 
 ## Available Skills
 
@@ -22,7 +22,7 @@
 | [exped-export](../skills/exped-export/SKILL.md) | Framework export workflows — exporting ADHD agents and instr... | Exporting agents/instructions to a Vue3, React, Unity, Rust, Go, or other external project; Running the 8-phase expedition pipeline | ⚠️ Not documented | ~1309 |
 | [orch-discussion](../skills/orch-discussion/SKILL.md) | Orchestrator discussion preset — structured multi-agent disc... | See SKILL.md | ⚠️ Not documented | ~1274 |
 | [orch-expedition](../skills/orch-expedition/SKILL.md) | Orchestrator expedition preset — coordinating the 8-phase ex... | See SKILL.md | ⚠️ Not documented | ~933 |
-| [orch-experiment](../skills/orch-experiment/SKILL.md) | Orchestrator experiment preset — coordinating scientific exp... | See SKILL.md | ⚠️ Not documented | ~2420 |
+| [orch-experiment](../skills/orch-experiment/SKILL.md) | Orchestrator experiment preset — coordinating scientific exp... | See SKILL.md | ⚠️ Not documented | ~2552 |
 | [orch-implementation](../skills/orch-implementation/SKILL.md) | Orchestrator implementation preset — coordinating implementa... | See SKILL.md | ⚠️ Not documented | ~1209 |
 | [orch-routing](../skills/orch-routing/SKILL.md) | Orchestrator routing preset — routing user requests to the c... | See SKILL.md | ⚠️ Not documented | ~930 |
 | [orch-testing](../skills/orch-testing/SKILL.md) | Orchestrator testing preset — coordinating comprehensive tes... | See SKILL.md | ⚠️ Not documented | ~1013 |

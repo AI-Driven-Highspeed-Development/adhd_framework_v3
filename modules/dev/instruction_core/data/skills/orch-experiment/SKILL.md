@@ -105,6 +105,12 @@ Update all records and clean up experiment artifacts:
 - Check for existing experiment registry — read before creating new hypotheses
 - State: "Starting experiment workflow for: [observation]"
 
+### 1b. Resume Gate
+If a completed experiment entry is provided (Steps 1-5 already filled):
+- Verify Steps 1-5 are present and complete
+- Skip directly to Phase 2 (DESIGN-REVIEW) or Phase 3 (EXECUTE) depending on whether design review has already been done
+- State: "Resuming experiment [id] from Phase [N]"
+
 ### 2. Phase 1: SETUP
 Invoke HyperArch to scaffold experiment:
 ```yaml
@@ -129,6 +135,8 @@ checks:
 **If FAILED**: Return to Phase 1 with specific issues. Max 2 revision cycles.
 
 ### 4. Phase 3: EXECUTE
+⛔ MANDATORY: HyperOrch MUST invoke runSubagent(HyperArch) for this phase. If runSubagent is unavailable or fails, STOP and report the delegation failure to the user. NEVER fall back to manual command output, environment inspection, or execution guidance. Inability to delegate is a blocking failure, not an invitation to improvise.
+
 Invoke HyperArch to run the experiment:
 ```yaml
 task: "Execute experiment and collect measurements"
@@ -172,6 +180,14 @@ Required sections in template but `N/A` with justification is valid:
 ## Multi-Arm Extension
 For experiments testing multiple configurations of one variable:
 → See [multi_arm_extension.md](assets/multi_arm_extension.md)
+
+## Long-Running Execution Protocol
+For experiments involving long-running processes (GPU training, batch jobs, multi-hour computations):
+- HyperArch launches the process and returns a **monitoring plan** rather than blocking until completion
+- The monitoring plan includes: exact command(s) launched, expected output locations, key metrics to watch, abort criteria
+- HyperOrch relays the monitoring plan to the user
+- When results are available (user provides output or points to probe files), HyperOrch resumes the workflow at Phase 4 (ANALYZE)
+- HyperOrch NEVER constructs launch commands herself — this is HyperArch's responsibility even for "simple" commands
 
 ## Anti-Patterns
 
