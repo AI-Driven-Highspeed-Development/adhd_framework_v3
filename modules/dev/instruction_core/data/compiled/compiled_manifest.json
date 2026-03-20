@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "compiled_at": "2026-03-08T12:53:15.530486+00:00",
+  "compiled_at": "2026-03-20T02:47:23.323360+00:00",
   "entries": {
     "instruction_sync_overview.md": {
       "source": "instruction_sync_overview.flow",
@@ -16,9 +16,9 @@
     "agents/hyper_architect.adhd.agent.md": {
       "source": "agents/hyper_architect.flow",
       "type": "compiled",
-      "sha256": "dfe21ef8536f52f953b4d290b62ed4b4910ba9adaceda490b188e622ab94a7ee",
+      "sha256": "db68983795f32ef9fc9952f2fd0bfcf51f268bba9f242d4f7394759cacd3878b",
       "source_sha256": "56b220312447f6ce9ae087818d2387bdf65d8959bd01fb940f43f65b3be1f719",
-      "size": 7488,
+      "size": 8050,
       "transitive_sha256": "aa03ebbbf1f1a93a7088c624826345982a9a4c4239e47f984940d8eedf877686",
       "transitive_files": [
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/adhd/framework_info.flow",
@@ -33,9 +33,9 @@
     "agents/hyper_san_checker.adhd.agent.md": {
       "source": "agents/hyper_san_checker.flow",
       "type": "compiled",
-      "sha256": "fda6fc2136369bca9fd056965ebfddd181a7ab02767097a891b1e35a2f91c069",
+      "sha256": "aad4255a462fec8445a9ef4e9146631dfa8dd324f6684e074dfd589acbf70bee",
       "source_sha256": "3756e84b2aebc85423e86bfc89013e76f8a1a26677f3ad3e7e1f335877855f5b",
-      "size": 6423,
+      "size": 6987,
       "transitive_sha256": "059040b15907152b13ac380921731cbf9844e245b037461c64a3e4ed56c9152d",
       "transitive_files": [
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/adhd/framework_info.flow",
@@ -63,10 +63,10 @@
     "agents/hyper_orchestrator.adhd.agent.md": {
       "source": "agents/hyper_orchestrator.flow",
       "type": "compiled",
-      "sha256": "5f39c24dee30d3d651e6fae5f3884eb5fc4ddc62d58168b0115313d3ab8c7618",
-      "source_sha256": "6f0ae549e4577355addf74fd3f09c67b98debcc059b6599b3e27e953b7b0b1fd",
-      "size": 9223,
-      "transitive_sha256": "3dfea8a4a1615550b47f12f1dbe8b4880334f89e0d7e05ba6cbe414014a42985",
+      "sha256": "edf23e893bc0a580ca5fc7426abecc171df9be0f156d9e6d01bfd5c46e8739db",
+      "source_sha256": "793229552270e44f69713785733a42ed546b99c77a372ec3254d3058842d0c13",
+      "size": 8848,
+      "transitive_sha256": "cf0a935eff80018640628c814946d6189db28069d2a1cf338d747e0b1add5cab",
       "transitive_files": [
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/adhd/framework_info.flow",
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/specialist_awareness.flow",
@@ -77,9 +77,9 @@
     "agents/hyper_day_dreamer.adhd.agent.md": {
       "source": "agents/hyper_day_dreamer.flow",
       "type": "compiled",
-      "sha256": "b28a524a276db5ed52b6d8ee7400ddae4dcae9274ee83a1579633b39c1a8a436",
+      "sha256": "c65949352b1e61549af331e192563fdc3cfbcd6cbfd20147612d4f0934f7584a",
       "source_sha256": "1edad45cf63723485fa8364d8c8a4335a44447822cab55444046ff96122d7b6b",
-      "size": 9417,
+      "size": 9981,
       "transitive_sha256": "a56ee84eca7ef3d0f0c1cb855fae0c3dcd0e984675964708d22594d2124b2a3b",
       "transitive_files": [
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/core_philosophy.flow",
@@ -91,9 +91,9 @@
     "agents/hyper_red.adhd.agent.md": {
       "source": "agents/hyper_red.flow",
       "type": "compiled",
-      "sha256": "e7021f883d8f65a6f6298f25289097b3edc117c332f7916546a831a22c15a488",
+      "sha256": "c0618424e82b322e717263c343b9c39da81fa20907855b1a814d72ba0626a10a",
       "source_sha256": "01c06a21088dbf1883c8941d980f47157693f9112a51539dab48c448faff3283",
-      "size": 7944,
+      "size": 8500,
       "transitive_sha256": "dec0b6eb2ad76db669f4bdf7fccbe8ba426a4fbe6249cd5c4b9816a98d3c14fd",
       "transitive_files": [
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/adhd/framework_info.flow",
@@ -118,9 +118,9 @@
     "agents/hyper_agent_smith.adhd.agent.md": {
       "source": "agents/hyper_agent_smith.flow",
       "type": "compiled",
-      "sha256": "04dcd84e7e277c36ca9ba0f01d8fa56237336df5bf6fe8ce444c348c65fa0011",
+      "sha256": "a0b0639f1cc591be1947f4364cb8d51d3e1fc69b0977a67db9c05cd72f31c462",
       "source_sha256": "a75f55e3f5b749c4527b769b7fb257fadacdc4f89e6744ba63f4237d620092ae",
-      "size": 8431,
+      "size": 8995,
       "transitive_sha256": "04daf4ef16e673140ff2c7bed3dd1e426a11cd58c02a0091ab8b79c47bca431d",
       "transitive_files": [
         "/home/stellar/PublicRepo/ADHD-Framework/adhd_framework_v3/modules/dev/instruction_core/data/flows/_lib/patterns/core_philosophy.flow",

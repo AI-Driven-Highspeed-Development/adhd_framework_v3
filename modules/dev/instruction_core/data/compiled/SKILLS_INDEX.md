@@ -1,7 +1,7 @@
 # 📚 Skills Index
 
 > Auto-generated during instruction sync. DO NOT EDIT MANUALLY.
-> Last updated: 2026-03-08T12:53:15.541087+00:00
+> Last updated: 2026-03-20T02:47:23.338764+00:00
 
 ## Available Skills
 
@@ -22,6 +22,7 @@
 | [exped-export](../skills/exped-export/SKILL.md) | Framework export workflows — exporting ADHD agents and instr... | Exporting agents/instructions to a Vue3, React, Unity, Rust, Go, or other external project; Running the 8-phase expedition pipeline | ⚠️ Not documented | ~1309 |
 | [orch-discussion](../skills/orch-discussion/SKILL.md) | Orchestrator discussion preset — structured multi-agent disc... | See SKILL.md | ⚠️ Not documented | ~1274 |
 | [orch-expedition](../skills/orch-expedition/SKILL.md) | Orchestrator expedition preset — coordinating the 8-phase ex... | See SKILL.md | ⚠️ Not documented | ~933 |
+| [orch-experiment](../skills/orch-experiment/SKILL.md) | Orchestrator experiment preset — coordinating scientific exp... | See SKILL.md | ⚠️ Not documented | ~2420 |
 | [orch-implementation](../skills/orch-implementation/SKILL.md) | Orchestrator implementation preset — coordinating implementa... | See SKILL.md | ⚠️ Not documented | ~1209 |
 | [orch-routing](../skills/orch-routing/SKILL.md) | Orchestrator routing preset — routing user requests to the c... | See SKILL.md | ⚠️ Not documented | ~930 |
 | [orch-testing](../skills/orch-testing/SKILL.md) | Orchestrator testing preset — coordinating comprehensive tes... | See SKILL.md | ⚠️ Not documented | ~1013 |
@@ -32,7 +33,7 @@
 | [smith-instructions](../skills/smith-instructions/SKILL.md) | Instructions-file authoring workflow for `.instructions.md` ... | Creating a new instruction file for a module or format; Updating `applyTo` patterns for existing instructions | ⚠️ Not documented | ~695 |
 | [smith-module-instructions](../skills/smith-module-instructions/SKILL.md) | Module instruction authoring workflow for `.instructions.md`... | Creating a new module instruction file; Updating instructions after a module API change | ⚠️ Not documented | ~762 |
 | [smith-modules-readme](../skills/smith-modules-readme/SKILL.md) | Module README authoring workflow for ADHD Framework modules.... | Creating a README for a new module; Updating an existing module README after API changes | ⚠️ Not documented | ~987 |
-| [smith-prompts](../skills/smith-prompts/SKILL.md) | Prompt-file authoring workflow for `.prompt.md` files. Defin... | Creating a new reusable prompt template; Modifying an existing prompt's structure or steps | ⚠️ Not documented | ~693 |
+| [smith-prompts](../skills/smith-prompts/SKILL.md) | Prompt-file authoring workflow for `.prompt.md` files. Defin... | Creating a new reusable prompt template; Modifying an existing prompt's structure or steps | ⚠️ Not documented | ~695 |
 | [smith-skills](../skills/smith-skills/SKILL.md) | Teaches agents how to write proper SKILL.md files following ... | Creating a new agent skill from scratch; Reviewing or improving existing skills | ⚠️ Not documented | ~2355 |
 
 ## Quick Reference
@@ -44,4 +45,4 @@
 - **Export**: exped-export, orch-expedition
 - **Testing**: orch-testing, red-testing
 - **Discussion**: orch-discussion
-- **Other**: arch-cli, arch-mcp, arch-module, san-output
+- **Other**: arch-cli, arch-mcp, arch-module, orch-experiment, san-output
