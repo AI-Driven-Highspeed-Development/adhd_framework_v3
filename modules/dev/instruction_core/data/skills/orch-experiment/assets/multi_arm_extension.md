@@ -1,14 +1,20 @@
 # Multi-Arm Extension
 
-For experiments that test multiple values of a single variable in one structured experiment.
+For experiments with multiple arms beyond a simple baseline-vs-intervention pair.
 
 ---
 
 ## What Multi-Arm Means
 
-A standard interventional experiment tests ONE new value against a baseline. A multi-arm experiment tests MULTIPLE new values against the SAME baseline — each value is an "arm."
+A standard interventional experiment tests ONE new value against a baseline. Multi-arm experiments extend this in two ways:
 
-The one-variable rule still applies: all arms change the same single variable, just to different values.
+### Parameter sweeps
+Multiple arms test different values of the SAME variable against baseline. Causal isolation is straightforward — all arms differ from baseline in the same dimension.
+
+### Factorial / interaction designs
+Arms test individual variables AND their combinations. For example: A (X only), B (Y only), C (X+Y). Causal isolation is maintained because individual arms provide baselines for decomposing the combination arm's effects. The combination arm reveals interaction effects that neither individual arm can.
+
+**The test remains**: "If a metric moves in any arm, can I determine what caused it?"
 
 ---
 
@@ -18,6 +24,8 @@ The one-variable rule still applies: all arms change the same single variable, j
 - A/B/C comparisons (three caching strategies)
 - Threshold tuning (timeout values of 5s, 10s, 30s)
 - Configuration selection (pool sizes of 4, 8, 16, 32)
+- Factorial ablations (testing components individually and in combination)
+- Interaction detection (does X+Y behave differently than X and Y predict separately?)
 
 ---
 
@@ -41,9 +49,11 @@ Arm A is always the baseline (current/default value).
 
 All arms MUST share:
 - Same instrumentation and measurement method
-- Same environment and configuration (except the one variable)
+- Same environment and configuration (except the variable(s) under test)
 - Same execution procedure
 - Same prediction table structure
+
+For factorial designs, the baseline is the control arm (no changes). Each subsequent arm must be clearly traceable back to baseline with an explicit description of what changed and why.
 
 ---
 

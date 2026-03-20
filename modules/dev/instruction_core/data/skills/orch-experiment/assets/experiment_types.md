@@ -31,19 +31,21 @@ Two types. Every experiment MUST be classified as one before execution.
 
 **Definition**: Changes runtime behavior to test a causal claim. Modifies code, configuration, environment, or data.
 
-**One-variable rule** (MANDATORY):
-- Exactly ONE variable differs from baseline
-- Everything else stays identical
-- If you change 3 things and the metric moves, you don't know which mattered
+**Causal isolation principle**:
+The purpose of an interventional experiment is to attribute observed effects to specific causes. The simplest way to ensure this is changing one variable per arm from baseline. But the real test is: **"If a metric moves, can I determine which change caused it?"**
+
+- **Simple case**: Each arm changes one variable from baseline. Attribution is direct.
+- **Factorial designs**: Arms A (X only), B (Y only), C (X+Y) are valid when individual arms exist in the same experiment — arm C reveals interaction effects that are isolable by comparison against A and B.
+- **Confounded designs**: An arm that changes multiple variables with no individual-variable arms to compare against defeats causal isolation. This is a genuine violation regardless of how it's framed.
 
 **Baseline requirement**:
 - State the baseline value explicitly in the experiment entry
 - State the new value explicitly
-- The diff between baseline and experiment must be exactly one variable
+- The relationship between baseline, individual arms, and any combination arms must be clear
 
 **Examples**:
 - Changing a cache TTL from 60s to 300s to test response time impact
-- Switching a database query from sequential scan to index scan
+- A/B: testing index scan vs sequential scan; C: testing both together (with A and B providing individual baselines)
 - Increasing worker thread count from 4 to 8
 - Replacing a sorting algorithm to compare throughput
 
