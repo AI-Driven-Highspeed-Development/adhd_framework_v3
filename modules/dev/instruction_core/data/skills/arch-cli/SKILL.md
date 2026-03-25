@@ -14,7 +14,19 @@ A guide for building CLI command registration scripts that integrate with the AD
 - Understanding handler signature requirements
 - Debugging CLI command routing issues
 
----
+## Invocation
+
+Registered CLI commands are invoked through the project's `admin_cli.py` entry point — NOT through `adhd`:
+
+```bash
+python admin_cli.py <module_short_name> <command> [args...]
+# Examples:
+python admin_cli.py dlt train vitl16_prod    # dinov3_lora_trainer (short_name="dlt")
+python admin_cli.py sdm update AAPL          # stocks_data_manager (short_name="sdm")
+python admin_cli.py tsm list-sessions        # training_session_manager (short_name="tsm")
+```
+
+**IMPORTANT**: `adhd` is the framework CLI (create-project, sync, refresh, etc.). Module commands go through `admin_cli.py`.
 
 ## Core Principles
 

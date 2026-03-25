@@ -141,6 +141,8 @@ Before classifying, READ THE SIGNALS the user already gave you:
 Classify intent using these signals: implementation / testing / discussion / experiment / routing
 - If implementation / testing / discussion / experiment: proceed to Load Preset step
   - Preset can be chained: e.g. "Discuss about X, auto-invite, then implement X, then test it" → load each preset sequentially
+  - Single intent can trigger multiple presets if needed:
+    - e.g. "discuss about experiment design" → load both `orch-discussion` and `orch-experiment` presets, for the `orch-experiment` templates are needed for the discussion about experiment design
 - If intent is routing (does NOT match other modes): proceed to Load Preset step with routing preset
   - Something like "implement the agent file changes" is ROUTING (to HyperAgentSmith), NOT implementation mode.
 - Do NOT rely on keywords alone. Reason about the user's actual goal from all available signals.

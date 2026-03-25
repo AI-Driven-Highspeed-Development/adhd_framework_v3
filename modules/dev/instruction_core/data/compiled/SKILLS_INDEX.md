@@ -1,13 +1,13 @@
 # 📚 Skills Index
 
 > Auto-generated during instruction sync. DO NOT EDIT MANUALLY.
-> Last updated: 2026-03-20T03:46:51.392112+00:00
+> Last updated: 2026-03-25T04:23:53.008213+00:00
 
 ## Available Skills
 
 | Skill | Description | When to Use | When NOT | ~Tokens |
 |-------|-------------|-------------|----------|---------|
-| [arch-cli](../skills/arch-cli/SKILL.md) | CLI command registration and development patterns for ADHD F... | Creating a new `*_cli.py` file for a module; Registering commands with the centralized `CLIManager` | ⚠️ Not documented | ~999 |
+| [arch-cli](../skills/arch-cli/SKILL.md) | CLI command registration and development patterns for ADHD F... | Creating a new `*_cli.py` file for a module; Registering commands with the centralized `CLIManager` | ⚠️ Not documented | ~1147 |
 | [arch-mcp](../skills/arch-mcp/SKILL.md) | MCP server implementation workflow for ADHD modules. Covers ... | Creating a new MCP server module; Adding tools to an existing MCP module | ⚠️ Not documented | ~1315 |
 | [arch-module](../skills/arch-module/SKILL.md) | Module implementation workflow for ADHD Framework Python mod... | Creating a new ADHD module from scratch; Modifying existing module code | ⚠️ Not documented | ~1544 |
 | [dream-close](../skills/dream-close/SKILL.md) | Step-by-step SOP for closing and completing DREAM plans — ex... | All plan work is complete — every phase finished, every task resolved; Plan is ready to be marked DONE and archived | ⚠️ Not documented | ~2548 |
@@ -22,7 +22,7 @@
 | [exped-export](../skills/exped-export/SKILL.md) | Framework export workflows — exporting ADHD agents and instr... | Exporting agents/instructions to a Vue3, React, Unity, Rust, Go, or other external project; Running the 8-phase expedition pipeline | ⚠️ Not documented | ~1309 |
 | [orch-discussion](../skills/orch-discussion/SKILL.md) | Orchestrator discussion preset — structured multi-agent disc... | See SKILL.md | ⚠️ Not documented | ~1274 |
 | [orch-expedition](../skills/orch-expedition/SKILL.md) | Orchestrator expedition preset — coordinating the 8-phase ex... | See SKILL.md | ⚠️ Not documented | ~933 |
-| [orch-experiment](../skills/orch-experiment/SKILL.md) | Orchestrator experiment preset — coordinating scientific exp... | See SKILL.md | ⚠️ Not documented | ~2552 |
+| [orch-experiment](../skills/orch-experiment/SKILL.md) | Orchestrator experiment preset — coordinating scientific exp... | See SKILL.md | ⚠️ Not documented | ~3842 |
 | [orch-implementation](../skills/orch-implementation/SKILL.md) | Orchestrator implementation preset — coordinating implementa... | See SKILL.md | ⚠️ Not documented | ~1209 |
 | [orch-routing](../skills/orch-routing/SKILL.md) | Orchestrator routing preset — routing user requests to the c... | See SKILL.md | ⚠️ Not documented | ~930 |
 | [orch-testing](../skills/orch-testing/SKILL.md) | Orchestrator testing preset — coordinating comprehensive tes... | See SKILL.md | ⚠️ Not documented | ~1013 |
