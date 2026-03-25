@@ -315,7 +315,8 @@
           }
         ]
       }
-    ]
+    ],
+    "groups": []
   },
   "adhd_mcp": {
     "module_name": "adhd_mcp",
@@ -525,6 +526,7 @@
           }
         ]
       }
-    ]
+    ],
+    "groups": []
   }
 }

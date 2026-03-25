@@ -1,7 +1,7 @@
 # 📚 Skills Index
 
 > Auto-generated during instruction sync. DO NOT EDIT MANUALLY.
-> Last updated: 2026-03-25T04:23:53.008213+00:00
+> Last updated: 2026-03-25T04:30:41.517414+00:00
 
 ## Available Skills
 
