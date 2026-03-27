@@ -87,6 +87,8 @@ class DependencyGraph:
 - The `@out` node is the entry point for compilation. If missing and `require_out=True`, a `MissingOutNodeError` is raised.
 - Import paths in `.flow` files are resolved relative to the importing file's directory.
 - Flow files under `_lib/` directories are shared fragments intended for import, not standalone compilation.
+- During full refresh (`adhd r -f`), `flow_core/refresh_full.py` performs a best-effort install of the FLOW Language extension (`adhd-framework.flow-language`) using a detected VS Code CLI.
+- Auto-install overrides are available in `.config` under `flow_core.extension_auto_install`: `enabled` (default `true`), `extension_id`, `vsix_path`, and `code_cli_path`.
 - See [manual.md](manual.md) for full Flow DSL syntax reference.
 
 ## Requirements & prerequisites

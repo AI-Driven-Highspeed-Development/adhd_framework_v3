@@ -20,6 +20,39 @@ Commands:
 
 from __future__ import annotations
 
+# ---------------------------------------------------------------------------
+# Fast-path: direct LSP invocation by VS Code extension
+# When run as `python flow_cli.py lsp`, relative imports below would fail
+# (no known parent package). Intercept here before they are reached.
+# ---------------------------------------------------------------------------
+if __name__ == "__main__":
+    import sys as _sys
+    if len(_sys.argv) > 1 and _sys.argv[1] == "lsp":
+        import os as _os
+
+        # Ensure flow_core's parent dir is on sys.path so absolute imports
+        # resolve even when running outside an installed venv.
+        _here = _os.path.dirname(_os.path.abspath(__file__))
+        _parent = _os.path.dirname(_here)
+        if _parent not in _sys.path:
+            _sys.path.insert(0, _parent)
+
+        # Logger's compact_style creates a StreamHandler(stream=sys.stdout)
+        # by default.  Stdout is reserved for LSP JSON-RPC, so temporarily
+        # swap sys.stdout → stderr while the Logger is initialised.  The
+        # handler captures the stream *object* at creation time, so after
+        # restoring sys.stdout the handler still writes to the real stderr.
+        _real_stdout = _sys.stdout
+        _sys.stdout = _sys.stderr          # Logger will bind its handler here
+        from logger_util import Logger as _Logger
+        _logger = _Logger(name="FlowLSP")
+        _sys.stdout = _real_stdout          # restore for pygls stdio transport
+
+        from flow_core.flow_lsp import start_server
+        start_server(transport="stdio", logger=_logger)
+        _sys.exit(0)
+# ---------------------------------------------------------------------------
+
 import argparse
 import json
 import os
@@ -1442,4 +1475,7 @@ def register_cli() -> None:
 
 
 if __name__ == "__main__":
+    # LSP fast-path is handled at the top of this file (before relative
+    # imports).  If we reach here, we were loaded as a package module
+    # (e.g. python -m flow_core.flow_cli) — just register with CLIManager.
     register_cli()

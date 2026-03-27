@@ -17,6 +17,7 @@ Library: pygls >= 1.0.0
 
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 from typing import Optional, Dict, List, Set
@@ -29,7 +30,7 @@ from pygls.workspace import TextDocument
 from logger_util import Logger
 from .tokenizer import Tokenizer
 from .parser import Parser
-from .resolver import Resolver, validate_with_errors
+from .resolver import Resolver
 from .models import FlowFile, FlowNode, Position, NodeRef
 from .errors import FlowError
 
@@ -42,6 +43,15 @@ FLOW_LANGUAGE_ID = "flow"
 FLOW_FILE_PATTERN = "**/*.flow"
 SERVER_NAME = "flow-lsp"
 SERVER_VERSION = "0.1.0"
+
+# Path targets for file clickability in go-to-definition.
+# Match ./ or ../ relative paths ending in .flow/.md and require a safe boundary
+# after extension to avoid partial captures (e.g. ".flowx" should not match).
+PATH_REF_PATTERN = (
+    r"(?:\./|\.\./)[^\s|<>\"']+\.(?:flow|md)(?=$|[\s|<>\"'])"
+)
+IMPORT_PATH_PATTERN = re.compile(rf"^\s*\+(?!\+)(?P<path>{PATH_REF_PATTERN})")
+INLINE_FILE_REF_PATTERN = re.compile(rf"\+\+(?P<path>{PATH_REF_PATTERN})")
 
 # Document selector for Flow files - used for registration
 # Note: These are TypedDict-style classes, not regular classes
@@ -65,6 +75,9 @@ class FlowLanguageServer(LanguageServer):
         
         # Cache for parsed files: uri -> (version, FlowFile, node_positions)
         self._file_cache: Dict[str, tuple[int, FlowFile, Dict[str, Position]]] = {}
+        
+        # Cache for imported node source maps: uri -> {node_id: (file_path, Position)}
+        self._import_source_map: Dict[str, Dict[str, tuple[str, Position]]] = {}
         
         # Tokenizer, parser, resolver instances
         self._tokenizer = Tokenizer(logger=self.logger)
@@ -134,11 +147,14 @@ class FlowLanguageServer(LanguageServer):
         
         Includes both local nodes and imported nodes.
         """
+        node_ids: Set[str] = set()
         cached = self.get_cached_file(uri)
         if cached:
             flow_file, _ = cached
-            return set(flow_file.nodes.keys())
-        return set()
+            node_ids.update(flow_file.nodes.keys())
+        if uri in self._import_source_map:
+            node_ids.update(self._import_source_map[uri].keys())
+        return node_ids
     
     def find_node_definition(
         self, uri: str, node_id: str
@@ -160,9 +176,13 @@ class FlowLanguageServer(LanguageServer):
             # Check local nodes first
             if node_id in node_positions:
                 return uri, node_positions[node_id]
-            
-            # TODO: Handle imported nodes by resolving imports
-            # For now, only handle local definitions
+        
+        # Check imported nodes via resolver source map
+        source_map = self._import_source_map.get(uri)
+        if source_map and node_id in source_map:
+            file_path, position = source_map[node_id]
+            target_uri = Path(file_path).as_uri()
+            return target_uri, position
         
         return None
 
@@ -172,6 +192,9 @@ class FlowLanguageServer(LanguageServer):
 # =============================================================================
 
 server = FlowLanguageServer()
+
+# Suppress noisy "Cancel notification for unknown message id" warnings from pygls
+logging.getLogger("pygls.protocol.json_rpc").setLevel(logging.ERROR)
 
 
 # =============================================================================
@@ -280,12 +303,42 @@ def did_close(ls: FlowLanguageServer, params: lsp.DidCloseTextDocumentParams) ->
     
     ls.logger.debug(f"Flow document closed: {uri}")
     
-    # Clear cache
-    if uri in ls._file_cache:
-        del ls._file_cache[uri]
+    # Clear caches
+    ls._file_cache.pop(uri, None)
+    ls._import_source_map.pop(uri, None)
     
     # Clear diagnostics
-    ls.publish_diagnostics(uri, [])
+    ls.text_document_publish_diagnostics(
+        lsp.PublishDiagnosticsParams(uri=uri, diagnostics=[])
+    )
+
+
+# =============================================================================
+# Workspace Events
+# =============================================================================
+
+@server.feature(lsp.WORKSPACE_DID_CHANGE_WATCHED_FILES)
+def did_change_watched_files(
+    ls: FlowLanguageServer, params: lsp.DidChangeWatchedFilesParams
+) -> None:
+    """Handle watched file changes — re-validate open .flow files."""
+    for change in params.changes:
+        uri = change.uri
+        if not _is_flow_document(uri):
+            continue
+
+        ls.logger.debug(f"Watched file changed: {uri} (type={change.type})")
+
+        # If the file was deleted, clear its caches
+        if change.type == lsp.FileChangeType.Deleted:
+            ls._file_cache.pop(uri, None)
+            ls._import_source_map.pop(uri, None)
+            continue
+
+        # For created/changed files, re-validate if the document is open
+        document = ls.workspace.get_text_document(uri)
+        if document:
+            _publish_diagnostics(ls, document)
 
 
 # =============================================================================
@@ -312,14 +365,16 @@ def _publish_diagnostics(ls: FlowLanguageServer, document: TextDocument) -> None
         # Cache the successful parse
         ls._cache_flow_file(uri, document.version, flow_file)
         
-        # Stage 3: Validate semantics
+        # Stage 3: Validate semantics (use instance resolver to retain source map)
         file_path = ls.get_file_path(uri)
-        errors = validate_with_errors(
+        errors = ls._resolver.validate_with_errors(
             flow_file,
             base_path=file_path.parent,
             source_path=str(file_path),
-            logger=ls.logger,
         )
+        
+        # Cache the source map for cross-file go-to-definition
+        ls._import_source_map[uri] = ls._resolver.get_node_source_map()
         
         for error in errors:
             diagnostics.append(_flow_error_to_diagnostic(error))
@@ -339,7 +394,9 @@ def _publish_diagnostics(ls: FlowLanguageServer, document: TextDocument) -> None
             source="flow-lsp",
         ))
     
-    ls.publish_diagnostics(uri, diagnostics)
+    ls.text_document_publish_diagnostics(
+        lsp.PublishDiagnosticsParams(uri=uri, diagnostics=diagnostics)
+    )
 
 
 def _flow_error_to_diagnostic(error: FlowError) -> lsp.Diagnostic:
@@ -453,7 +510,12 @@ def goto_definition(
     document = ls.workspace.get_text_document(params.text_document.uri)
     position = params.position
     
-    # Get the node reference at the cursor position
+    # Resolve file path references first (+... import or ++... inline file ref).
+    path_location = _get_path_definition_at_position(ls, document, position)
+    if path_location:
+        return path_location
+
+    # Fall back to node reference go-to-definition behavior.
     node_id = _get_node_ref_at_position(document, position)
     if not node_id:
         ls.logger.debug("No node reference found at position")
@@ -477,6 +539,67 @@ def goto_definition(
             end=lsp.Position(line=def_pos.line - 1, character=def_pos.column - 1 + len(node_id) + 1),  # +1 for @
         ),
     )
+
+
+def _get_path_definition_at_position(
+    ls: FlowLanguageServer,
+    document: TextDocument,
+    position: lsp.Position,
+) -> Optional[lsp.Location]:
+    """
+    Resolve file path references at the cursor position.
+
+    Supported forms:
+    - +../path/to/file.flow (line import)
+    - ++./path/to/file.md (inline file reference, including inside string templates)
+    """
+    rel_path = _get_path_ref_at_position(document, position)
+    if not rel_path:
+        return None
+
+    doc_path = ls.get_file_path(document.uri)
+    target_path = (doc_path.parent / rel_path).resolve()
+    if not target_path.exists() or not target_path.is_file():
+        ls.logger.debug(f"Path reference target not found: {target_path}")
+        return None
+
+    return lsp.Location(
+        uri=target_path.as_uri(),
+        range=lsp.Range(
+            start=lsp.Position(line=0, character=0),
+            end=lsp.Position(line=0, character=0),
+        ),
+    )
+
+
+def _get_path_ref_at_position(
+    document: TextDocument,
+    position: lsp.Position,
+) -> Optional[str]:
+    """Extract a relative file path reference at the given cursor position."""
+    lines = document.source.split("\n")
+    if position.line >= len(lines):
+        return None
+
+    line = lines[position.line]
+    char = position.character
+
+    # +./... or +../... at line start (allow indentation)
+    import_match = IMPORT_PATH_PATTERN.search(line)
+    if import_match:
+        start = import_match.start()
+        end = import_match.end("path")
+        if start <= char < end:
+            return import_match.group("path")
+
+    # ++./... or ++../... anywhere in the line (including inside templates)
+    for match in INLINE_FILE_REF_PATTERN.finditer(line):
+        start = match.start()
+        end = match.end("path")
+        if start <= char < end:
+            return match.group("path")
+
+    return None
 
 
 def _get_node_ref_at_position(
@@ -503,7 +626,7 @@ def _get_node_ref_at_position(
         end = match.end()
         
         # Check if cursor is within this reference
-        if start <= char <= end:
+        if start <= char < end:
             full_id = match.group(2)
             # Return just the base node ID (before any dot)
             return full_id.split(".")[0]

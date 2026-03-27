@@ -20,9 +20,12 @@ from pygls.workspace import TextDocument
 
 from flow_core.flow_lsp import (
     FlowLanguageServer,
+    goto_definition,
     _flow_error_to_diagnostic,
     _get_node_ref_at_position,
     _get_node_content_preview,
+    _get_path_ref_at_position,
+    _get_path_definition_at_position,
 )
 from flow_core.errors import FlowError, ParserError
 from flow_core.models import FlowNode, NodeRef, Position
@@ -308,6 +311,184 @@ class TestNodeRefDetection:
         assert node_id == "last"
 
 
+class TestPathRefDetection:
+    """Tests for detecting file path references at cursor position."""
+
+    def test_detect_plus_import_when_cursor_on_prefix_plus(self):
+        """Treat + prefix as part of clickable import span."""
+        source = "+../_lib/patterns/specialist_awareness.flow"
+        doc = MagicMock(spec=TextDocument)
+        doc.source = source
+
+        position = lsp.Position(line=0, character=0)
+        path = _get_path_ref_at_position(doc, position)
+
+        assert path == "../_lib/patterns/specialist_awareness.flow"
+
+    def test_detect_plus_parent_relative_flow_import(self):
+        """Detect +../_lib/...flow at line start."""
+        source = "+../_lib/patterns/specialist_awareness.flow"
+        doc = MagicMock(spec=TextDocument)
+        doc.source = source
+
+        # Cursor on "specialist" segment.
+        position = lsp.Position(line=0, character=18)
+        path = _get_path_ref_at_position(doc, position)
+
+        assert path == "../_lib/patterns/specialist_awareness.flow"
+
+    def test_detect_inline_plus_plus_md_path_in_template(self):
+        """Detect ++./...instructions.md inside templated token text."""
+        source = " >>|++./.github/instructions/adhd_framework_context.instructions.md|<<"
+        doc = MagicMock(spec=TextDocument)
+        doc.source = source
+
+        # Cursor on "adhd_framework_context" segment.
+        position = lsp.Position(line=0, character=35)
+        path = _get_path_ref_at_position(doc, position)
+
+        assert path == "./.github/instructions/adhd_framework_context.instructions.md"
+
+    def test_detect_inline_plus_plus_md_path_when_cursor_on_first_plus(self):
+        """Treat first + in ++ as part of clickable inline span."""
+        source = " >>|++./.github/instructions/adhd_framework_context.instructions.md|<<"
+        doc = MagicMock(spec=TextDocument)
+        doc.source = source
+
+        plus_idx = source.index("++")
+        position = lsp.Position(line=0, character=plus_idx)
+        path = _get_path_ref_at_position(doc, position)
+
+        assert path == "./.github/instructions/adhd_framework_context.instructions.md"
+
+    def test_detect_inline_plus_plus_md_path_when_cursor_on_second_plus(self):
+        """Treat second + in ++ as part of clickable inline span."""
+        source = " >>|++./.github/instructions/adhd_framework_context.instructions.md|<<"
+        doc = MagicMock(spec=TextDocument)
+        doc.source = source
+
+        plus_idx = source.index("++") + 1
+        position = lsp.Position(line=0, character=plus_idx)
+        path = _get_path_ref_at_position(doc, position)
+
+        assert path == "./.github/instructions/adhd_framework_context.instructions.md"
+
+    def test_no_path_match_for_non_relative_target(self):
+        """Do not match ++ paths that are not relative ./ or ../ targets."""
+        source = "|++some/absolute_like/path.flow|"
+        doc = MagicMock(spec=TextDocument)
+        doc.source = source
+
+        position = lsp.Position(line=0, character=12)
+        path = _get_path_ref_at_position(doc, position)
+
+        assert path is None
+
+    def test_no_partial_match_when_extension_has_trailing_text(self):
+        """Do not partially match paths like .flowx or .md.tmp."""
+        source = "+../_lib/patterns/specialist_awareness.flowx"
+        doc = MagicMock(spec=TextDocument)
+        doc.source = source
+
+        position = lsp.Position(line=0, character=24)
+        path = _get_path_ref_at_position(doc, position)
+
+        assert path is None
+
+    def test_cursor_at_path_end_boundary_is_not_inside_match(self):
+        """Use [start, end) semantics: cursor at end index is outside path span."""
+        source = "+../_lib/patterns/specialist_awareness.flow"
+        doc = MagicMock(spec=TextDocument)
+        doc.source = source
+
+        path_end = len(source)
+        position = lsp.Position(line=0, character=path_end)
+        path = _get_path_ref_at_position(doc, position)
+
+        assert path is None
+
+
+class TestPathGoToDefinition:
+    """Tests for resolving file path references to concrete file locations."""
+
+    def test_resolve_import_path_relative_to_current_document(self, tmp_path):
+        """Resolve +../ path to an existing sibling parent file."""
+        project_root = tmp_path / "repo"
+        flow_dir = project_root / "agents"
+        lib_dir = project_root / "_lib" / "patterns"
+        flow_dir.mkdir(parents=True)
+        lib_dir.mkdir(parents=True)
+
+        flow_file = flow_dir / "specialist.flow"
+        target_file = lib_dir / "specialist_awareness.flow"
+        flow_file.write_text("+../_lib/patterns/specialist_awareness.flow\n", encoding="utf-8")
+        target_file.write_text("@out |<<<ok>>>|.\n", encoding="utf-8")
+
+        doc = MagicMock(spec=TextDocument)
+        doc.uri = flow_file.as_uri()
+        doc.source = "+../_lib/patterns/specialist_awareness.flow"
+
+        ls = FlowLanguageServer()
+        position = lsp.Position(line=0, character=24)
+        location = _get_path_definition_at_position(ls, doc, position)
+
+        assert location is not None
+        assert location.uri == target_file.as_uri()
+
+    def test_resolve_inline_md_path_to_location(self, tmp_path):
+        """Resolve ++./...md inline reference to an existing markdown file."""
+        project_root = tmp_path / "repo"
+        docs_dir = project_root / ".github" / "instructions"
+        project_root.mkdir(parents=True)
+        docs_dir.mkdir(parents=True)
+
+        flow_file = project_root / "specialist.flow"
+        target_file = docs_dir / "adhd_framework_context.instructions.md"
+        flow_file.write_text(
+            " >>|++./.github/instructions/adhd_framework_context.instructions.md|<<\n",
+            encoding="utf-8",
+        )
+        target_file.write_text("# docs\n", encoding="utf-8")
+
+        doc = MagicMock(spec=TextDocument)
+        doc.uri = flow_file.as_uri()
+        doc.source = " >>|++./.github/instructions/adhd_framework_context.instructions.md|<<"
+
+        ls = FlowLanguageServer()
+        position = lsp.Position(line=0, character=40)
+        location = _get_path_definition_at_position(ls, doc, position)
+
+        assert location is not None
+        assert location.uri == target_file.as_uri()
+
+    @pytest.mark.parametrize("cursor_offset", [0, 1, 2, 25])
+    def test_resolve_inline_md_path_when_cursor_on_pluses_or_path(self, tmp_path, cursor_offset):
+        """Resolve ++ references when cursor is on either + or within path text."""
+        project_root = tmp_path / "repo"
+        docs_dir = project_root / ".github" / "instructions"
+        project_root.mkdir(parents=True)
+        docs_dir.mkdir(parents=True)
+
+        flow_file = project_root / "specialist.flow"
+        target_file = docs_dir / "adhd_framework_context.instructions.md"
+        source = " >>|++./.github/instructions/adhd_framework_context.instructions.md|<<"
+
+        flow_file.write_text(source + "\n", encoding="utf-8")
+        target_file.write_text("# docs\n", encoding="utf-8")
+
+        doc = MagicMock(spec=TextDocument)
+        doc.uri = flow_file.as_uri()
+        doc.source = source
+
+        ls = FlowLanguageServer()
+        plus_idx = source.index("++")
+        position = lsp.Position(line=0, character=plus_idx + cursor_offset)
+        location = _get_path_definition_at_position(ls, doc, position)
+
+        assert location is not None
+        assert location.uri == target_file.as_uri()
+
+
 # =============================================================================
 # Go-to-Definition Tests
 # =============================================================================
@@ -340,6 +521,44 @@ class TestGoToDefinition:
         result = lsp_server.find_node_definition("file:///unknown.flow", "any")
         
         assert result is None
+
+    def test_fallback_to_node_ref_when_cursor_is_outside_path_span(self, tmp_path):
+        """Preserve node ref go-to-definition when cursor is not inside a valid path match."""
+        project_root = tmp_path / "repo"
+        docs_dir = project_root / "docs"
+        docs_dir.mkdir(parents=True)
+
+        flow_file = project_root / "main.flow"
+        target_md = docs_dir / "ref.md"
+        flow_file.write_text("@target |<<<ok>>>|.\n", encoding="utf-8")
+        target_md.write_text("# ref\n", encoding="utf-8")
+
+        source = " >>|++./docs/ref.md$target|<<"
+        doc = MagicMock(spec=TextDocument)
+        doc.uri = flow_file.as_uri()
+        doc.source = source
+
+        ls = MagicMock()
+        ls.workspace.get_text_document.return_value = doc
+        ls.get_file_path.return_value = flow_file
+        ls.logger = MagicMock()
+        ls.find_node_definition = MagicMock(
+            return_value=(doc.uri, Position(line=1, column=1))
+        )
+
+        # Cursor on node reference token, outside valid path span.
+        cursor = source.index("$target") + 1
+        params = lsp.DefinitionParams(
+            text_document=lsp.TextDocumentIdentifier(uri=doc.uri),
+            position=lsp.Position(line=0, character=cursor),
+        )
+
+        location = goto_definition(ls, params)
+
+        assert location is not None
+        assert location.uri == doc.uri
+        assert location.range.start.line == 0
+        assert location.range.start.character == 0
 
 
 # =============================================================================

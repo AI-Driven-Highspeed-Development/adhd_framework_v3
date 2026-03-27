@@ -869,6 +869,21 @@ class Resolver:
         
         return self._errors
     
+    def get_node_source_map(self) -> Dict[str, Tuple[str, Position]]:
+        """Return mapping of node_id -> (source_file_path, Position).
+
+        Must be called after validate_with_errors() or resolve() — reads
+        the internal state accumulated during that run.
+
+        Returns:
+            Dict mapping each node ID to its (absolute_file_path, Position).
+        """
+        result: Dict[str, Tuple[str, Position]] = {}
+        for node_id, source_file in self._node_source_files.items():
+            position = self._node_positions.get(node_id, Position(0, 0))
+            result[node_id] = (source_file, position)
+        return result
+
     def resolve_with_graph(
         self,
         flow_file: FlowFile,

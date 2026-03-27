@@ -2,5 +2,11 @@
     "module_name": "flow_core",
     "path": {
         "data": "./project/data/flow_core"
+    },
+    "extension_auto_install": {
+        "enabled": true,
+        "extension_id": "adhd-framework.flow-language",
+        "vsix_path": "./modules/dev/flow_core/data/adhd-framework.flow-language-0.1.0.vsix",
+        "code_cli_path": null
     }
 }
